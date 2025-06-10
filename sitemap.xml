@@ -2,48 +2,52 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>https://cc.zitzhen.cn/</loc>
-<lastmod>2025-06-10T20:20:19+08:00</lastmod>
+<lastmod>2025-06-11T00:58:53+08:00</lastmod>
+</url>
+<url>
+<loc>https://cc.zitzhen.cn/baidu_verify_codeva-Nc3ckBEoE0.html</loc>
+<lastmod>2025-06-11T00:58:53+08:00</lastmod>
 </url>
 <url>
 <loc>https://cc.zitzhen.cn/control/</loc>
-<lastmod>2025-06-10T20:20:19+08:00</lastmod>
+<lastmod>2025-06-11T00:58:53+08:00</lastmod>
 </url>
 <url>
 <loc>https://cc.zitzhen.cn/safe/</loc>
-<lastmod>2025-06-10T20:20:19+08:00</lastmod>
+<lastmod>2025-06-11T00:58:53+08:00</lastmod>
 </url>
 <url>
 <loc>https://cc.zitzhen.cn/tipping/</loc>
-<lastmod>2025-06-10T20:20:19+08:00</lastmod>
+<lastmod>2025-06-11T00:58:53+08:00</lastmod>
 </url>
   <url>
-    <loc>https://cc.zitzhen.cn/control/小圳邮件/</loc>
-  </url>
-  <url>
-    <loc>https://cc.zitzhen.cn/control/水印/</loc>
-  </url>
-  <url>
     <loc>https://cc.zitzhen.cn/control/剪切板/</loc>
-  </url>
-  <url>
-    <loc>https://cc.zitzhen.cn/control/文本-Qii/</loc>
-  </url>
-  <url>
-    <loc>https://cc.zitzhen.cn/control/WebSQL/</loc>
-  </url>
-  <url>
-    <loc>https://cc.zitzhen.cn/control/CoCo扩展工具/</loc>
   </url>
   <url>
     <loc>https://cc.zitzhen.cn/control/按钮-Qii/</loc>
   </url>
   <url>
+    <loc>https://cc.zitzhen.cn/control/WebSQL/</loc>
+  </url>
+  <url>
     <loc>https://cc.zitzhen.cn/control/计算机单位工具/</loc>
+  </url>
+  <url>
+    <loc>https://cc.zitzhen.cn/control/文本-Qii/</loc>
   </url>
   <url>
     <loc>https://cc.zitzhen.cn/control/小宏播放器/</loc>
   </url>
   <url>
+    <loc>https://cc.zitzhen.cn/control/小圳邮件/</loc>
+  </url>
+  <url>
     <loc>https://cc.zitzhen.cn/control/文件工具箱/</loc>
+  </url>
+  <url>
+    <loc>https://cc.zitzhen.cn/control/水印/</loc>
+  </url>
+  <url>
+    <loc>https://cc.zitzhen.cn/control/CoCo扩展工具/</loc>
   </url>
 </urlset>
