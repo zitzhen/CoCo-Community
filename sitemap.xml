@@ -2,19 +2,19 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>https://cc.zitzhen.cn/</loc>
-<lastmod>2025-07-07T21:16:11+08:00</lastmod>
+<lastmod>2025-07-08T01:09:34+08:00</lastmod>
 </url>
 <url>
 <loc>https://cc.zitzhen.cn/control/</loc>
-<lastmod>2025-07-07T21:16:11+08:00</lastmod>
+<lastmod>2025-07-08T01:09:34+08:00</lastmod>
 </url>
 <url>
 <loc>https://cc.zitzhen.cn/safe/</loc>
-<lastmod>2025-07-07T21:16:11+08:00</lastmod>
+<lastmod>2025-07-08T01:09:34+08:00</lastmod>
 </url>
 <url>
 <loc>https://cc.zitzhen.cn/tipping/</loc>
-<lastmod>2025-07-07T21:16:11+08:00</lastmod>
+<lastmod>2025-07-08T01:09:34+08:00</lastmod>
 </url>
   <url>
     <loc>https://cc.zitzhen.cn/control/剪切板/</loc>
@@ -33,6 +33,9 @@
   </url>
   <url>
     <loc>https://cc.zitzhen.cn/control/返回键-Qii/</loc>
+  </url>
+  <url>
+    <loc>https://cc.zitzhen.cn/control/屏幕工具-Qii/</loc>
   </url>
   <url>
     <loc>https://cc.zitzhen.cn/control/计算机单位工具/</loc>
