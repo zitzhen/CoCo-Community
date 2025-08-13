@@ -2,27 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>https://cc.zitzhen.cn/</loc>
-<lastmod>2025-08-11T10:46:40+08:00</lastmod>
+<lastmod>2025-08-12T23:10:26+08:00</lastmod>
 </url>
 <url>
 <loc>https://cc.zitzhen.cn/control/</loc>
-<lastmod>2025-08-11T10:46:40+08:00</lastmod>
+<lastmod>2025-08-12T23:10:26+08:00</lastmod>
 </url>
 <url>
 <loc>https://cc.zitzhen.cn/safe/</loc>
-<lastmod>2025-08-11T10:46:40+08:00</lastmod>
+<lastmod>2025-08-12T23:10:26+08:00</lastmod>
 </url>
 <url>
 <loc>https://cc.zitzhen.cn/tipping/</loc>
-<lastmod>2025-08-11T10:46:40+08:00</lastmod>
+<lastmod>2025-08-12T23:10:26+08:00</lastmod>
 </url>
 <url>
 <loc>https://cc.zitzhen.cn/agreement/privacypolicy/</loc>
-<lastmod>2025-08-11T10:46:40+08:00</lastmod>
+<lastmod>2025-08-12T23:10:26+08:00</lastmod>
 </url>
 <url>
 <loc>https://cc.zitzhen.cn/agreement/useragreement/</loc>
-<lastmod>2025-08-11T10:46:40+08:00</lastmod>
+<lastmod>2025-08-12T23:10:26+08:00</lastmod>
 </url>
   <url>
     <loc>https://cc.zitzhen.cn/control/标签栏-Qii/</loc>
@@ -46,6 +46,9 @@
     <loc>https://cc.zitzhen.cn/control/导航栏-Qii/</loc>
   </url>
   <url>
+    <loc>https://cc.zitzhen.cn/control/执行积木-LJT/</loc>
+  </url>
+  <url>
     <loc>https://cc.zitzhen.cn/control/LakexEditorViewer/</loc>
   </url>
   <url>
@@ -61,7 +64,13 @@
     <loc>https://cc.zitzhen.cn/control/滑动条-Qii/</loc>
   </url>
   <url>
+    <loc>https://cc.zitzhen.cn/control/文字处理工具-LJT/</loc>
+  </url>
+  <url>
     <loc>https://cc.zitzhen.cn/control/返回键-Qii/</loc>
+  </url>
+  <url>
+    <loc>https://cc.zitzhen.cn/control/文字转data urlo-LJT/</loc>
   </url>
   <url>
     <loc>https://cc.zitzhen.cn/control/屏幕工具-Qii/</loc>
@@ -71,6 +80,9 @@
   </url>
   <url>
     <loc>https://cc.zitzhen.cn/control/计算机单位工具/</loc>
+  </url>
+  <url>
+    <loc>https://cc.zitzhen.cn/control/随机获取网易云音乐一首歌曲-LJT/</loc>
   </url>
   <url>
     <loc>https://cc.zitzhen.cn/control/CCQI-快速导入/</loc>
@@ -88,7 +100,13 @@
     <loc>https://cc.zitzhen.cn/control/全局广播-Qii/</loc>
   </url>
   <url>
+    <loc>https://cc.zitzhen.cn/control/设备检测器-LJT/</loc>
+  </url>
+  <url>
     <loc>https://cc.zitzhen.cn/control/音乐播放器-Qii/</loc>
+  </url>
+  <url>
+    <loc>https://cc.zitzhen.cn/control/生成指定格式的html-LJT/</loc>
   </url>
   <url>
     <loc>https://cc.zitzhen.cn/control/聊天框-Qii/</loc>
@@ -112,6 +130,9 @@
     <loc>https://cc.zitzhen.cn/control/流彩背景-Qii/</loc>
   </url>
   <url>
+    <loc>https://cc.zitzhen.cn/control/触摸板-LJT/</loc>
+  </url>
+  <url>
     <loc>https://cc.zitzhen.cn/control/CoCo扩展工具/</loc>
   </url>
   <url>
@@ -131,6 +152,9 @@
   </url>
   <url>
     <loc>https://cc.zitzhen.cn/user/Inventocode</loc>
+  </url>
+  <url>
+    <loc>https://cc.zitzhen.cn/user/LJT-YTWH</loc>
   </url>
   <url>
     <loc>https://cc.zitzhen.cn/user/iamliuxiaozhen</loc>
