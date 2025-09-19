@@ -107,11 +107,17 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from "vue"
 import { useRoute } from "vue-router"
-import { marked } from "marked"
 import { useHead } from "@vueuse/head"
+import { 
+  fetchControlData,
+  ReadmeResult,
+  AuthorInfo,
+  ControlInfo
+} from './index.ts'
+import { ControlData } from '@types'
 
 // -------- 响应式数据 --------
 const loading = ref(true)
@@ -120,7 +126,7 @@ const errorVisibleSmall = ref(false)
 const errorMessage = ref("")
 const filename = ref("")
 const fileSize = ref("正在加载")
-const versions = ref([])
+const versions = ref<string[]>([])
 const introduceHtml = ref("<p>正在处理</p>")
 const avatar = ref("")
 const authorName = ref("正在加载")
@@ -135,47 +141,11 @@ function offError() {
   errorVisibleSmall.value = false
 }
 
-// README 候选路径
-async function fetchReadmeCandidate(id) {
-  const candidates = [
-    `/information/readme/control/${id}/README.md`,
-    `/information/readme/control/${id}/readme.md`,
-    `/information/readme/control/${id}/Readme.md`,
-    `/information/readme/control/${id}/README.MD`,
-    `/information/readme/control/${id}/README.markdown`,
-    `/information/control/${id}/README.md`,
-    `/information/control/${id}/readme.md`,
-    `/readme/control/${id}/README.md`,
-    `/readme/control/${id}/readme.md`,
-  ]
-
-  let firstHtml = null
-
-  for (const url of candidates) {
-    try {
-      const res = await fetch(url)
-      const text = await res.text().catch(() => "")
-      const ct = (res.headers.get("content-type") || "").toLowerCase()
-
-      if (!res.ok) {
-        console.debug("[ControlDetail] README 候选未命中：", url, res.status)
-        continue
-      }
-
-      if (ct.includes("text/html") || /<!doctype|<html/i.test(text)) {
-        if (!firstHtml) firstHtml = { url, status: res.status, snippet: text.slice(0, 1024) }
-        console.warn("[ControlDetail] README 返回 HTML（可能是 index.html）: ", url)
-        continue
-      }
-
-      return { url, text }
-    } catch (err) {
-      console.warn("[ControlDetail] 请求 README 异常：", url, err)
-      continue
-    }
-  }
-
-  return { error: true, firstHtml }
+function throwError(msg: string) {
+  errorMessage.value = msg
+  errorVisible.value = true
+  errorVisibleSmall.value = true
+  loading.value = false
 }
 
 async function fetchData() {
@@ -185,66 +155,19 @@ async function fetchData() {
       throwError("未检测到参数")
       return
     }
-    filename.value = id
+    filename.value = id as string
 
-    // 1) information.json
-    const infoUrl = `/information/control/${id}/information.json`
-    const infoRes = await fetch(infoUrl)
-    if (!infoRes.ok) {
-      const body = await infoRes.text().catch(() => "")
-      console.warn("[ControlDetail] information.json 错误响应：", infoUrl, infoRes.status, body.slice?.(0, 500))
-      throw new Error(`未找到 information.json：${infoUrl} （HTTP ${infoRes.status}）`)
-    }
-    const jsonData = await infoRes.json()
-
-    // 2) 控件文件（计算大小）
-    const controlUrl = `/control/${id}/control.jsx`
-    const controlRes = await fetch(controlUrl)
-    if (!controlRes.ok) {
-      const body = await controlRes.text().catch(() => "")
-      console.warn("[ControlDetail] control.jsx 错误响应：", controlUrl, controlRes.status, body.slice?.(0, 500))
-      throw new Error(`未找到控件文件：${controlUrl} （HTTP ${controlRes.status}）`)
-    }
-    const controlBlob = await controlRes.blob()
-    fileSize.value = (controlBlob.size / 1024).toFixed(2)
-
-    // 3) README
-    const readmeResult = await fetchReadmeCandidate(id)
-    if (readmeResult.error) {
-      if (readmeResult.firstHtml) {
-        introduceHtml.value =
-          `<p style="color:#b33">未能正确加载 README.md（服务器返回 HTML 或 路径不匹配）。</p>` +
-          `<p>请确认文件存在于 <code>public/information/readme/control/${id}/README.md</code>，并且文件名大小写完全匹配。</p>`
-      } else {
-        introduceHtml.value =
-          `<p style="color:#b33">未能找到 README.md（尝试了常见大小写与目录）。</p>` +
-          `<p>请确认文件存在于 <code>public/information/readme/control/${id}/README.md</code>。</p>`
-      }
-    } else {
-      introduceHtml.value = marked.parse(readmeResult.text || "")
-    }
-
-    // 4) Github 作者信息
-    if (jsonData && jsonData.author) {
-      try {
-        const creatorRes = await fetch(`https://api.github.com/users/${jsonData.author}`)
-        if (creatorRes.ok) {
-          const creator = await creatorRes.json()
-          avatar.value = creator.avatar_url
-          authorName.value = creator.name || jsonData.author
-          authorBio.value = creator.bio
-        } else {
-          authorName.value = jsonData.author
-        }
-      } catch (err) {
-        console.warn("[ControlDetail] 获取 Github 信息失败：", err)
-        authorName.value = jsonData.author
-      }
-    }
-
-    downloadUrl.value = `/control/${id}/control.jsx`
-    sourceUrl.value = downloadUrl.value
-    versions.value = Array.isArray(jsonData.Version_number_list) ? jsonData.Version_number_list : []
+    // 获取控件数据
+    const data = await fetchControlData(id as string)
+    
+    fileSize.value = data.fileSize
+    introduceHtml.value = data.introduceHtml
+    avatar.value = data.avatar
+    authorName.value = data.authorName
+    authorBio.value = data.authorBio
+    downloadUrl.value = data.downloadUrl
+    sourceUrl.value = data.sourceUrl
+    versions.value = data.versions
 
     // ✅ 动态更新 SEO 信息
     useHead({
@@ -256,21 +179,13 @@ async function fetchData() {
         { property: "og:image", content: avatar.value || "" }
       ]
     })
-  } catch (e) {
+  } catch (e: any) {
     console.error("加载内容出错:", e)
     throwError(e.message || "未知错误")
   } finally {
     loading.value = false
   }
 }
-
-function throwError(msg) {
-  errorMessage.value = msg
-  errorVisible.value = true
-  errorVisibleSmall.value = true
-  loading.value = false
-}
-
 
 onMounted(() => {
   fetchData()

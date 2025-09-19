@@ -117,17 +117,20 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import axios from 'axios';
+import { FileType, FileIcons } from '@types';
+import { getSubDirs, getFileIconClass, searchFiles } from './index.ts';
 
-export default {
+export default defineComponent({
   name: 'Home',
   data() {
     return {
       loading: true,
       searchTerm: '',
-      files: [],
-      filteredFiles: [],
+      files: [] as FileType[],
+      filteredFiles: [] as FileType[],
       // 文件类型对应的图标
       fileIcons: {
         pdf: "fa-file-pdf",
@@ -137,58 +140,42 @@ export default {
         video: "fa-file-video",
         code: "fa-file-code",
         default: "fa-file"
-      }
+      } as FileIcons
     }
   },
   methods: {
-    getFileIconClass(fileType) {
-      return this.fileIcons[fileType] || this.fileIcons.default;
+    getFileIconClass(fileType: string) {
+      return getFileIconClass(fileType, this.fileIcons);
     },
     searchFiles() {
-      const term = this.searchTerm.toLowerCase();
-      this.filteredFiles = this.files.filter(file => 
-        file.name.toLowerCase().includes(term)
-      );
+      this.filteredFiles = searchFiles(this.searchTerm, this.files);
     },
-    async getSubDirs() {
-      const owner = 'zitzhen';
-      const repo = 'CoCo-Community';
-      const path = 'control';
-      const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
-      
+    async fetchSubDirs() {
       try {
-        const { data } = await axios.get(url);
-        let dirs = data.filter(item => item.type === "dir").map(item => item.name);
-        // 过滤掉 CS 和 JS 文件夹
-        dirs = dirs.filter(name => name !== 'css' && name !== 'js');
-        console.log("Directories:", dirs);
-        
-        const fileObjs = dirs.map(name => ({
-          name: name,
-          type: "code",
-          size: "未知",
-          date: "未知",
-          downloads: "未知",
-          url: `${window.location.origin}/control/${name}`
-        }));
-        
+        const fileObjs = await getSubDirs();
         this.files = fileObjs;
         this.filteredFiles = fileObjs;
         this.loading = false;
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching directories:", error.response?.status || error.message);
-        document.getElementById("no_fetch").style.display = 'block';
+        const noFetchElement = document.getElementById("no_fetch");
+        if (noFetchElement) {
+          noFetchElement.style.display = 'block';
+        }
         this.loading = false;
       }
     }
   },
   mounted() {
     if (window.location.origin.includes("github.io")) {
-      document.getElementById("github_error").style.display = 'block';
+      const githubErrorElement = document.getElementById("github_error");
+      if (githubErrorElement) {
+        githubErrorElement.style.display = 'block';
+      }
     }
-    this.getSubDirs();
+    this.fetchSubDirs();
   }
-}
+});
 </script>
 
 <style>
@@ -199,7 +186,7 @@ export default {
 @import '../../src/assets/style/home/pay_button.css';
 </style>
 
-<script setup>
+<script setup lang="ts">
 import { useHead } from '@vueuse/head'
 
 useHead({

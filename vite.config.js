@@ -10,6 +10,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
+      '@types': resolve(__dirname, 'src/types'),
     },
   },
   server: useHttps

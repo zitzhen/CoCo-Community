@@ -20,13 +20,14 @@
   </div>
 </template>
 
-<script>
-import axios from 'axios'
-import { marked } from 'marked'
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { fetchPrivacyPolicyContent } from './index.ts';
+import { PrivacyPolicyData } from '@types';
 
-export default {
+export default defineComponent({
   name: 'PrivacyPolicy',
-  data() {
+  data(): PrivacyPolicyData {
     return {
       loading: true,
       content: ''
@@ -34,15 +35,14 @@ export default {
   },
   async mounted() {
     try {
-      const response = await axios.get('/src/assets/content/agreement/privacypolicy/content.md')
-      this.content = marked.parse(response.data)
-      this.loading = false
-    } catch (error) {
-      console.error('请求出错:', error)
-      this.loading = false
+      this.content = await fetchPrivacyPolicyContent();
+      this.loading = false;
+    } catch (error: any) {
+      console.error('请求出错:', error);
+      this.loading = false;
     }
   }
-}
+});
 </script>
 
 <style scoped>
@@ -50,7 +50,7 @@ export default {
 @import '../../../assets/style/home/Loading.css';
 </style>
 
-<script setup>
+<script setup lang="ts">
 import { useHead } from '@vueuse/head'
 
 useHead({
