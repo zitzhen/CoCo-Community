@@ -9,7 +9,7 @@
     // See also https://aka.ms/tsconfig/module
     "module": "nodenext",
     "target": "esnext",
-    "types": ["vite/client", "vue"],
+    "types": ["vite/client", "vue", "node"],
     // For nodejs:
     // "lib": ["esnext"],
     // "types": ["node"],
@@ -23,6 +23,7 @@
     // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
+    "strictNullChecks": true,
 
     // Style Options
     // "noImplicitReturns": true,
@@ -40,5 +41,11 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@types": ["src/types"]
+    }
   }
 }
