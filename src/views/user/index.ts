@@ -1,4 +1,4 @@
-import { UserInfo, UserIntroduction } from '@types';
+import { UserInfo, UserIntroduction } from '../../types';
 
 // 获取URL最后一段的函数
 export function getCurrentUrlLastSegment(): string {

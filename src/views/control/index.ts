@@ -1,5 +1,5 @@
 import { marked } from "marked";
-import { ReadmeResult, AuthorInfo, ControlInfo } from '@types';
+import { ReadmeResult, AuthorInfo, ControlInfo } from '../../types';
 
 // README 候选路径
 export async function fetchReadmeCandidate(id: string): Promise<ReadmeResult> {

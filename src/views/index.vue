@@ -163,26 +163,33 @@ export default defineComponent({
         if (noFetchElement) {
           noFetchElement.style.display = 'block';
         }
+        // 即使出错也要停止加载状态，避免页面一直显示加载中
         this.loading = false;
       }
     }
   },
   mounted() {
-    // 设置页面标题和元信息
-    useHead({
-      title: 'ZIT-CoCo-Community|CoCo编辑器的小圳社区|自定义控件下载中心',
-      meta: [
-        {content: 'CoCo-Community，全称为ZIT-CoCo-Community。这是由于ZIT小圳创科工作室的创造的编程猫CoCo编辑器社区，目前提供自定义控件下载服务，后续会支持论坛的交流。' }
-      ]
-    })
-    
-    if (window.location.origin.includes("github.io")) {
-      const githubErrorElement = document.getElementById("github_error");
-      if (githubErrorElement) {
-        githubErrorElement.style.display = 'block';
+    try {
+      // 设置页面标题和元信息
+      useHead({
+        title: 'ZIT-CoCo-Community|CoCo编辑器的小圳社区|自定义控件下载中心',
+        meta: [
+          {content: 'CoCo-Community，全称为ZIT-CoCo-Community。这是由于ZIT小圳创科工作室的创造的编程猫CoCo编辑器社区，目前提供自定义控件下载服务，后续会支持论坛的交流。' }
+        ]
+      })
+      
+      if (window.location.origin.includes("github.io")) {
+        const githubErrorElement = document.getElementById("github_error");
+        if (githubErrorElement) {
+          githubErrorElement.style.display = 'block';
+        }
       }
+      this.fetchSubDirs();
+    } catch (error) {
+      console.error("Error in mounted hook:", error);
+      // 确保即使出错也要停止加载状态
+      this.loading = false;
     }
-    this.fetchSubDirs();
   }
 });
 </script>

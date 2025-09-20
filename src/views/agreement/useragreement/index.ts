@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { marked } from 'marked';
-import { AgreementData } from '@types';
+import { AgreementData } from '../../../types';
 
 // 获取用户协议内容的函数
 export async function fetchUserAgreementContent(): Promise<string> {

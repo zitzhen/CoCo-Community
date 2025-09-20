@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { FileType, FileIcons } from '@types';
+import { FileType, FileIcons } from '../types';
 
 // 获取子目录的函数
 export async function getSubDirs(): Promise<FileType[]> {

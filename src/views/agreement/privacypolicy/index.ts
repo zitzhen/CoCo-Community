@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { marked } from 'marked';
-import { PrivacyPolicyData } from '@types';
+import { PrivacyPolicyData } from '../../../types';
 
 // 获取隐私政策内容的函数
 export async function fetchPrivacyPolicyContent(): Promise<string> {
