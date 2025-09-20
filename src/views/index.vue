@@ -122,6 +122,7 @@ import { defineComponent } from 'vue';
 import axios from 'axios';
 import { FileType, FileIcons } from '@types';
 import { getSubDirs, getFileIconClass, searchFiles } from './index.ts';
+import { useHead } from '@vueuse/head'
 
 export default defineComponent({
   name: 'Home',
@@ -167,6 +168,14 @@ export default defineComponent({
     }
   },
   mounted() {
+    // 设置页面标题和元信息
+    useHead({
+      title: 'ZIT-CoCo-Community|CoCo编辑器的小圳社区|自定义控件下载中心',
+      meta: [
+        {content: 'CoCo-Community，全称为ZIT-CoCo-Community。这是由于ZIT小圳创科工作室的创造的编程猫CoCo编辑器社区，目前提供自定义控件下载服务，后续会支持论坛的交流。' }
+      ]
+    })
+    
     if (window.location.origin.includes("github.io")) {
       const githubErrorElement = document.getElementById("github_error");
       if (githubErrorElement) {
@@ -185,17 +194,6 @@ export default defineComponent({
 @import '../../src/assets/style/control/error.css';
 @import '../../src/assets/style/home/pay_button.css';
 </style>
-
-<script setup lang="ts">
-import { useHead } from '@vueuse/head'
-
-useHead({
-  title: 'ZIT-CoCo-Community|CoCo编辑器的小圳社区|自定义控件下载中心',
-  meta: [
-    {content: 'CoCo-Community，全称为ZIT-CoCo-Community。这是由于ZIT小圳创科工作室的创造的编程猫CoCo编辑器社区，目前提供自定义控件下载服务，后续会支持论坛的交流。' }
-  ]
-})
-</script>
 
 <style scoped>
 /*协议/**/ 

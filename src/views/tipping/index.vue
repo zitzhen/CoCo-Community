@@ -70,18 +70,22 @@
 </style>
 
 <script lang="ts">
+import { defineComponent } from 'vue';
 import { initializePaymentMethods } from './index.ts';
-
-initializePaymentMethods();
-</script>
-
-<script setup lang="ts">
 import { useHead } from '@vueuse/head'
 
-useHead({
-  title: '打赏|CoCo-Community|欢迎向ZIT-CoCo-Community打赏',
-  meta: [
-    {content: '欢迎您支持ZIT-CoCo-Community，为我们的开发人员点上一杯咖啡吧~' }
-  ]
-})
+export default defineComponent({
+  name: 'Tipping',
+  mounted() {
+    // 设置页面标题和元信息
+    useHead({
+      title: '打赏|CoCo-Community|欢迎向ZIT-CoCo-Community打赏',
+      meta: [
+        {content: '欢迎您支持ZIT-CoCo-Community，为我们的开发人员点上一杯咖啡吧~' }
+      ]
+    })
+    
+    initializePaymentMethods();
+  }
+});
 </script>

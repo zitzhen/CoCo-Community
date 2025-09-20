@@ -24,6 +24,7 @@
 import { defineComponent } from 'vue';
 import { fetchUserAgreementContent } from './index.ts';
 import { AgreementData } from '@types';
+import { useHead } from '@vueuse/head'
 
 export default defineComponent({
   name: 'UserAgreement',
@@ -34,6 +35,14 @@ export default defineComponent({
     }
   },
   async mounted() {
+    // 设置页面标题和元信息
+    useHead({
+      title: '用户协议|CoCo-Community|适用于CoCo-Community的用户协议条款',
+      meta: [
+        {content: '这是适用于ZIT-CoCo-Community的用户协议及条款。' }
+      ]
+    })
+    
     try {
       this.content = await fetchUserAgreementContent();
       this.loading = false;
@@ -49,14 +58,3 @@ export default defineComponent({
 @import '../../../assets/style/agreement/style.css';
 @import '../../../assets/style/home/Loading.css';
 </style>
-
-<script setup lang="ts">
-import { useHead } from '@vueuse/head'
-
-useHead({
-  title: '用户协议|CoCo-Community|适用于CoCo-Community的用户协议条款',
-  meta: [
-    {content: '这是适用于ZIT-CoCo-Community的用户协议及条款。' }
-  ]
-})
-</script>

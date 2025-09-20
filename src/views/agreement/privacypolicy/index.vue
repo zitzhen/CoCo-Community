@@ -24,6 +24,7 @@
 import { defineComponent } from 'vue';
 import { fetchPrivacyPolicyContent } from './index.ts';
 import { PrivacyPolicyData } from '@types';
+import { useHead } from '@vueuse/head'
 
 export default defineComponent({
   name: 'PrivacyPolicy',
@@ -34,6 +35,14 @@ export default defineComponent({
     }
   },
   async mounted() {
+    // 设置页面标题和元信息
+    useHead({
+      title: '隐私政策|CoCo-Community|适用于CoCo-Community的隐私政策条款',
+      meta: [
+        {content: '这是适用于ZIT-CoCo-Community的隐私政策及条款。' }
+      ]
+    })
+    
     try {
       this.content = await fetchPrivacyPolicyContent();
       this.loading = false;
@@ -49,14 +58,3 @@ export default defineComponent({
 @import '../../../assets/style/agreement/style.css';
 @import '../../../assets/style/home/Loading.css';
 </style>
-
-<script setup lang="ts">
-import { useHead } from '@vueuse/head'
-
-useHead({
-  title: '隐私政策|CoCo-Community|适用于CoCo-Community的隐私政策条款',
-  meta: [
-    {content: '这是适用于ZIT-CoCo-Community的隐私政策及条款。' }
-  ]
-})
-</script>
