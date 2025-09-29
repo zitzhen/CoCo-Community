@@ -13,6 +13,9 @@ CoCo-Community，全称为ZIT-CoCo-Community
 >[!tip]
 >🎉🎉🎉  
 >自2025年09月24日以来，CoCo-Community的技术栈从HTML转为Vue
+
+>[!tip]
+>自2025年09月30日 00:55以来，我们已将所有控件转移到子仓库。
 ---
 ## 项目所在的所有仓库：
 此项目在GitHub为主仓库，目前在以下几个社区发布：
