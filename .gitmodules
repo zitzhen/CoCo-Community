@@ -1,0 +1,3 @@
+[submodule "public/control"]
+	path = public/control
+	url = git@github.com:zitzhen/CoCo-Community-Control.git
