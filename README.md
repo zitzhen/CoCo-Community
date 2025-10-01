@@ -10,12 +10,7 @@
 CoCo-Community，全称为ZIT-CoCo-Community  
 这是由于ZIT小圳创科工作室的创造的编程猫CoCo编辑器社区，目前提供自定义控件下载服务，后续会支持论坛的交流，目前与ZIT-Community隔离
 此项目正在开发中
->[!tip]
->🎉🎉🎉  
->自2025年09月24日以来，CoCo-Community的技术栈从HTML转为Vue
 
->[!tip]
->自2025年09月30日 00:55以来，我们已将所有控件转移到子仓库。
 ---
 ## 项目所在的所有仓库：
 此项目在GitHub为主仓库，目前在以下几个社区发布：
@@ -23,8 +18,8 @@ CoCo-Community，全称为ZIT-CoCo-Community
 |图标|名称|
 |---|---|
 |<img src="https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png" width="50" height="50" alt="Github的图片"> | [Github](https://Github.com/zitzhen/CoCo-Community) |
-|<img src="src/assets/images/icon/Gitee-logo.png" width="50" height="50" alt="Gitee的图片">| [Gitee](https://Github.com/zitzhen/CoCo-Community) | 
-|<img src="src/assets/images/icon/gitlab.svg" width="50" height="50" alt="Gitee的图片">| [GitLab](https://jihulab.com/zitzhen/CoCo-Community/) |
+|<img src="icon/Gitee-logo.png" width="50" height="50" alt="Gitee的图片">| [Gitee](https://Github.com/zitzhen/CoCo-Community) | 
+|<img src="icon/gitlab.png" width="50" height="50" alt="Gitee的图片">| [GitLab](https://jihulab.com/zitzhen/CoCo-Community/) |
 
 >[!tip]
 >请您首选Github访问CoCo-Community

@@ -13,48 +13,48 @@
         </div>
             
         <div class="payment-methods">
-            <div class="method" :class="{ active: activeMethod === 'wechat' }" data-method="wechat" @click="setActiveMethod('wechat')">
+            <div class="method" data-method="wechat">
                 <div class="method-icon">
-                    <img src="../../assets/images/tipping/WechatPaylogo.png" alt="微信支付">
+                    <img src="/src/assets/images/tipping/WechatPaylogo.png" alt="微信支付">
                 </div>
                 <div class="method-name">微信支付</div>
                 <div class="method-desc">扫码打赏</div>
             </div>
             
-            <div class="method" :class="{ active: activeMethod === 'alipay' }" data-method="alipay" @click="setActiveMethod('alipay')">
+            <div class="method" data-method="alipay">
                 <div class="method-icon">
-                    <img src="../../assets/images/tipping/Alipaylogo.png" alt="支付宝">
+                    <img src="/src/assets/images/tipping/Alipaylogo.png" alt="支付宝">
                 </div>
                 <div class="method-name">支付宝</div>
                 <div class="method-desc">扫码打赏</div>
             </div>
             
-            <div class="method" :class="{ active: activeMethod === 'qq' }" data-method="qq" @click="setActiveMethod('qq')">
+            <div class="method"data-method="qq" >
                 <div class="method-icon">
-                    <img src="../../assets/images/tipping/QQlogo.png" alt="QQ钱包">
+                    <img src="/src/assets/images/tipping/QQlogo.png" alt="QQ钱包">
                 </div>
                 <div class="method-name">QQ钱包</div>
                 <div class="method-desc">扫码打赏</div>
             </div>
         </div>
         
-        <div id="wechat-qr" class="qr-container" :class="{ active: activeMethod === 'wechat' }">
+        <div id="wechat-qr" class="qr-container">
             <div class="qr-code">
-                <img src="../../assets/images/tipping/Wechatpay.png" alt="微信收款码">
+                <img src="/src/assets/images/tipping/Wechatpay.png" alt="微信收款码">
             </div>
             <div class="hint">打开微信扫一扫，向我们打赏</div>
         </div>
         
-        <div id="alipay-qr" class="qr-container" :class="{ active: activeMethod === 'alipay' }">
+        <div id="alipay-qr" class="qr-container">
             <div class="qr-code">
-                <img src="../../assets/images/tipping/Alipay.png" alt="支付宝收款码">
+                <img src="/src/assets/images/tipping/Alipay.png" alt="支付宝收款码">
             </div>
             <div class="hint">打开支付宝扫一扫，向我们打赏</div>
         </div>
         
-        <div id="qq-qr" class="qr-container" :class="{ active: activeMethod === 'qq' }">
+        <div id="qq-qr" class="qr-container">
             <div class="qr-code">
-                <img src="../../assets/images/tipping/QQpay.png" alt="QQ收款码">
+                <img src="/src/assets/images/tipping/QQpay.png" alt="QQ收款码">
             </div>
             <div class="hint">打开QQ扫一扫，向我们打赏</div>
         </div>
@@ -69,27 +69,23 @@
 @import '../../assets/style/tipping/style.css';
 </style>
 
-<script setup>
-import { ref, onMounted } from 'vue'
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { initializePaymentMethods } from './index.ts';
 import { useHead } from '@vueuse/head'
 
-// 响应式数据
-const activeMethod = ref('wechat')
-
-// 设置激活的支付方式
-const setActiveMethod = (method) => {
-    activeMethod.value = method
-}
-
-// 默认设置微信支付为激活状态
-onMounted(() => {
-    activeMethod.value = 'wechat'
-})
-
-useHead({
-  title: '打赏|CoCo-Community|欢迎向ZIT-CoCo-Community打赏',
-  meta: [
-    {content: '欢迎您支持ZIT-CoCo-Community，为我们的开发人员点上一杯咖啡吧~' }
-  ]
-})
+export default defineComponent({
+  name: 'Tipping',
+  mounted() {
+    // 设置页面标题和元信息
+    useHead({
+      title: '打赏|CoCo-Community|欢迎向ZIT-CoCo-Community打赏',
+      meta: [
+        {content: '欢迎您支持ZIT-CoCo-Community，为我们的开发人员点上一杯咖啡吧~' }
+      ]
+    })
+    
+    initializePaymentMethods();
+  }
+});
 </script>

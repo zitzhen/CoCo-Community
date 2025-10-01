@@ -16,8 +16,14 @@
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
+    "@types/axios": "^0.9.36",
+    "@types/marked": "^5.0.2",
+    "@types/node": "^24.5.2",
+    "@types/vue": "^1.0.31",
     "@vitejs/plugin-vue": "^5.0.0",
-    "prerender-spa-plugin": "^3.4.0",
+    "@vue/runtime-core": "^3.5.21",
+    "@vue/tsconfig": "^0.8.1",
+    "typescript": "^5.9.2",
     "vite": "^5.0.0",
     "vite-plugin-prerender": "^1.0.8",
     "vite-ssg": "^28.1.0"

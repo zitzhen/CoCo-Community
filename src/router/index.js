@@ -1,47 +1,30 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router'
+import Home from '@/views/index.vue'
+import UserAgreement from '@/views/agreement/useragreement/index.vue'
+import PrivacyPolicy from '@/views/agreement/privacypolicy/index.vue'
+import Agreement from '@/views/agreement/index.vue'
+import Tipping from '@/views/tipping/index.vue' 
+import Errorpages from '@/views/user/No-parameters.vue'
+import User from '@/views/user/index.vue'
+import Control from '@/views/control/index.vue'
+import Test from '@/views/test.vue'
 
 const routes = [
-  { path: '/', name: 'Home', component: () => import('@/views/index.vue') },
-  { path: '/agreement/useragreement', name: 'UserAgreement', component: () => import('@/views/agreement/useragreement/index.vue') },
-  { path: '/agreement/privacypolicy', name: 'PrivacyPolicy', component: () => import('@/views/agreement/privacypolicy/index.vue') },
-  { path: '/agreement', name: 'Agreement', component: () => import('@/views/agreement/index.vue') },
-  { path: '/tipping', name: 'Tipping', component: () => import('@/views/tipping/index.vue') },
-  { path: '/user/:id', name: 'User', component: () => import('@/views/user/index.vue') },
-  { path: '/user', name: 'UserError', component: () => import('@/views/user/No-parameters.vue') },
-  { path: '/control/:id', name: 'Control', component: () => import('@/views/control/index.vue') },
-  { path: '/control', name: 'ControlError', component: () => import('@/views/user/No-parameters.vue') },
-  { path: '/essay/all/:id', name: 'DevEssay', component: () => import('@/views/essay/all/dev.vue') },
-  { path: '/essay/all', name: 'ErrorEssay', component: () => import('@/views/user/No-parameters.vue') },
-  { path: '/essay', name: 'Essay', component: () => import('@/views/essay/index.vue') },
-  { path: '/safe', name: 'Safe', component: () => import('@/views/safe/index.vue') },
-  { path: '/new-control', name: 'NewControl', component: () => import('@/views/essay/all/dev.vue') }
-];
-
-// 在 Cloudflare Pages 环境中使用正确的 base
-const base = '/';
+  { path: '/', name: 'Home', component: Home },  // 恢复首页路由
+  { path: '/agreement/useragreement', name: 'UserAgreement', component: UserAgreement },
+  { path: '/agreement/privacypolicy', name: 'PrivacyPolicy', component: PrivacyPolicy },
+  { path: '/agreement', name: 'Agreement', component: Agreement },
+  { path: '/tipping', name: 'Tipping', component: Tipping },
+  { path: '/user/:id', name: 'User', component: User },
+  { path: '/user', name: 'UserError', component: Errorpages },
+  { path: '/control/:id', name: 'Control', component: Control },
+  { path: '/control', name: 'ControlError', component: Errorpages },
+  { path: '/test', name: 'Test', component: Test },
+]
 
 const router = createRouter({
-  history: createWebHistory(base),
+  history: createWebHistory(),
   routes
-});
+})
 
-// 添加路由守卫处理 Cloudflare Pages SPA 回退
-router.beforeEach((to, from, next) => {
-  // 如果是根路径，直接通过
-  if (to.path === '/') {
-    next();
-    return;
-  }
-
-  // 检查目标路由是否存在
-  const matched = router.resolve(to.path);
-
-  if (matched.matched.length > 0) {
-    next();
-  } else {
-    // 如果路由不存在，重定向到首页
-    next({ name: 'Home' });
-  }
-});
-
-export default router;
+export default router
