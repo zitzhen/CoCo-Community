@@ -34,7 +34,7 @@ export default {
   },
   async mounted() {
     try {
-      const response = await axios.get('/src/assets/content/agreement/useragreement/content.md')
+      const response = await axios.get('https://cc.zitzhen.cn/agreement/useragreement/content.md')
       this.content = marked.parse(response.data)
       this.loading = false
     } catch (error) {
