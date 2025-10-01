@@ -213,19 +213,26 @@ footer {
 }
 </style>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useHead } from '@vueuse/head'
+import { 
+  getCurrentUrlLastSegment, 
+  fetchGithubInformation, 
+  fetchUserInformation, 
+  renderInformation
+} from './index.ts'
+import { UserInfo, UserIntroduction } from '@types'
 
 const Nickname = ref('')
 const bio = ref('加载中...')
 const avatar = ref('')
 const Control_number = ref('')
-const controlList = ref([])
+const controlList = ref<string[]>([])
 const loading = ref(true)
 const activeTab = ref('files')
 
-function switchTab(tab) {
+function switchTab(tab: string) {
   activeTab.value = tab
 }
 
@@ -237,42 +244,28 @@ useHead({
   ]
 })
 
-function getCurrentUrlLastSegment() {
-  const currentUrl = window.location.href
-  const cleanedUrl = currentUrl.endsWith('/') ? currentUrl.slice(0, -1) : currentUrl
-  const url = new URL(cleanedUrl)
-  const pathSegments = url.pathname.split('/').filter(segment => segment !== '')
-  return pathSegments.length > 0 ? pathSegments[pathSegments.length - 1] : ''
-}
-
-async function fetch_github_information(username) {
-  const url = `https://api.github.com/users/${username}`
-  const res = await fetch(url)
-  return res.ok ? res.json() : null
-}
-
-async function fetch_user_information(username) {
-  const url = `https://${window.location.host}/information/user/${username}.json`
-  const res = await fetch(url)
-  return res.ok ? res.json() : null
-}
-
-function render_information(information) {
-  Nickname.value = information.name || information.login
-  bio.value = information.bio || '此人很懒，什么都没有'
-  avatar.value = information.avatar_url || ''
-}
-
 onMounted(async () => {
   const username = getCurrentUrlLastSegment()
-  const user_github_information = await fetch_github_information(username)
-  const user_introduction = await fetch_user_information(username)
+  const user_github_information: UserInfo | null = await fetchGithubInformation(username)
+  const user_introduction: UserIntroduction | null = await fetchUserInformation(username)
 
-  if (user_github_information) render_information(user_github_information)
-  else if (user_introduction) render_information(user_introduction)
+  if (user_github_information) {
+    renderInformation(user_github_information, 
+      (name) => { Nickname.value = name }, 
+      (bioText) => { bio.value = bioText }, 
+      (avatarUrl) => { avatar.value = avatarUrl }
+    )
+  } else if (user_introduction && user_introduction.list_of_controls) {
+    // 从用户介绍中获取信息
+    Nickname.value = username
+    bio.value = '此人很懒，什么都没有'
+    avatar.value = ''
+  }
 
-  Control_number.value = user_introduction ? user_introduction.number_of_controls : 'Error'
-  if (user_introduction?.list_of_controls) controlList.value = user_introduction.list_of_controls
+  Control_number.value = user_introduction?.number_of_controls || 'Error'
+  if (user_introduction?.list_of_controls) {
+    controlList.value = user_introduction.list_of_controls
+  }
 
   loading.value = false
 })
