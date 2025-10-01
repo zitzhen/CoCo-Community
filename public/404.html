@@ -3,62 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 Not Found|页面未找到 - ZIT-CoCo-Community</title>
-    <link rel ='stylesheet' href="https://cc.zitzhen.cn/404/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>ZIT-CoCo-Community|CoCo编辑器的小圳社区|自定义控件下载中心</title>
     <link rel="icon" href="/favicon.png" type="image/png">
     <meta name="robots" content="noindex, nofollow">
+    <script>
+        // 对于 SPA 应用，将 404 重定向回 index.html
+        (function() {
+            // 检查是否是直接访问的 404 页面
+            if (location.pathname !== '/404.html') {
+                // 保存当前路径到 sessionStorage
+                sessionStorage.setItem('redirect', location.href);
+                // 重定向到主页
+                location.replace('/');
+            }
+        })();
+    </script>
 </head>
 <body>
-    <header>
-        <div>
-            <h1>ZIT-CoCo-Community</h1>
-        </div>
-    </header>
-
-    <div class="container">
-        <div class="error-content">
-            <div class="error-icon">
-                <i class="fas fa-exclamation-triangle"></i>
-            </div>
-            <h2 class="error-title">404 - 页面未找到</h2>
-            <p class="error-message">
-                抱歉，您访问的页面不存在或已被移除。<br>
-                可能是URL地址输入错误，或者页面已被删除。
-                <p>请求的路径是：</p>
-                <p id="url"></p>
-            </p>
-        </div>
-    </div>
-
-    <div class="notifications-container">
-    <div class="error-alert">
-        <div class="flex">
-        <div class="flex-shrink-0">
-            
-            <svg aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" class="error-svg">
-            <path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" fill-rule="evenodd"></path>
-            </svg>
-        </div>
-        <div class="error-prompt-container">
-            <p class="error-prompt-heading">你需要执行的操作如下：
-            </p><div class="error-prompt-wrap">
-            <ul class="error-prompt-list" role="list">
-                <li>如果您正在尝试通过GitHub Pages的链接访问，请使用Cloudflare Pages或ZIT-CoCo-Community的官方链接访问。</li>
-                <li>如遇问题请联系ZIT-CoCo-Community支持人员</li>
-            </ul>
-        </div>
-        </div>
-        </div>
-    </div>
-    </div>
-    <br>
-    <footer>
-        <div class="container">
-            <p>© 2025 ZIT-CoCo-Community | 遇到问题请联系支持团队</p>
-        </div>
-    </footer>
-
-    <script src="https://cc.zitzhen.cn/404/script.js"></script>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
 </body>
 </html>

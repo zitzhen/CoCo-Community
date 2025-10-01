@@ -20,41 +20,43 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import { fetchPrivacyPolicyContent } from './index.ts';
-import { PrivacyPolicyData } from '@types';
-import { useHead } from '@vueuse/head'
+<script>
+import axios from 'axios'
+import { marked } from 'marked'
 
-export default defineComponent({
+export default {
   name: 'PrivacyPolicy',
-  data(): PrivacyPolicyData {
+  data() {
     return {
       loading: true,
       content: ''
     }
   },
   async mounted() {
-    // 设置页面标题和元信息
-    useHead({
-      title: '隐私政策|CoCo-Community|适用于CoCo-Community的隐私政策条款',
-      meta: [
-        {content: '这是适用于ZIT-CoCo-Community的隐私政策及条款。' }
-      ]
-    })
-    
     try {
-      this.content = await fetchPrivacyPolicyContent();
-      this.loading = false;
-    } catch (error: any) {
-      console.error('请求出错:', error);
-      this.loading = false;
+      const response = await axios.get('https://cc.zitzhen.cn/agreement/privacypolicy/content.md')
+      this.content = marked.parse(response.data)
+      this.loading = false
+    } catch (error) {
+      console.error('请求出错:', error)
+      this.loading = false
     }
   }
-});
+}
 </script>
 
 <style scoped>
 @import '../../../assets/style/agreement/style.css';
 @import '../../../assets/style/home/Loading.css';
 </style>
+
+<script setup>
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: '隐私政策|CoCo-Community|适用于CoCo-Community的隐私政策条款',
+  meta: [
+    {content: '这是适用于ZIT-CoCo-Community的隐私政策及条款。' }
+  ]
+})
+</script>

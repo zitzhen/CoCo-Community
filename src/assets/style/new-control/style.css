@@ -1,0 +1,427 @@
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2980b9;
+    --background-color: #f5f7fa;
+    --card-color: #ffffff;
+    --text-color: #333333;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --border-color: #e1e4e8;
+    --success-color: #2ecc71;
+    --error-color: #e74c3c;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 1.5rem 0;
+    text-align: center;
+    box-shadow: var(--shadow);
+}
+
+.container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+h1 {
+    margin: 0;
+    font-size: 2.2rem;
+}
+
+.upload-container {
+    background-color: var(--card-color);
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.upload-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.upload-header .icon {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.upload-description {
+    color: #666;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+/* Markdown编辑器样式 */
+.md-container {
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.md-header {
+    display: flex;
+    background-color: #f6f8fa;
+    border-bottom: 1px solid var(--border-color);
+    border-radius: 4px 4px 0 0;
+}
+
+.md-tab {
+    padding: 0.8rem 1.2rem;
+    cursor: pointer;
+    font-weight: 500;
+    color: #586069;
+    border-bottom: 2px solid transparent;
+}
+
+.md-tab.active {
+    color: var(--primary-color);
+    border-bottom-color: #f9826c;
+    background-color: white;
+    font-weight: 600;
+}
+
+.md-tab:first-child {
+    border-radius: 4px 0 0 0;
+}
+
+.md-content {
+    display: none;
+    padding: 1rem;
+}
+
+.md-content.active {
+    display: block;
+}
+
+.md-editor {
+    min-height: 200px;
+    width: 100%;
+    padding: 0.8rem;
+    border: none;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    resize: vertical;
+}
+
+.md-editor:focus {
+    outline: none;
+}
+
+.md-preview {
+    min-height: 200px;
+    padding: 0.8rem;
+}
+
+.md-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    padding: 0.5rem;
+    background-color: #f6f8fa;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.md-btn {
+    background: none;
+    border: none;
+    padding: 0.4rem 0.6rem;
+    cursor: pointer;
+    border-radius: 3px;
+    color: #24292e;
+}
+
+.md-btn:hover {
+    background-color: rgba(27, 31, 35, 0.1);
+}
+
+/* GitHub风格的Markdown预览 */
+.md-preview h1,
+.md-preview h2,
+.md-preview h3,
+.md-preview h4,
+.md-preview h5,
+.md-preview h6 {
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.md-preview h1 {
+    padding-bottom: 0.3em;
+    font-size: 2em;
+    border-bottom: 1px solid #eaecef;
+}
+
+.md-preview h2 {
+    padding-bottom: 0.3em;
+    font-size: 1.5em;
+    border-bottom: 1px solid #eaecef;
+}
+
+.md-preview p {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.md-preview ul,
+.md-preview ol {
+    padding-left: 2em;
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.md-preview blockquote {
+    padding: 0 1em;
+    color: #6a737d;
+    border-left: 0.25em solid #dfe2e5;
+    margin: 0 0 16px 0;
+}
+
+.md-preview pre {
+    padding: 16px;
+    overflow: auto;
+    background-color: #f6f8fa;
+    border-radius: 3px;
+    line-height: 1.45;
+}
+
+.md-preview code {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 85%;
+    background-color: rgba(27, 31, 35, 0.05);
+    border-radius: 3px;
+    padding: 0.2em 0.4em;
+}
+
+.md-preview pre code {
+    background-color: transparent;
+    padding: 0;
+}
+
+.md-preview table {
+    border-spacing: 0;
+    border-collapse: collapse;
+    display: block;
+    width: 100%;
+    overflow: auto;
+}
+
+.md-preview table th {
+    font-weight: 600;
+}
+
+.md-preview table th,
+.md-preview table td {
+    padding: 6px 13px;
+    border: 1px solid #dfe2e5;
+}
+
+.md-preview table tr {
+    background-color: #fff;
+    border-top: 1px solid #c6cbd1;
+}
+
+.md-preview table tr:nth-child(2n) {
+    background-color: #f6f8fa;
+}
+
+/* 文件上传区域 */
+.file-upload-area {
+    border: 2px dashed var(--border-color);
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 1.5rem;
+}
+
+.file-upload-area:hover {
+    border-color: var(--primary-color);
+    background-color: rgba(52, 152, 219, 0.05);
+}
+
+.file-upload-area.active {
+    border-color: var(--success-color);
+    background-color: rgba(46, 204, 113, 0.05);
+}
+
+.file-upload-icon {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.file-upload-text {
+    margin-bottom: 0.5rem;
+}
+
+.file-upload-hint {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.file-preview {
+    display: none;
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+}
+
+.file-icon {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+    color: var(--primary-color);
+}
+
+.file-details {
+    flex: 1;
+}
+
+.file-name {
+    font-weight: bold;
+    word-break: break-all;
+}
+
+.file-size {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.remove-file {
+    color: var(--error-color);
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.progress-container {
+    display: none;
+    margin-top: 1.5rem;
+}
+
+.progress-bar {
+    height: 10px;
+    background-color: #eee;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress {
+    height: 100%;
+    background-color: var(--success-color);
+    width: 0%;
+    transition: width 0.3s;
+}
+
+.progress-text {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    text-decoration: none;
+}
+
+.btn:hover {
+    background-color: var(--secondary-color);
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+}
+
+.btn-disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.upload-requirements {
+    margin-top: 2rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.upload-requirements h3 {
+    margin-top: 0;
+    font-size: 1.1rem;
+}
+
+.upload-requirements ul {
+    padding-left: 1.5rem;
+}
+
+footer {
+    text-align: center;
+    padding: 2rem 0;
+    margin-top: 2rem;
+    color: #666;
+    border-top: 1px solid var(--border-color);
+}
+
+/* 响应式调整 */
+@media (max-width: 576px) {
+    .upload-container {
+        padding: 1.5rem;
+    }
+    
+    .file-upload-area {
+        padding: 1.5rem;
+    }
+}

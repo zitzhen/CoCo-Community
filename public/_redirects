@@ -1,12 +1,2 @@
 # _redirects 文件
-/control/?name=:name    /control/:name   301
-/control/:name    /control/?name=:name   200
-/control/:name/   /control/:name   301
-# 将 coco-community.pages.dev 的所有请求 301 重定向到 cc.zitzhen.cn，保留路径和参数
-https://coco-community.pages.dev/* https://cc.zitzhen.cn/:splat 301
-
-
-## 用户页面
-/user/?username=:username    /user/:username   301
-/user/:username    /user/?username=:username   200
-/user/:username/   /user/:username   301
+# 为了解决 Vue Router 在部署后的问题，移除了可能导致冲突的重定向规则

@@ -41,84 +41,8 @@
 
             <div class="article-content">
                 <div class="markdown-body">
-                    <p>本文将详细介绍文件下载中心API的使用方法，包括认证、文件上传下载、权限管理等核心功能，帮助开发者快速集成到自己的应用中。</p>
-
-                    <h2>API概述</h2>
-                    <p>文件下载中心提供了一套完整的RESTful API，支持以下主要功能：</p>
-                    <ul>
-                        <li>文件上传与下载</li>
-                        <li>文件元数据管理</li>
-                        <li>用户权限控制</li>
-                        <li>批量操作支持</li>
-                        <li>Webhook通知</li>
-                    </ul>
-
-                    <h2>认证方式</h2>
-                    <p>所有API请求都需要进行认证，我们支持以下两种认证方式：</p>
-
-                    <h3>1. API密钥认证</h3>
-                    <pre><code class="language-http">GET /api/v1/files
-Authorization: Bearer your_api_key</code></pre>
-
-                    <h3>2. OAuth 2.0</h3>
-                    <p>对于需要用户授权的操作，可以使用OAuth 2.0流程：</p>
-                    <pre><code class="language-http">POST /oauth/token
-Content-Type: application/x-www-form-urlencoded
-
-grant_type=authorization_code
-&code=AUTHORIZATION_CODE
-&redirect_uri=REDIRECT_URI
-&client_id=CLIENT_ID
-&client_secret=CLIENT_SECRET</code></pre>
-
-                    <h2>文件上传</h2>
-                    <p>上传文件可以使用简单的POST请求：</p>
-                    <pre><code class="language-http">POST /api/v1/files
-Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
-
-------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="file"; filename="example.txt"
-Content-Type: text/plain
-
-(文件二进制数据)
-------WebKitFormBoundary7MA4YWxkTrZu0gW--</code></pre>
-
-                    <h2>分块上传</h2>
-                    <p>对于大文件，我们推荐使用分块上传：</p>
-                    <ol>
-                        <li>初始化上传会话</li>
-                        <li>上传分块（可并行）</li>
-                        <li>完成上传</li>
-                    </ol>
-
-                    <h2>最佳实践</h2>
-                    <p>以下是一些API使用的最佳实践：</p>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>场景</th>
-                                <th>建议</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>批量操作</td>
-                                <td>使用批量API减少请求次数</td>
-                            </tr>
-                            <tr>
-                                <td>错误处理</td>
-                                <td>检查HTTP状态码和错误响应体</td>
-                            </tr>
-                            <tr>
-                                <td>速率限制</td>
-                                <td>遵守X-RateLimit头信息</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <blockquote>
-                        <p>注意：生产环境请始终使用HTTPS协议，并妥善保管您的API密钥。</p>
-                    </blockquote>
+                   <!--文章内容-->
+                   <p>正在处理文章内容</p>
                 </div>
             </div>
 
@@ -135,6 +59,7 @@ Content-Type: text/plain
                 </div>
             </div>
 
+            <!---
             <div class="related-articles">
                 <h3 class="section-title"><i class="fas fa-book-open"></i> 相关文章</h3>
                 <div class="related-article-list">
@@ -161,6 +86,7 @@ Content-Type: text/plain
                     </div>
                 </div>
             </div>
+        -->
 
             <div class="comments-section">
                 <h3 class="section-title"><i class="fas fa-comments"></i> 评论 (28)</h3>
@@ -208,6 +134,7 @@ Content-Type: text/plain
             </div>
         </div>
 
+        
         <div class="sidebar">
             <div class="sidebar-card">
                 <h3 class="section-title"><i class="fas fa-fire"></i> 热门文章</h3>
@@ -235,6 +162,7 @@ Content-Type: text/plain
                     </div>
                 </div>
             </div>
+            
 
             <div class="sidebar-card">
                 <h3 class="section-title"><i class="fas fa-tags"></i> 标签云</h3>

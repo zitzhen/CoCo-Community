@@ -117,21 +117,17 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script>
 import axios from 'axios';
-import { FileType, FileIcons } from '@types';
-import { getSubDirs, getFileIconClass, searchFiles } from './index.ts';
-import { useHead } from '@vueuse/head'
 
-export default defineComponent({
+export default {
   name: 'Home',
   data() {
     return {
       loading: true,
       searchTerm: '',
-      files: [] as FileType[],
-      filteredFiles: [] as FileType[],
+      files: [],
+      filteredFiles: [],
       // 文件类型对应的图标
       fileIcons: {
         pdf: "fa-file-pdf",
@@ -141,57 +137,52 @@ export default defineComponent({
         video: "fa-file-video",
         code: "fa-file-code",
         default: "fa-file"
-      } as FileIcons
+      }
     }
   },
   methods: {
-    getFileIconClass(fileType: string) {
-      return getFileIconClass(fileType, this.fileIcons);
+    getFileIconClass(fileType) {
+      return this.fileIcons[fileType] || this.fileIcons.default;
     },
     searchFiles() {
-      this.filteredFiles = searchFiles(this.searchTerm, this.files);
+      const term = this.searchTerm.toLowerCase();
+      this.filteredFiles = this.files.filter(file => 
+        file.name.toLowerCase().includes(term)
+      );
     },
-    async fetchSubDirs() {
+    async getSubDirs() {
       try {
-        const fileObjs = await getSubDirs();
+        // 使用本地 list.json 文件获取控件列表
+        const { data } = await axios.get('/list.json');
+        const dirs = data.list || [];
+        console.log("Directories:", dirs);
+        
+        const fileObjs = dirs.map(name => ({
+          name: name,
+          type: "code",
+          size: "未知",
+          date: "未知",
+          downloads: "未知",
+          url: `${window.location.origin}/control/${name}`
+        }));
+        
         this.files = fileObjs;
         this.filteredFiles = fileObjs;
         this.loading = false;
-      } catch (error: any) {
+      } catch (error) {
         console.error("Error fetching directories:", error.response?.status || error.message);
-        const noFetchElement = document.getElementById("no_fetch");
-        if (noFetchElement) {
-          noFetchElement.style.display = 'block';
-        }
-        // 即使出错也要停止加载状态，避免页面一直显示加载中
+        document.getElementById("no_fetch").style.display = 'block';
         this.loading = false;
       }
     }
   },
   mounted() {
-    try {
-      // 设置页面标题和元信息
-      useHead({
-        title: 'ZIT-CoCo-Community|CoCo编辑器的小圳社区|自定义控件下载中心',
-        meta: [
-          {content: 'CoCo-Community，全称为ZIT-CoCo-Community。这是由于ZIT小圳创科工作室的创造的编程猫CoCo编辑器社区，目前提供自定义控件下载服务，后续会支持论坛的交流。' }
-        ]
-      })
-      
-      if (window.location.origin.includes("github.io")) {
-        const githubErrorElement = document.getElementById("github_error");
-        if (githubErrorElement) {
-          githubErrorElement.style.display = 'block';
-        }
-      }
-      this.fetchSubDirs();
-    } catch (error) {
-      console.error("Error in mounted hook:", error);
-      // 确保即使出错也要停止加载状态
-      this.loading = false;
+    if (window.location.origin.includes("github.io")) {
+      document.getElementById("github_error").style.display = 'block';
     }
+    this.getSubDirs();
   }
-});
+}
 </script>
 
 <style>
@@ -201,6 +192,17 @@ export default defineComponent({
 @import '../../src/assets/style/control/error.css';
 @import '../../src/assets/style/home/pay_button.css';
 </style>
+
+<script setup>
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: 'ZIT-CoCo-Community|CoCo编辑器的小圳社区|自定义控件下载中心',
+  meta: [
+    {content: 'CoCo-Community，全称为ZIT-CoCo-Community。这是由于ZIT小圳创科工作室的创造的编程猫CoCo编辑器社区，目前提供自定义控件下载服务，后续会支持论坛的交流。' }
+  ]
+})
+</script>
 
 <style scoped>
 /*协议/**/ 
