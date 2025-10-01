@@ -44,4 +44,14 @@ router.beforeEach((to, from, next) => {
   }
 });
 
+// 添加全局后置钩子，用于处理页面标题和SEO
+router.afterEach((to, from) => {
+  // 设置默认标题
+  document.title = 'ZIT-CoCo-Community';
+  
+  // 移除可能存在的错误SEO标签
+  const existingMeta = document.querySelectorAll('meta[name="description"], meta[property="og:title"], meta[property="og:description"]');
+  existingMeta.forEach(meta => meta.remove());
+});
+
 export default router;
