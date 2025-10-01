@@ -1,9 +1,5 @@
 # _redirects 文件
 # 为了解决 Vue Router 在部署后的问题，添加 SPA 路由重定向规则
 
-# 控件页面路由重定向
-/control/* /index.html 200
-
-# 其他动态路由重定向
-/user/* /index.html 200
-/essay/all/* /index.html 200
+# 通用SPA路由重定向
+/* /index.html 200
