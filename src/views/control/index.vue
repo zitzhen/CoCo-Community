@@ -228,7 +228,8 @@ function throwError(msg) {
     meta: [
       { name: "description", content: "请求的控件未找到：" + msg },
       { property: "og:title", content: "控件未找到" },
-      { property: "og:description", content: "请求的控件未找到：" + msg }
+      { property: "og:description", content: "请求的控件未找到：" + msg },
+      { name: "robots", content: "noindex, follow" }
     ]
   })
 }
