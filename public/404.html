@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>页面未找到 - ZIT-CoCo-Community</title>
+    <title>ZIT-CoCo-Community|CoCo编辑器的小圳社区|自定义控件下载中心</title>
     <link rel="icon" href="/favicon.png" type="image/png">
-    <meta name="description" content="您访问的页面不存在或已被移除">
-    <meta name="robots" content="noindex, follow">
+    <meta name="robots" content="noindex, nofollow">
     <script>
         // 对于 SPA 应用，将 404 重定向回 index.html
         (function() {
@@ -23,18 +22,5 @@
 <body>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
-    <script>
-        // 处理 SPA 路由回弹问题
-        (function() {
-            // 检查 sessionStorage 中是否有重定向信息
-            const redirectUrl = sessionStorage.getItem('redirect');
-            if (redirectUrl) {
-                // 清除重定向信息
-                sessionStorage.removeItem('redirect');
-                // 使用 history.replaceState 更新 URL，避免重新加载
-                history.replaceState(null, null, redirectUrl);
-            }
-        })();
-    </script>
 </body>
 </html>

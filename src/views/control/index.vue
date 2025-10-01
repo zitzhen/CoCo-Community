@@ -150,21 +150,14 @@ async function fetchData() {
     // 1) 获取信息文件
     const infoUrl = `/control/${id}/information.json`
     const infoRes = await fetch(infoUrl)
-    if (!infoRes.ok) {
-      // 如果找不到information.json，直接显示404错误
-      throwError(`未找到控件：${id} （HTTP ${infoRes.status}）`)
-      return
-    }
+    if (!infoRes.ok) throw new Error(`未找到 information.json：${infoUrl} （HTTP ${infoRes.status}）`)
     const jsonData = await infoRes.json()
 
     // 2) 控件文件（根据最新版本号）
     const latestVersion = jsonData.Current_version
     const controlUrl = `/control/${id}/${latestVersion}/control.jsx`
     const controlRes = await fetch(controlUrl)
-    if (!controlRes.ok) {
-      throwError(`未找到控件文件：${controlUrl} （HTTP ${controlRes.status}）`)
-      return
-    }
+    if (!controlRes.ok) throw new Error(`未找到控件文件：${controlUrl} （HTTP ${controlRes.status}）`)
     const controlBlob = await controlRes.blob()
     fileSize.value = (controlBlob.size / 1024).toFixed(2)
 
@@ -221,17 +214,6 @@ function throwError(msg) {
   errorVisible.value = true
   errorVisibleSmall.value = true
   loading.value = false
-  
-  // 立即设置SEO信息，避免404回弹影响SEO
-  useHead({
-    title: `控件未找到 - ZIT-CoCo-Community`,
-    meta: [
-      { name: "description", content: "请求的控件未找到：" + msg },
-      { property: "og:title", content: "控件未找到" },
-      { property: "og:description", content: "请求的控件未找到：" + msg },
-      { name: "robots", content: "noindex, follow" }
-    ]
-  })
 }
 
 onMounted(() => {
