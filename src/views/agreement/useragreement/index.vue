@@ -14,7 +14,7 @@
       </div>
       <h2 v-if="loading" id="Loading_tip">请稍后，我们正在处理</h2>
       <div v-else>
-        <div v-html="content"></div>
+        <div v-html="content" class="content"></div>
       </div>
     </div>
   </div>
@@ -48,6 +48,11 @@ export default {
 <style scoped>
 @import '../../../assets/style/agreement/style.css';
 @import '../../../assets/style/home/Loading.css';
+@media (prefers-color-scheme: dark){
+  .content{
+    color: black;
+  }
+}
 </style>
 
 <script setup>
