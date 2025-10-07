@@ -1,2 +1,2 @@
 # _redirects 文件
-# 为了解决 Vue Router 在部署后的问题，移除了可能导致冲突的重定向规则
+/*    /index.html   200
