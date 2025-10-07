@@ -14,7 +14,8 @@ const routes = [
   { path: '/essay/all', name: 'ErrorEssay', component: () => import('@/views/user/No-parameters.vue') },
   { path: '/essay', name: 'Essay', component: () => import('@/views/essay/index.vue') },
   { path: '/safe', name: 'Safe', component: () => import('@/views/safe/index.vue') },
-  { path: '/new-control', name: 'NewControl', component: () => import('@/views/essay/all/dev.vue') }
+  { path: '/new-control', name: 'NewControl', component: () => import('@/views/essay/all/dev.vue') },
+  {path: '/:pathMatch(.*)*', name: 'NotFound',component: () => import('@/views/NotFound.vue')}
 ];
 
 // 在 Cloudflare Pages 环境中使用正确的 base
