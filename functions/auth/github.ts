@@ -7,13 +7,14 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
       return new Response("Missing code", { status: 400 });
     }
 
+    // Step 1: 交换 access token
     const tokenRes = await fetch("https://github.com/login/oauth/access_token", {
       method: "POST",
       headers: {
         Accept: "application/json",
-        "Content-Type": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: JSON.stringify({
+      body: new URLSearchParams({
         client_id: env.GITHUB_CLIENT_ID,
         client_secret: env.GITHUB_CLIENT_SECRET,
         code,
@@ -27,6 +28,7 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
       return new Response("Failed to get access token", { status: 401 });
     }
 
+    // Step 2: 获取用户信息
     const userRes = await fetch("https://api.github.com/user", {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -36,11 +38,14 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
 
     const user = await userRes.json();
 
+    // Step 3: 设置 Cookie 并跳转到首页
+    const cookie = `token=${accessToken}; Path=/; HttpOnly; Secure; SameSite=Lax`;
+
     return new Response(null, {
       status: 302,
       headers: {
-        "Set-Cookie": `token=${accessToken}; Path=/; HttpOnly; Secure; SameSite=Lax`,
-        Location: "/"
+        "Set-Cookie": cookie,
+        Location: "/",
       },
     });
   } catch (err: any) {
