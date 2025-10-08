@@ -21,14 +21,25 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
       }),
     });
 
-    const tokenData = await tokenRes.json();
-    const accessToken = tokenData.access_token;
+    // Step 2: 兼容解析响应格式
+    let tokenData: any;
+    let accessToken: string | null = null;
 
-    if (!accessToken || typeof accessToken !== "string") {
-      return new Response("Failed to get access token: " + JSON.stringify(tokenData), { status: 401 });
+    try {
+      tokenData = await tokenRes.json();
+      accessToken = tokenData.access_token;
+    } catch (jsonErr) {
+      const rawText = await tokenRes.text();
+      console.log("Fallback raw token response:", rawText);
+      const params = new URLSearchParams(rawText);
+      accessToken = params.get("access_token");
     }
 
-    // Step 2: 获取 GitHub 用户信息
+    if (!accessToken || typeof accessToken !== "string") {
+      return new Response("Failed to get access token", { status: 401 });
+    }
+
+    // Step 3: 获取 GitHub 用户信息
     const userRes = await fetch("https://api.github.com/user", {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -37,22 +48,23 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
     });
 
     const user = await userRes.json();
+    console.log("GitHub user info:", user);
 
-    // Step 3: 设置 Cookie 并跳转
+    // Step 4: 设置 Cookie 并跳转
     const cookie = [
       `token=${accessToken}`,
       "Path=/",
       "HttpOnly",
       "Secure",
       "SameSite=Lax",
-      `Expires=${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString()}`, // 7天有效期
+      `Expires=${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString()}`,
     ].join("; ");
 
     return new Response(null, {
       status: 302,
       headers: {
         "Set-Cookie": cookie,
-        Location: "/", // ✅ 可改为 /dashboard 或 /welcome
+        Location: "/",
       },
     });
   } catch (err: any) {
