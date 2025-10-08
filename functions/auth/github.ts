@@ -4,14 +4,13 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
     const code = url.searchParams.get("code");
 
     if (!code) {
-      return new Response("Missing code", { status: 400 });
+      return new Response(JSON.stringify({ error: "missing_code" }), { status: 400 });
     }
 
-    // Step 1: 请求 GitHub 交换 access_token（使用 res.text() 解析）
     const tokenRes = await fetch("https://github.com/login/oauth/access_token", {
       method: "POST",
       headers: {
-        Accept: "application/json", // GitHub 有时忽略这个
+        Accept: "application/json",
         "User-Agent": "Cloudflare-Worker-OAuth",
       },
       body: new URLSearchParams({
@@ -26,10 +25,9 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
     const accessToken = params.get("access_token");
 
     if (!accessToken || accessToken.length < 10) {
-      return new Response("Failed to get access token: " + rawText, { status: 401 });
+      return new Response(JSON.stringify({ error: "no_token", detail: rawText }), { status: 401 });
     }
 
-    // Step 2: 设置 Cookie（7天有效期）
     const cookie = [
       `token=${accessToken}`,
       "Path=/",
@@ -39,16 +37,17 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
       `Expires=${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString()}`,
     ].join("; ");
 
-    // Step 3: 跳转回首页（或你指定的页面）
     return new Response(null, {
       status: 302,
       headers: {
         "Set-Cookie": cookie,
-        Location: "/", // ✅ 可改为 /dashboard 或 /welcome
+        Location: "/",
       },
     });
   } catch (err: any) {
-    console.error("OAuth error:", err);
-    return new Response("OAuth error: " + err.message, { status: 500 });
+    return new Response(JSON.stringify({ error: "server_error", message: err.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 };
