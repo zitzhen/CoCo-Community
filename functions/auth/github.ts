@@ -7,12 +7,12 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
       return new Response("Missing code", { status: 400 });
     }
 
-    // Step 1: 交换 access token（修复格式）
+    // Step 1: 交换 access token（使用正确格式）
     const tokenRes = await fetch("https://github.com/login/oauth/access_token", {
       method: "POST",
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/json", // ✅ 告诉 GitHub 返回 JSON
+        "Content-Type": "application/x-www-form-urlencoded", // ✅ 正确的 body 类型
       },
       body: new URLSearchParams({
         client_id: env.GITHUB_CLIENT_ID,
@@ -22,7 +22,7 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
     });
 
     const tokenData = await tokenRes.json();
-    console.log("GitHub token response:", tokenData); // 调试输出
+    console.log("GitHub token response:", tokenData); // ✅ 调试输出
 
     const accessToken = tokenData.access_token;
 
@@ -39,18 +39,20 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
     });
 
     const user = await userRes.json();
+    console.log("GitHub user info:", user); // ✅ 可选调试输出
 
-    // Step 3: 设置 Cookie 并跳转
+    // Step 3: 设置 Cookie 并跳转到首页
     const cookie = `token=${accessToken}; Path=/; HttpOnly; Secure; SameSite=Lax`;
 
     return new Response(null, {
       status: 302,
       headers: {
         "Set-Cookie": cookie,
-        Location: "/",
+        Location: "/", // ✅ 可改为 /dashboard 或 /login-success
       },
     });
   } catch (err: any) {
+    console.error("OAuth error:", err); // ✅ 捕获异常
     return new Response("OAuth error: " + err.message, { status: 500 });
   }
 };
