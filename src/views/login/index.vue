@@ -18,7 +18,7 @@
     </a>
     <div style="height: 13px;"></div>
 
-    <a href="https://cc.zitzhen.cn/agreement/useragreement">《用户协议》</a><a href="https://cc.zitzhen.cn/agreement/privacypolicy">《隐私政策》</a>
+    <router-link to="/agreement/useragreement">《用户协议》</router-link> <router-link to="/agreement/privacypolicy">《隐私政策》</router-link>
   </div>
 </div>
 </template>
