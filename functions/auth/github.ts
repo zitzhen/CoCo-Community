@@ -37,8 +37,14 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
 
   const user = await userRes.json();
 
-  // Step 3: 返回用户信息或跳转
-  return new Response(JSON.stringify(user), {
-    headers: { "Content-Type": "application/json" },
+  // Step 3: 设置 Cookie 并跳转到前端页面
+  const cookie = `token=${accessToken}; Path=/; HttpOnly; Secure; SameSite=Lax`;
+
+  return new Response(null, {
+    status: 302,
+    headers: {
+      "Set-Cookie": cookie,
+      Location: "/", // 回到首页 Vue 页面路径
+    },
   });
 };
