@@ -7,11 +7,11 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
       return new Response("Missing code", { status: 400 });
     }
 
-    // Step 1: 请求 GitHub 交换 access_token
+    // Step 1: 请求 GitHub 交换 access_token（解析为文本）
     const tokenRes = await fetch("https://github.com/login/oauth/access_token", {
       method: "POST",
       headers: {
-        Accept: "application/json",
+        Accept: "application/json", // ✅ GitHub 有时忽略这个
         "User-Agent": "Cloudflare-Worker-OAuth",
       },
       body: new URLSearchParams({
@@ -21,22 +21,15 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
       }),
     });
 
-    // Step 2: 兼容解析响应格式
-    let tokenData: any;
-    let accessToken: string | null = null;
+    const rawText = await tokenRes.text();
+    console.log("GitHub raw token response:", rawText);
 
-    try {
-      tokenData = await tokenRes.json();
-      accessToken = tokenData.access_token;
-    } catch (jsonErr) {
-      const rawText = await tokenRes.text();
-      console.log("Fallback raw token response:", rawText);
-      const params = new URLSearchParams(rawText);
-      accessToken = params.get("access_token");
-    }
+    // Step 2: 手动解析 access_token
+    const params = new URLSearchParams(rawText);
+    const accessToken = params.get("access_token");
 
-    if (!accessToken || typeof accessToken !== "string") {
-      return new Response("Failed to get access token", { status: 401 });
+    if (!accessToken) {
+      return new Response("Failed to get access token: " + rawText, { status: 401 });
     }
 
     // Step 3: 获取 GitHub 用户信息
@@ -51,14 +44,7 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
     console.log("GitHub user info:", user);
 
     // Step 4: 设置 Cookie 并跳转
-    const cookie = [
-      `token=${accessToken}`,
-      "Path=/",
-      "HttpOnly",
-      "Secure",
-      "SameSite=Lax",
-      `Expires=${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString()}`,
-    ].join("; ");
+    const cookie = `token=${accessToken}; Path=/; HttpOnly; Secure; SameSite=Lax`;
 
     return new Response(null, {
       status: 302,
