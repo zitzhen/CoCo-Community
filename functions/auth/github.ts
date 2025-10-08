@@ -7,11 +7,11 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
       return new Response("Missing code", { status: 400 });
     }
 
-    // Step 1: 请求 GitHub 交换 access_token（只用 res.json()）
+    // Step 1: 请求 GitHub 交换 access_token（解析为文本）
     const tokenRes = await fetch("https://github.com/login/oauth/access_token", {
       method: "POST",
       headers: {
-        Accept: "application/json",
+        Accept: "application/json", //  GitHub 有时忽略这个
         "User-Agent": "Cloudflare-Worker-OAuth",
       },
       body: new URLSearchParams({
@@ -21,12 +21,12 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
       }),
     });
 
-    const tokenData = await tokenRes.json();
-    const accessToken = tokenData.access_token;
+    const rawText = await tokenRes.text();
+    const params = new URLSearchParams(rawText);
+    const accessToken = params.get("access_token");
 
-    // ✅ 正确判断：accessToken 存在且是字符串
-    if (typeof accessToken !== "string" || accessToken.length < 10) {
-      return new Response("Failed to get access token: " + JSON.stringify(tokenData), { status: 401 });
+    if (!accessToken || accessToken.length < 10) {
+      return new Response("Failed to get access token: " + rawText, { status: 401 });
     }
 
     // Step 2: 获取 GitHub 用户信息
@@ -38,7 +38,6 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
     });
 
     const user = await userRes.json();
-    console.log("GitHub user info:", user);
 
     // Step 3: 设置 Cookie 并跳转
     const cookie = [
@@ -54,7 +53,7 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
       status: 302,
       headers: {
         "Set-Cookie": cookie,
-        Location: "/", // ✅ 可改为 /dashboard
+        Location: "/", // 跳转回首页
       },
     });
   } catch (err: any) {
