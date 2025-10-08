@@ -7,7 +7,7 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
       return new Response("Missing code", { status: 400 });
     }
 
-    // Step 1: 交换 access token
+    // Step 1: 交换 access token（修复格式）
     const tokenRes = await fetch("https://github.com/login/oauth/access_token", {
       method: "POST",
       headers: {
@@ -22,10 +22,12 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
     });
 
     const tokenData = await tokenRes.json();
+    console.log("GitHub token response:", tokenData); // 调试输出
+
     const accessToken = tokenData.access_token;
 
     if (!accessToken) {
-      return new Response("Failed to get access token", { status: 401 });
+      return new Response("Failed to get access token: " + JSON.stringify(tokenData), { status: 401 });
     }
 
     // Step 2: 获取用户信息
@@ -38,7 +40,7 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
 
     const user = await userRes.json();
 
-    // Step 3: 设置 Cookie 并跳转到首页
+    // Step 3: 设置 Cookie 并跳转
     const cookie = `token=${accessToken}; Path=/; HttpOnly; Secure; SameSite=Lax`;
 
     return new Response(null, {
