@@ -1,2 +1,4 @@
 # _redirects 文件
+# 让 _redirects 只处理前端路由，不干扰静态资源
+/assets/*   /assets/:splat   200
 /*    /index.html   200
