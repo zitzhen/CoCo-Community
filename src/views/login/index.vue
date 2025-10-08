@@ -9,7 +9,7 @@
 <div style="height: 90px;"></div>
 <div class="login-container">
   <div class="login-box">
-    <h2 class="login-title">Hello,欢迎来到CoCo-Community，请使用Github登录</h2>
+    <h2 class="login-title">{{ Welcome_text }}</h2>
     <a
       href="https://github.com/login/oauth/authorize?client_id=Ov23lii4E31EzV9VMW7B&redirect_uri=https://cc.zitzhen.cn/auth/github"
       class="github-button"
@@ -22,6 +22,33 @@
   </div>
 </div>
 </template>
+
+<script>
+const res = await fetch("/api/me", { credentials: "include" });
+const data = await res.json();
+function trurlogin(){
+    if (data.authenticated) {
+    console.log("已登录用户：");
+    return true;
+    } else {
+    console.log("未登录");
+    return false;
+}
+}
+
+
+import axios from 'axios'
+export default{
+    name:'login',
+    data(){
+        return{
+            Welcome_text:"Hello,欢迎来到CoCo-Community，请使用稍后"
+        }
+    },async mounted(){
+        
+    }
+}
+</script>
 
 <style>
 /* 导航栏样式 */
