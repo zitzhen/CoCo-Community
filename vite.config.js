@@ -27,9 +27,7 @@ export default defineConfig({
         host: 'localhost',
         port: 5173,
       },
-  // 为 Cloudflare Pages 配置基础路径
-  base: process.env.NODE_ENV === 'production' ? '/' : '/',
-  // 为 Cloudflare Pages 配置构建输出
+  base: './',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
