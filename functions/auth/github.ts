@@ -1,63 +1,74 @@
 export const onRequestGet: PagesFunction = async ({ request, env }) => {
   try {
-    const url = new URL(request.url);
-    const code = url.searchParams.get("code");
+    // 1. 解析 Cookie
+    const cookieHeader = request.headers.get("cookie") || "";
+    const getCookie = (name: string) => {
+      const match = cookieHeader.match(new RegExp("(^|; )" + name + "=([^;]+)"));
+      return match ? decodeURIComponent(match[2]) : null;
+    };
+    const token = getCookie("token");
 
-    if (!code) {
-      return new Response("Missing code", { status: 400 });
+    if (!token) {
+      return new Response(JSON.stringify({ error: "no_token" }), {
+        status: 401,
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+      });
     }
 
-    // Step 1: 请求 GitHub 交换 access_token（解析为文本）
-    const tokenRes = await fetch("https://github.com/login/oauth/access_token", {
-      method: "POST",
-      headers: {
-        Accept: "application/json", //  GitHub 有时忽略这个
-        "User-Agent": "Cloudflare-Worker-OAuth",
-      },
-      body: new URLSearchParams({
-        client_id: env.GITHUB_CLIENT_ID,
-        client_secret: env.GITHUB_CLIENT_SECRET,
-        code,
-      }),
-    });
-
-    const rawText = await tokenRes.text();
-    const params = new URLSearchParams(rawText);
-    const accessToken = params.get("access_token");
-
-    if (!accessToken || accessToken.length < 10) {
-      return new Response("Failed to get access token: " + rawText, { status: 401 });
+    // 2. 可选：简易令牌长度校验，防止空字符串
+    if (typeof token !== "string" || token.length < 10) {
+      return new Response(JSON.stringify({ error: "invalid_token" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+      });
     }
 
-    // Step 2: 获取 GitHub 用户信息
-    const userRes = await fetch("https://api.github.com/user", {
+    // 3. 请求 GitHub 验证 token 并获取用户信息
+    const githubRes = await fetch("https://api.github.com/user", {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${token}`,
         Accept: "application/json",
+        "User-Agent": "YourAppName-Server",
       },
     });
 
-    const user = await userRes.json();
+    // 4. 如果 token 无效或被撤销，GitHub 通常返回 401/403
+    if (!githubRes.ok) {
+      const text = await githubRes.text().catch(() => "");
+      return new Response(JSON.stringify({ error: "github_error", status: githubRes.status, detail: text }), {
+        status: 401,
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+      });
+    }
 
-    // Step 3: 设置 Cookie 并跳转
-    const cookie = [
-      `token=${accessToken}`,
-      "Path=/",
-      "HttpOnly",
-      "Secure",
-      "SameSite=Lax",
-      `Expires=${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString()}`,
-    ].join("; ");
+    const user = await githubRes.json();
 
-    return new Response(null, {
-      status: 302,
+    // 5. 只返回安全且必要的字段
+    const safeUser = {
+      id: user.id,
+      login: user.login,
+      name: user.name ?? null,
+      avatar_url: user.avatar_url ?? null,
+      html_url: user.html_url ?? null,
+      email: user.email ?? null,
+      bio: user.bio ?? null,
+    };
+
+    // 6. 成功响应（可根据需要添加缓存头或使用 KV 缓存）
+    return new Response(JSON.stringify({ authenticated: true, user: safeUser }), {
+      status: 200,
       headers: {
-        "Set-Cookie": cookie,
-        Location: "/", // 跳转回首页
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "no-store", // token 相关数据通常不缓存到浏览器
       },
     });
   } catch (err: any) {
-    console.error("OAuth error:", err);
-    return new Response("OAuth error: " + err.message, { status: 500 });
+    console.error("api/me error:", err);
+    return new Response(JSON.stringify({ error: "server_error", message: String(err) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+    });
   }
 };
