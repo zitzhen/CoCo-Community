@@ -11,7 +11,7 @@
   <div class="login-box">
     <h2 class="login-title">Hello,欢迎来到CoCo-Community，请使用Github登录</h2>
     <a
-      href="https://github.com/login/oauth/authorize?client_id=YOUR_CLIENT_ID"
+      href="https://github.com/login/oauth/authorize?client_id=Ov23lii4E31EzV9VMW7B"
       class="github-button"
     >
       使用 GitHub 登录
