@@ -20,12 +20,11 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
       }),
     });
 
-    const rawText = await tokenRes.text();
-    const params = new URLSearchParams(rawText);
-    const accessToken = params.get("access_token");
+    const tokenData = await tokenRes.json(); // ✅ 正确解析 JSON
+    const accessToken = tokenData.access_token;
 
     if (!accessToken || accessToken.length < 10) {
-      return new Response(JSON.stringify({ error: "no_token", detail: rawText }), { status: 401 });
+      return new Response(JSON.stringify({ error: "no_token", detail: JSON.stringify(tokenData) }), { status: 401 });
     }
 
     const cookie = [
@@ -41,7 +40,7 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
       status: 302,
       headers: {
         "Set-Cookie": cookie,
-        Location: "/",
+        Location: "/", // 回调到首页
       },
     });
   } catch (err: any) {
