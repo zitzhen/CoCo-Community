@@ -28,20 +28,9 @@
 </template>
 
 <script>
-const res = await fetch("/api/me", { credentials: "include" });
-const data = await res.json();
-function trurlogin(){
-    if (data.authenticated) {
-    console.log("已登录用户：");
-    return true;
-    } else {
-    console.log("未登录");
-    return false;
-}
-}
 
 
-import axios from 'axios'
+
 export default{
     name:'login',
     data(){
