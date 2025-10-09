@@ -3,6 +3,10 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
+            <div class="user-info-home">
+                <div class="user-avatar-home"></div>
+                <div class="user-name-home">{{ username }}</div>
+        </div>
         </div>
     </nav>
 <div style="height: 90px;"></div>
@@ -226,7 +230,7 @@ useHead({
 })
 </script>
 
-<style scoped>
+<style>
 /*协议/**/ 
     .button-book {
     font-size: 17px;
@@ -331,6 +335,39 @@ useHead({
     margin: 5px auto;
     background-color: #2c3e50;
     transition: all 0.3s ease;
+}
+
+/* 用户信息样式 */
+.user-info-home {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 8px 15px;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+}
+
+.user-info-home:hover {
+    background-color: rgba(52, 152, 219, 0.1);
+}
+
+.user-avatar-home {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3498db, #2c3e50);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    margin-right: 12px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.user-name-home {
+    font-weight: 600;
+    color: #2c3e50;
 }
 @media screen and (max-width: 768px) {
   .hamburger {
