@@ -3,6 +3,10 @@
         <nav class="navbar">
             <div class="nav-container">
                 <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
+                <div class="user-info-home">
+                    <div class="user-avatar-home"></div>
+                    <div class="user-name-home">{{ username }}</div>
+            </div>
             </div>
         </nav>
     </div>
