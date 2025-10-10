@@ -1,25 +1,15 @@
-async function checkLoginStatus() {
+export async function checkLoginStatus() {
   try {
     const res = await fetch("/api/me", {
-      credentials: "include", //  自动携带 HttpOnly Cookie
+      credentials: "include",
     });
 
-    if (!res.ok) {
-      console.log("未登录");
-      return null;
-    }
+    if (!res.ok) return null;
 
     const data = await res.json();
-
-    if (data.authenticated && data.user) {
-      console.log("已登录用户：", data.user);
-      return data; //  返回用户信息
-    } else {
-      console.log("未登录");
-      return data;
-    }
+    return data;
   } catch (err) {
     console.error("登录状态检查失败：", err);
-    return false;
+    return null;
   }
 }

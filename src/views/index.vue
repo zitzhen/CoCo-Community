@@ -121,6 +121,7 @@
 
 <script>
 import axios from 'axios';
+import { checkLoginStatus } from '@/script/login';
 
 export default {
   name: 'Home',
@@ -209,6 +210,21 @@ export default {
         this.applyDarkMode(e.matches);
       });
     }
+
+    checkLoginStatus().then((logininformation) => {
+    if (!logininformation || !logininformation.authenticated) {
+      this.username = '未登录用户';
+      this.avatar = '/images/user.png';
+    } else {
+      this.username = logininformation.user.name || logininformation.user.login;
+      this.avatar = logininformation.user.avatar_url || '/images/user.png';
+    }
+  }).catch((err) => {
+    console.error("登录检查失败：", err);
+    this.username = '登录信息检查失败';
+  });
+
+
   }
 }
 </script>
@@ -232,17 +248,6 @@ useHead({
 })
 </script>
 
-<script>
-
-const logininformation = await checkLoginStatus();
-if(!logininformation){
-  this.username = '登录信息检查失败';
-}else if (logininformation.authenticated){
-  this.username = logininformation.user.name;
-  this.avatar = logininformation.user.avatar_url;
-}
-
-</script>
 
 <style>
 @import url(@/assets/css/Navigation-bar.css);
