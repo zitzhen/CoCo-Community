@@ -126,6 +126,7 @@ export default {
   name: 'Home',
   data() {
     return {
+      avatar:"/images/user.png",
       username:"未登录用户",
       loading: true,
       searchTerm: '',

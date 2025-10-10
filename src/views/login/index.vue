@@ -35,6 +35,7 @@ export default{
     name:'login',
     data(){
         return{
+            avatar:"/images/user.png",
             Welcome_text:"Hello,欢迎来到CoCo-Community，请使用GitHub登录",
             username: "未登录用户" 
         }
