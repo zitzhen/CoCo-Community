@@ -1,14 +1,14 @@
 <template>
   <div id="app">
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
-            <div class="user-info-home">
-                <div class="user-avatar-home"></div>
-                <div class="user-name-home">{{ username }}</div>
-        </div>
-        </div>
-    </nav>
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
+                <div class="user-info">
+                    <img :src="avatar" alt="用户头像" class="user-avatar">
+                    <div class="user-name">{{ username }}</div>
+                </div>
+            </div>
+        </nav>
 <div style="height: 90px;"></div>
     <br style="display: none;" id="error_br">
     <!-- From Uiverse.io by kennyotsu --> 
@@ -126,6 +126,7 @@ export default {
   name: 'Home',
   data() {
     return {
+      username:"未登录用户",
       loading: true,
       searchTerm: '',
       files: [],
@@ -231,6 +232,7 @@ useHead({
 </script>
 
 <style>
+@import url(@/assets/css/Navigation-bar.css);
 /*协议/**/ 
     .button-book {
     font-size: 17px;
@@ -251,119 +253,4 @@ useHead({
     transform: translate(0em, 0.2em);
 }
 
-
-
-/* 导航栏样式 */
-.navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background-color: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    padding: 0 20px;
-    transition: all 0.3s ease;
-}
-
-.nav-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 70px;
-}
-
-.logo {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #cc00ff;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-}
-
-.logo span {
-    color: #3498db;
-}
-
-.logo-icon {
-    margin-right: 10px;
-    font-size: 2rem;
-}
-
-/* 用户信息样式 */
-.user-info {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    padding: 5px 15px;
-    border-radius: 30px;
-    transition: all 0.3s ease;
-}
-
-.user-info:hover {
-    background-color: rgba(52, 152, 219, 0.1);
-}
-
-.user-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #3498db;
-    margin-right: 12px;
-    transition: all 0.3s ease;
-}
-
-.user-info:hover .user-avatar {
-    transform: scale(1.05);
-    box-shadow: 0 0 10px rgba(52, 152, 219, 0.4);
-}
-
-.user-name {
-    font-weight: 500;
-    color: #2c3e50;
-    font-size: 1rem;
-}
-@media screen and (max-width: 768px) {
-  .hamburger {
-      display: block;
-  }
-  
-  .hamburger.active .bar:nth-child(2) {
-      opacity: 0;
-  }
-  
-  .hamburger.active .bar:nth-child(1) {
-      transform: translateY(8px) rotate(45deg);
-  }
-  
-  .hamburger.active .bar:nth-child(3) {
-      transform: translateY(-8px) rotate(-45deg);
-  }
-  
-  .nav-menu {
-      position: fixed;
-      left: -100%;
-      top: 70px;
-      flex-direction: column;
-      background-color: white;
-      width: 100%;
-      text-align: center;
-      transition: 0.3s;
-      box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
-      padding: 20px 0;
-  }
-  
-  .nav-menu.active {
-      left: 0;
-  }
-  
-  .nav-item {
-      margin: 15px 0;
-  }
-}
 </style>
