@@ -13,13 +13,13 @@ async function checkLoginStatus() {
 
     if (data.authenticated && data.user) {
       console.log("已登录用户：", data.user);
-      return data.user; //  返回用户信息
+      return data; //  返回用户信息
     } else {
       console.log("未登录");
-      return null;
+      return data;
     }
   } catch (err) {
     console.error("登录状态检查失败：", err);
-    return null;
+    return false;
   }
 }

@@ -232,6 +232,18 @@ useHead({
 })
 </script>
 
+<script>
+
+const logininformation = await checkLoginStatus();
+if(!logininformation){
+  this.username = '登录信息检查失败';
+}else if (logininformation.authenticated){
+  this.username = logininformation.user.name;
+  this.avatar = logininformation.user.avatar_url;
+}
+
+</script>
+
 <style>
 @import url(@/assets/css/Navigation-bar.css);
 /*协议/**/ 
