@@ -4,7 +4,7 @@
             <div class="nav-container">
                 <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
                 <div class="user-info">
-                    <img src="s.githubusercontent.com/u/149680880?v=4" alt="用户头像" class="user-avatar">
+                    <img :src="avatar" alt="用户头像" class="user-avatar">
                     <div class="user-name">{{ username }}</div>
                 </div>
             </div>
@@ -84,7 +84,7 @@ body {
 .logo {
     font-size: 1.8rem;
     font-weight: 700;
-    color: #2c3e50;
+    color: #cc00ff;
     text-decoration: none;
 }
 

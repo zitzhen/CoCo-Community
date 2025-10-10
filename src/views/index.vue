@@ -279,7 +279,7 @@ useHead({
 .logo {
     font-size: 1.8rem;
     font-weight: 700;
-    color: #2c3e50;
+    color: #cc00ff;
     text-decoration: none;
     display: flex;
     align-items: center;
