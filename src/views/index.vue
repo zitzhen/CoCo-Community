@@ -135,13 +135,7 @@ export default {
       filteredFiles: [],
       // 文件类型对应的图标
       fileIcons: {
-        pdf: "fa-file-pdf",
-        exe: "fa-file-code",
-        zip: "fa-file-archive",
-        word: "fa-file-word",
-        video: "fa-file-video",
-        code: "fa-file-code",
-        default: "fa-file"
+        code: "fa-file-code"
       }
     }
   },
