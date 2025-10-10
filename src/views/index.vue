@@ -259,10 +259,12 @@ useHead({
     top: 0;
     left: 0;
     width: 100%;
-    background-color: #fff;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
     z-index: 1000;
     padding: 0 20px;
+    transition: all 0.3s ease;
 }
 
 .nav-container {
@@ -277,97 +279,54 @@ useHead({
 .logo {
     font-size: 1.8rem;
     font-weight: 700;
-    color: #cc00ff;
+    color: #2c3e50;
     text-decoration: none;
+    display: flex;
+    align-items: center;
 }
 
 .logo span {
-    color: #000000;
-}
-
-.nav-menu {
-    display: flex;
-    list-style: none;
-}
-
-.nav-item {
-    margin-left: 30px;
-}
-
-.nav-link {
-    text-decoration: none;
-    color: #2c3e50;
-    font-weight: 500;
-    font-size: 1rem;
-    transition: color 0.3s ease;
-    position: relative;
-    padding: 5px 0;
-}
-
-.nav-link:hover {
     color: #3498db;
 }
 
-.nav-link::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background-color: #3498db;
-    transition: width 0.3s ease;
-}
-
-.nav-link:hover::after {
-    width: 100%;
-}
-
-.hamburger {
-    display: none;
-    cursor: pointer;
-}
-
-.bar {
-    display: block;
-    width: 25px;
-    height: 3px;
-    margin: 5px auto;
-    background-color: #2c3e50;
-    transition: all 0.3s ease;
+.logo-icon {
+    margin-right: 10px;
+    font-size: 2rem;
 }
 
 /* 用户信息样式 */
-.user-info-home {
+.user-info {
     display: flex;
     align-items: center;
     cursor: pointer;
-    padding: 8px 15px;
+    padding: 5px 15px;
     border-radius: 30px;
     transition: all 0.3s ease;
 }
 
-.user-info-home:hover {
+.user-info:hover {
     background-color: rgba(52, 152, 219, 0.1);
 }
 
-.user-avatar-home {
+.user-avatar {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #3498db, #2c3e50);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: bold;
+    object-fit: cover;
+    border: 2px solid #3498db;
     margin-right: 12px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
 }
 
-.user-name-home {
-    font-weight: 600;
+.user-info:hover .user-avatar {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.4);
+}
+
+.user-name {
+    font-weight: 500;
     color: #2c3e50;
+    font-size: 1rem;
 }
 @media screen and (max-width: 768px) {
   .hamburger {
