@@ -88,13 +88,6 @@
               </svg>
             </button>
           </a>
-          <a href="https://jihulab.com/zitzhen/CoCo-Community">
-            <button class="btn bins">
-              <svg width="40" height="40" fill="#FC6D26" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="gitlab">
-                <image href="/src/assets/images/icon/gitlab.svg" width="24" height="24" x="0" y="0"/>
-              </svg>
-            </button>
-          </a>
         </div>
         <br>
         <div style="margin: 0 auto;">
