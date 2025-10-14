@@ -29,12 +29,11 @@ CoCo-Community，全称为ZIT-CoCo-Community
 |---|---|
 |<img src="https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png" width="50" height="50" alt="Github的图片"> | [Github](https://Github.com/zitzhen/CoCo-Community) |
 |<img src="src/assets/images/icon/Gitee-logo.png" width="50" height="50" alt="Gitee的图片">| [Gitee](https://Github.com/zitzhen/CoCo-Community) | 
-|<img src="src/assets/images/icon/gitlab.svg" width="50" height="50" alt="Gitee的图片">| [GitLab](https://jihulab.com/zitzhen/CoCo-Community/) |
 
 >[!tip]
 >请您首选Github访问CoCo-Community
 >
->自2025年06月13日以来，Gitlab的访问已恢复，但是，请您尽量不要通过Gitlab访问CoCo-Community，因为Gitlab的镜像仓库频繁发生错误
+>自2025年10月14日以来，刘小圳的GitLab(极狐)会员以到期，已手动删除仓库。
 >
 > 若您发现未在此公布的平台出现仓库，请您即使举报并联系ZIT-CoCo-Community开发者名单
 >
