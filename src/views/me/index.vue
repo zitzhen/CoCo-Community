@@ -10,6 +10,11 @@
             </div>
         </nav>
 </div>
+<div>
+  <img :src="avatar" alt="用户图像"></img>
+  <h1>{{ name }}</h1>
+  <p>{{ bio }}</p>
+</div>
 </template>
 
 <style>
