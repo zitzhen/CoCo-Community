@@ -1,0 +1,144 @@
+.container-me {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+.profile-header-me {
+    display: flex;
+    align-items: center;
+    padding: 32px 0 24px 0;
+    border-bottom: 1px solid #eee;
+}
+.avatar-me {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    margin-right: 32px;
+    object-fit: cover;
+    border: 2px solid #3498db;
+}
+.me-info-me {
+    flex: 1;
+}
+.stats-me {
+    display: flex;
+    gap: 32px;
+    margin-top: 16px;
+}
+.stat-item-me {
+    text-align: center;
+}
+.stat-number-me {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #3498db;
+}
+.stat-label-me {
+    font-size: 0.95rem;
+    color: #666;
+}
+.tabs-me {
+    display: flex;
+    gap: 16px;
+    margin: 32px 0 0 0;
+    border-bottom: 1px solid #eee;
+}
+.tab-me {
+    padding: 12px 32px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: #666;
+    border-radius: 8px 8px 0 0;
+    background: #f7f7f7;
+    transition: background 0.2s, color 0.2s;
+}
+.tab-me.active-me {
+    background: #3498db;
+    color: #fff;
+    font-weight: bold;
+}
+.tab-content-me {
+    display: none;
+    padding: 24px 0;
+}
+.tab-content-me.active-me {
+    display: block;
+}
+.section-title-me {
+    font-size: 1.3rem;
+    margin-bottom: 16px;
+    color: #3498db;
+}
+.file-list-me {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+}
+.file-card-me {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.08);
+    padding: 16px;
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.file-icon-me {
+    font-size: 2rem;
+    color: #3498db;
+    margin-bottom: 8px;
+}
+.file-info-me {
+    flex: 1;
+    margin-bottom: 8px;
+}
+.file-name-me {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #333;
+}
+.file-actions-me {
+    margin-top: auto;
+}
+.download-btn-me {
+    background: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 16px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background 0.2s;
+}
+.download-btn-me:hover {
+    background: #217dbb;
+}
+.article-list-me {
+    min-height: 80px;
+    padding: 16px 0;
+}
+footer {
+    margin-top: 48px;
+    background: #f7f7f7;
+    padding: 24px 0;
+    text-align: center;
+    color: #888;
+}
+@media (max-width: 600px) {
+    .profile-header-me {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .avatar-me {
+        margin-bottom: 16px;
+        margin-right: 0;
+    }
+    .file-list-me {
+        flex-direction: column;
+        gap: 16px;
+    }
+    .file-card-me {
+        width: 100%;
+    }
+}

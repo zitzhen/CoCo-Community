@@ -10,15 +10,28 @@
             </div>
         </nav>
 </div>
-<div>
-  <img :src="avatar" alt="用户图像"></img>
-  <h1>{{ name }}</h1>
-  <p>{{ bio }}</p>
-</div>
+<div style="height: 90px;"></div>
+<div class="profile-header-me">
+         <img :src="avatar" alt="用户头像" class="avatar-me" id="avatar_img">
+        <div class="user-info-me">
+            <h1 id="user_name">{{ Nickname }}</h1>
+            <!--用户GitHub名称-->
+            <p id="user_introduction">{{ bio }}</p>
+            <!--用户GitHub介绍-->
+            <div class="stats-me">
+                <div class="stat-item-me">
+                    <div class="stat-number-me" id="number_of_controls">{{ Control_number }}</div>
+                    <div class="stat-label-me">控件</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style>
 @import url(@/assets/css/Navigation-bar.css);
+@import url(@/assets/style/me/style.css);
+@import url(@/assets/style/me/style2.css);
 </style>
 
 <script>
