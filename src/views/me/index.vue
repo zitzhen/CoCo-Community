@@ -59,12 +59,12 @@
     <div :class="['tab-content-me', { 'active-me': activeTab === 'github' }]" id="github">
       <h2 class="section-title-me">Github</h2>
     </div>
-</div>
 
-  <!--设置-->
+    <!--设置-->
   <div :class="['tab-content-me', { 'active-me': activeTab === 'settings' }]" id="settings">
     <h2 class="section-title-me">设置</h2>
   </div>
+</div>
   
 
     <footer>
