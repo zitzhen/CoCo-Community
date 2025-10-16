@@ -29,36 +29,36 @@
       </div>
     </div>
 
-    <!-- 菜单导航 -->
-    <div class="tabs-me">
-      <div :class="['tab-me', { 'active-me': activeTab === 'files' }]" @click="switchTab('files')">控件</div>
-      <div :class="['tab-me', { 'active-me': activeTab === 'articles' }]" @click="switchTab('articles')">文章</div>
-      <div :class="['tab-me', { 'active-me': activeTab === 'github' }]" @click="switchTab('github')">Github</div>
-      <div :class="['tab-me', { 'active-me': activeTab === 'settings' }]" @click="switchTab('settings')">设置</div>
-    </div>
-
-    <!-- 控件板块 -->
-    <div :class="['tab-content-me', { 'active-me': activeTab === 'files' }]" id="files">
-      <h2 class="section-title-me">你的控件</h2>
-    </div>
-
-    <!-- 文章板块 -->
-    <div :class="['tab-content-user', { 'active-user': activeTab === 'articles' }]" id="articles">
-      <h2>你的文章</h2>
-      <p>请勿着急，文章功能尚未发布。</p>
-    </div>
-
-    <!-- Github板块 -->
-    <div :class="['tab-content-user', { 'active-user': activeTab === 'github' }]" id="github">
-      <p>以下是您的Github账户信息</p>
-      <p>{{ url }}</p>
-    </div>
-
-    <!-- 设置板块 -->
-    <div :class="['tab-content-user', { 'active-user': activeTab === 'settings' }]" id="settings">
-      <p>暂无可设置项目</p>
-    </div>
+  <!-- 菜单导航 -->
+  <div class="tabs-me">
+    <div :class="['tab-me', { 'active-me': activeTab === 'files' }]" @click="switchTab('files')">控件</div>
+    <div :class="['tab-me', { 'active-me': activeTab === 'articles' }]" @click="switchTab('articles')">文章</div>
+    <div :class="['tab-me', { 'active-me': activeTab === 'github' }]" @click="switchTab('github')">Github</div>
+    <div :class="['tab-me', { 'active-me': activeTab === 'settings' }]" @click="switchTab('settings')">设置</div>
   </div>
+
+  <!-- 控件板块 -->
+  <div class="tab-content" v-show="activeTab === 'files'">
+    <h2 class="section-title-me">你的控件</h2>
+  </div>
+
+  <!-- 文章板块 -->
+  <div class="tab-content" v-show="activeTab === 'articles'">
+    <h2>你的文章</h2>
+    <p>请勿着急，文章功能尚未发布。</p>
+  </div>
+
+  <!-- Github板块 -->
+  <div class="tab-content" v-show="activeTab === 'github'">
+    <p>以下是您的Github账户信息</p>
+    <p>{{ url }}</p>
+  </div>
+
+  <!-- 设置板块 -->
+  <div class="tab-content" v-show="activeTab === 'settings'">
+    <p>暂无可设置项目</p>
+  </div>
+</div>
 </template>
 
 <script>
