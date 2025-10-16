@@ -29,8 +29,32 @@
     
     <!--菜单及导航-->
       <div class="tabs-me">
-        <div :class="['tab-me', { 'active-user': activeTab === 'files' }]" data-tab="files" @click="switchTab('files')">控件</div>
-        <div :class="['tab-me', { 'active-user': activeTab === 'articles' }]" data-tab="articles" @click="switchTab('articles')">文章</div>
+        <div :class="['tab-me', { 'active-me': activeTab === 'files' }]" data-tab="files" @click="switchTab('files')">控件</div>
+        <div :class="['tab-me', { 'active-me': activeTab === 'articles' }]" data-tab="articles" @click="switchTab('articles')">文章</div>
+        <div :class="['tab-me', { 'active-me': activeTab === 'github' }]" data-tab="github" @click="switchTab('gihtub')">Github</div>
+        <div :class="['tab-me', { 'active-me':activeTab === 'settings' }]" data-tab="settings" @click="switch('settings')">设置</div>
+      </div>
+
+    <!--控件板块-->
+    <div :class="['tab-content-me', { 'active-me': activeTab === 'files' }]" id="files">
+      <h2 class="section-title-me">你的控件</h2>
+    </div>
+
+    <!--文章板块-->
+    <div :class="['tab-content-user', { 'active-user': activeTab === 'articles' }]" id="articles">
+      <h2>你的文章</h2>
+      <p>请勿着急，文章功能尚未发布。</p>
+    </div>
+
+    <!--Github-->
+    <div :class="['tab-content-user', { 'active-user': activeTab === 'github' }]" id="github">
+      <p>以下是您的Github账户信息</p>
+      <p>{{ url }}</p>
+    </div>
+
+    <!--设置-->
+    <div>
+      <p>暂无可设置项目</p>
     </div>
 </template>
 
