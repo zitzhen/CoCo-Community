@@ -42,19 +42,7 @@
     <div :class="['tab-content-me', { 'active-me': activeTab === 'files' }]" id="files">
         <h2 class="section-title-me">你的控件</h2>
         <div class="file-list-me" id="display_controls">
-            <div class="file-card-me" v-for="(control, index) in controlList" :key="index">
-                <div class="file-icon-me">
-                    <i class="far fa-file-code"></i>
-                </div>
-                <div class="file-info-me">
-                    <div class="file-name-me">{{ control }}</div>
-                </div>
-                <div class="file-actions-me">
-                    <a :href="`https://cc.zitzhen.cn/control/${control}`">
-                        <button class="download-btn-me">去详情</button>
-                    </a>
-                </div>
-            </div>
+            <!--在这里插入列表-->
         </div>
     </div>
     
