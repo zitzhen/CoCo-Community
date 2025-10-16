@@ -55,8 +55,6 @@
                     </a>
                 </div>
             </div>
-
-            <p v-if="loading">请稍后，我们正在处理数据……</p>
         </div>
     </div>
     
@@ -80,7 +78,7 @@
     <h2 class="section-title-me">设置</h2>
   </div>
   
-  
+
     <footer>
       <div class="container-me">
           <p>© 2025 小圳社区 - CoCo-Community</p>
