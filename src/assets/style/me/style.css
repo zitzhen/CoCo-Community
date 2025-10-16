@@ -17,7 +17,7 @@
     object-fit: cover;
     border: 2px solid #3498db;
 }
-.me-info-me {
+.user-info-me {
     flex: 1;
 }
 .stats-me {
