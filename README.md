@@ -20,6 +20,7 @@ CoCo-Community，全称为ZIT-CoCo-Community
 >[!tip]
 >自2025年20月8日20:55 07b93c1提交之后，CoCo-Community登录功能正式完结上线！
 
+>[!important]
 >上述所说的登录功能完结指登录功能正常并上线，不代表将所以GithubAPI加上认证。
 ---
 ## 项目所在的所有仓库：
