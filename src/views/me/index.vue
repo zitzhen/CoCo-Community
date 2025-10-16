@@ -26,6 +26,12 @@
             </div>
         </div>
     </div>
+    
+    <!--菜单及导航-->
+      <div class="tabs-me">
+        <div :class="['tab-me', { 'active-user': activeTab === 'files' }]" data-tab="files" @click="switchTab('files')">控件</div>
+        <div :class="['tab-me', { 'active-user': activeTab === 'articles' }]" data-tab="articles" @click="switchTab('articles')">文章</div>
+    </div>
 </template>
 
 <style>
