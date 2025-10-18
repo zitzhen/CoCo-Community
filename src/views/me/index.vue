@@ -63,7 +63,7 @@
     <!--设置-->
   <div :class="['tab-content-me', { 'active-me': activeTab === 'settings' }]" id="settings">
     <h2 class="section-title-me">设置</h2>
-    <p>暂无可设置的项目</p>
+    <button>退出登录</button>
   </div>
 </div>
   
