@@ -1,11 +1,17 @@
 <template>
-    <header>
-      <div class="container">
-        <h1>ZIT-CoCo-Community</h1>
-      </div>
-    </header>
-    <br></br>
-    <div class="container">
+<div id="app">
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
+                <div class="user-info">
+                    <img :src="avatar" alt="用户头像" class="user-avatar">
+                    <div class="user-name">{{ username }}</div>
+                </div>
+            </div>
+        </nav>
+</div>
+<div style="height: 90px;"></div>
+    <div class="container-error-card">
         <div class="error-content">
             <div class="error-icon">
                 <i class="fas fa-exclamation-triangle"></i>
@@ -17,7 +23,8 @@
         </div>
     </div>
 </template>
-<style scoped>
+<style>
+@import url(@/assets/css/Navigation-bar.css);
     :root {
     --primary-color: #3498db;
     --secondary-color: #2980b9;
@@ -27,6 +34,11 @@
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.container-error-card{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 .error-content {
     background-color: var(--card-color);
@@ -64,3 +76,37 @@
     }
 }
 </style>
+
+<script>
+import axios from 'axios';
+import { checkLoginStatus } from '@/script/login';
+
+export default {
+  data() {
+    return {
+      username: "未登录用户",
+      avatar: "/images/user.png"
+    };
+  },
+  methods: {
+    async updateLoginInfo() {
+      try {
+        const logininformation = await checkLoginStatus();
+        if (!logininformation || !logininformation.authenticated) {
+          this.username = '未登录用户';
+          this.avatar = '/images/user.png';
+        } else {
+          this.username = logininformation.user.name || logininformation.user.login;
+          this.avatar = logininformation.user.avatar_url || '/images/user.png';
+        }
+      } catch (err) {
+        console.error("登录检查失败：", err);
+        this.username = '登录信息检查失败';
+      }
+    }
+  },
+  mounted() {
+    this.updateLoginInfo(); // 页面加载时调用
+  }
+};
+</script>

@@ -1,10 +1,14 @@
 <template>
   <div id="app">
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
-        </div>
-    </nav>
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
+                <div class="user-info">
+                    <img :src="avatar" alt="用户头像" class="user-avatar">
+                    <div class="user-name">{{ username }}</div>
+                </div>
+            </div>
+        </nav>
 <div style="height: 90px;"></div>
     <br style="display: none;" id="error_br">
     <!-- From Uiverse.io by kennyotsu --> 
@@ -110,24 +114,21 @@
 
 <script>
 import axios from 'axios';
+import { checkLoginStatus } from '@/script/login';
 
 export default {
   name: 'Home',
   data() {
     return {
+      avatar:"/images/user.png",
+      username:"未登录用户",
       loading: true,
       searchTerm: '',
       files: [],
       filteredFiles: [],
       // 文件类型对应的图标
       fileIcons: {
-        pdf: "fa-file-pdf",
-        exe: "fa-file-code",
-        zip: "fa-file-archive",
-        word: "fa-file-word",
-        video: "fa-file-video",
-        code: "fa-file-code",
-        default: "fa-file"
+        code: "fa-file-code"
       }
     }
   },
@@ -196,6 +197,21 @@ export default {
         this.applyDarkMode(e.matches);
       });
     }
+
+    checkLoginStatus().then((logininformation) => {
+    if (!logininformation || !logininformation.authenticated) {
+      this.username = '未登录用户';
+      this.avatar = '/images/user.png';
+    } else {
+      this.username = logininformation.user.name || logininformation.user.login;
+      this.avatar = logininformation.user.avatar_url || '/images/user.png';
+    }
+  }).catch((err) => {
+    console.error("登录检查失败：", err);
+    this.username = '登录信息检查失败';
+  });
+
+
   }
 }
 </script>
@@ -219,7 +235,9 @@ useHead({
 })
 </script>
 
-<style scoped>
+
+<style>
+@import url(@/assets/css/Navigation-bar.css);
 /*协议/**/ 
     .button-book {
     font-size: 17px;
@@ -240,127 +258,4 @@ useHead({
     transform: translate(0em, 0.2em);
 }
 
-
-
-/* 导航栏样式 */
-.navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background-color: #fff;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    padding: 0 20px;
-}
-
-.nav-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 70px;
-}
-
-.logo {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #cc00ff;
-    text-decoration: none;
-}
-
-.logo span {
-    color: #000000;
-}
-
-.nav-menu {
-    display: flex;
-    list-style: none;
-}
-
-.nav-item {
-    margin-left: 30px;
-}
-
-.nav-link {
-    text-decoration: none;
-    color: #2c3e50;
-    font-weight: 500;
-    font-size: 1rem;
-    transition: color 0.3s ease;
-    position: relative;
-    padding: 5px 0;
-}
-
-.nav-link:hover {
-    color: #3498db;
-}
-
-.nav-link::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background-color: #3498db;
-    transition: width 0.3s ease;
-}
-
-.nav-link:hover::after {
-    width: 100%;
-}
-
-.hamburger {
-    display: none;
-    cursor: pointer;
-}
-
-.bar {
-    display: block;
-    width: 25px;
-    height: 3px;
-    margin: 5px auto;
-    background-color: #2c3e50;
-    transition: all 0.3s ease;
-}
-@media screen and (max-width: 768px) {
-  .hamburger {
-      display: block;
-  }
-  
-  .hamburger.active .bar:nth-child(2) {
-      opacity: 0;
-  }
-  
-  .hamburger.active .bar:nth-child(1) {
-      transform: translateY(8px) rotate(45deg);
-  }
-  
-  .hamburger.active .bar:nth-child(3) {
-      transform: translateY(-8px) rotate(-45deg);
-  }
-  
-  .nav-menu {
-      position: fixed;
-      left: -100%;
-      top: 70px;
-      flex-direction: column;
-      background-color: white;
-      width: 100%;
-      text-align: center;
-      transition: 0.3s;
-      box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
-      padding: 20px 0;
-  }
-  
-  .nav-menu.active {
-      left: 0;
-  }
-  
-  .nav-item {
-      margin: 15px 0;
-  }
-}
 </style>
