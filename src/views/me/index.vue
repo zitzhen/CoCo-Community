@@ -63,10 +63,27 @@
     <!--设置-->
   <div :class="['tab-content-me', { 'active-me': activeTab === 'settings' }]" id="settings">
     <h2 class="section-title-me">设置</h2>
-    <button>退出登录</button>
+    <button @click="logout">退出登录</button>
   </div>
 </div>
   
+<div class="modal-overlay" :class="{ active: isModalOpen }" @click="closeModal">
+            <div class="modal" :class="currentAnimation" @click.stop>
+                <div class="modal-header">
+                    <h2 class="modal-title">退出登录？</h2>
+                    <button class="close-btn" @click="closeModal">×</button>
+                </div>
+                <div class="modal-body">
+                    <p>您确定要退出登录吗？</p>
+                    <p>我们将让CoCo-Community在本网站保存的Cookie立即过期</p>
+                    <p>如果您要撤销对CoCo-Community的令牌，请自行到Github撤销</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-btn modal-btn-cancel" @click="closeModal">取消</button>
+                    <button class="modal-btn modal-btn-confirm" @click="closeModal">确定</button>
+                </div>
+            </div>
+        </div>
 
     <footer>
       <div class="container-me">
@@ -79,6 +96,7 @@
 @import url(@/assets/css/Navigation-bar.css);
 @import url(@/assets/style/me/style.css);
 @import url(@/assets/style/me/style2.css);
+@import url(@/assets/css/popup.css);
 </style>
 
 <script>
@@ -100,7 +118,10 @@ export default {
   methods: {
     switchTab(tabName) {
       this.activeTab = tabName;
-    }
+    },
+    logout(){
+      console.log("丸子，用户要退出登录");
+    },
   },
   mounted() {
     checkLoginStatus()
@@ -123,4 +144,45 @@ export default {
       });
   }
 };
+</script>
+
+<script setup>
+createApp({
+    setup() {
+        const isModalOpen = ref(false);
+        const currentAnimation = ref('fade');
+        
+        const openModal = (animationType) => {
+            currentAnimation.value = animationType;
+            isModalOpen.value = true;
+            
+            // 阻止背景滚动
+            document.body.style.overflow = 'hidden';
+        };
+        
+        const closeModal = () => {
+            isModalOpen.value = false;
+            
+            // 恢复背景滚动
+            document.body.style.overflow = '';
+        };
+        
+        // 按ESC键关闭弹窗
+        const handleKeydown = (event) => {
+            if (event.key === 'Escape' && isModalOpen.value) {
+                closeModal();
+            }
+        };
+        
+        // 添加键盘事件监听
+        document.addEventListener('keydown', handleKeydown);
+        
+        return {
+            isModalOpen,
+            currentAnimation,
+            openModal,
+            closeModal
+        };
+    }
+    }).mount('#app');
 </script>
