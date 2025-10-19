@@ -1,9 +1,16 @@
 <template>
-    <header>
-        <div>
-            <h1>ZIT-CoCo-Community</h1>
-        </div>
-    </header>
+<div id="app">
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
+                <div class="user-info">
+                    <img :src="avatar_ber" alt="用户头像" class="user-avatar">
+                    <div class="user-name">{{ username }}</div>
+                </div>
+            </div>
+    </nav>
+</div>
+<div style="height: 90px;"></div>
     <div class="container-user" id="avatar">
     <!-- 用户信息头部 -->
     <div class="profile-header-user">
@@ -67,6 +74,8 @@
 </template>
 
 <style>
+@import url(@/assets/css/Navigation-bar.css);
+@import url(@/assets/style/user/style.css);
 .container-user {
     max-width: 900px;
     margin: 0 auto;
