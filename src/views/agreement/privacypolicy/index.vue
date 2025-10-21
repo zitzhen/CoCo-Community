@@ -1,12 +1,17 @@
 <template>
   <div>
-    <header>
-      <div class="container">
-        <h1>ZIT-CoCo-Community隐私政策</h1>
-        <p>请仔细阅读此隐私政策</p>
-      </div>
-    </header>
-
+  <div id="app">
+          <nav class="navbar">
+              <div class="nav-container">
+                  <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
+                  <div class="user-info">
+                      <img :src="avatar" alt="用户头像" class="user-avatar">
+                      <div class="user-name">{{ username }}</div>
+                  </div>
+              </div>
+      </nav>
+  </div>
+  <div style="height: 90px;"></div>
     <br />
     <div class="card-agreement" id="content">
       <div class="progress-container" v-if="loading">
@@ -23,13 +28,16 @@
 <script>
 import axios from 'axios'
 import { marked } from 'marked'
+import { checkLoginStatus } from '@/script/login';
 
 export default {
   name: 'PrivacyPolicy',
   data() {
     return {
       loading: true,
-      content: ''
+      content: '',
+      avatar:"/images/user.png",
+      username:"未登录用户",
     }
   },
   async mounted() {
@@ -41,6 +49,18 @@ export default {
       console.error('请求出错:', error)
       this.loading = false
     }
+    checkLoginStatus().then((logininformation) => {
+    if (!logininformation || !logininformation.authenticated) {
+      this.username = '未登录用户';
+      this.avatar = '/images/user.png';
+    } else {
+      this.username = logininformation.user.name || logininformation.user.login;
+      this.avatar = logininformation.user.avatar_url || '/images/user.png';
+    }
+  }).catch((err) => {
+    console.error("登录检查失败：", err);
+    this.username = '登录信息检查失败';
+  });
   }
 }
 </script>
@@ -48,6 +68,7 @@ export default {
 <style scoped>
 @import '../../../assets/style/agreement/style.css';
 @import '../../../assets/style/home/Loading.css';
+@import url(@/assets/css/Navigation-bar.css);
 @media (prefers-color-scheme: dark){
   .content{
     color: black;
