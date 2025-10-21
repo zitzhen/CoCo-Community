@@ -46,6 +46,7 @@ useHead({
 
 <style>
 @import url(@/assets/css/Navigation-bar.css);
+@import '@/assets/style/home/style.css';
 </style>
 
 <script>
