@@ -11,6 +11,7 @@
               </div>
       </nav>
   </div>
+  <div style="height: 90px;"></div>
     <br />
     <div class="card-agreement" id="content">
       <div class="progress-container" v-if="loading">
