@@ -1,12 +1,16 @@
 <template>
   <div>
-    <header>
-      <div class="container">
-        <h1>ZIT-CoCo-Community用户协议</h1>
-        <p>请仔细阅读此用户协议</p>
-      </div>
-    </header>
-
+  <div id="app">
+            <nav class="navbar">
+                <div class="nav-container">
+                    <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
+                    <div class="user-info">
+                        <img :src="avatar" alt="用户头像" class="user-avatar">
+                        <div class="user-name">{{ username }}</div>
+                    </div>
+                </div>
+        </nav>
+    </div>
     <br />
     <div class="card-agreement" id="content">
       <div class="progress-container" v-if="loading">
@@ -64,4 +68,32 @@ useHead({
     {content: '这是适用于ZIT-CoCo-Community的用户协议及条款。' }
   ]
 })
+</script>
+
+<script>
+import { checkLoginStatus } from '@/script/login';
+
+export default {
+  name: 'useragreement',
+  data() {
+    return {
+      avatar:"/images/user.png",
+      username:"未登录用户",
+    }
+  },
+  mounted() {
+    checkLoginStatus().then((logininformation) => {
+    if (!logininformation || !logininformation.authenticated) {
+      this.username = '未登录用户';
+      this.avatar = '/images/user.png';
+    } else {
+      this.username = logininformation.user.name || logininformation.user.login;
+      this.avatar = logininformation.user.avatar_url || '/images/user.png';
+    }
+  }).catch((err) => {
+    console.error("登录检查失败：", err);
+    this.username = '登录信息检查失败';
+  });
+  }
+}
 </script>
