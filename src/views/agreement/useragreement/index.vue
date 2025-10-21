@@ -11,7 +11,7 @@
                 </div>
         </nav>
     </div>
-    <br />
+<div style="height: 90px;"></div>
     <div class="card-agreement" id="content">
       <div class="progress-container" v-if="loading">
         <div class="progress-bar"></div>
@@ -27,13 +27,16 @@
 <script>
 import axios from 'axios'
 import { marked } from 'marked'
+import { checkLoginStatus } from '@/script/login';
 
 export default {
   name: 'UserAgreement',
   data() {
     return {
       loading: true,
-      content: ''
+      content: '',
+      avatar:"/images/user.png",
+      username:"未登录用户"
     }
   },
   async mounted() {
@@ -45,6 +48,18 @@ export default {
       console.error('请求出错:', error)
       this.loading = false
     }
+    checkLoginStatus().then((logininformation) => {
+    if (!logininformation || !logininformation.authenticated) {
+      this.username = '未登录用户';
+      this.avatar = '/images/user.png';
+    } else {
+      this.username = logininformation.user.name || logininformation.user.login;
+      this.avatar = logininformation.user.avatar_url || '/images/user.png';
+    }
+  }).catch((err) => {
+    console.error("登录检查失败：", err);
+    this.username = '登录信息检查失败';
+  });
   }
 }
 </script>
@@ -52,6 +67,7 @@ export default {
 <style scoped>
 @import '../../../assets/style/agreement/style.css';
 @import '../../../assets/style/home/Loading.css';
+@import url(@/assets/css/Navigation-bar.css);
 @media (prefers-color-scheme: dark){
   .content{
     color: black;
@@ -68,32 +84,4 @@ useHead({
     {content: '这是适用于ZIT-CoCo-Community的用户协议及条款。' }
   ]
 })
-</script>
-
-<script>
-import { checkLoginStatus } from '@/script/login';
-
-export default {
-  name: 'useragreement',
-  data() {
-    return {
-      avatar:"/images/user.png",
-      username:"未登录用户",
-    }
-  },
-  mounted() {
-    checkLoginStatus().then((logininformation) => {
-    if (!logininformation || !logininformation.authenticated) {
-      this.username = '未登录用户';
-      this.avatar = '/images/user.png';
-    } else {
-      this.username = logininformation.user.name || logininformation.user.login;
-      this.avatar = logininformation.user.avatar_url || '/images/user.png';
-    }
-  }).catch((err) => {
-    console.error("登录检查失败：", err);
-    this.username = '登录信息检查失败';
-  });
-  }
-}
 </script>
