@@ -10,6 +10,7 @@
             </div>
         </nav>
 <div style="height: 90px;"></div>
+<Center>
 <div class="banner-container">
   <div class="banner">
       <div class="binary-background">{{ binaryText }}</div>
@@ -50,6 +51,7 @@
       </div>
   </div>
 </div>
+</Center>
     <br style="display: none;" id="error_br">
     <!-- From Uiverse.io by kennyotsu --> 
     <div class="notifications-container" id="github_error" style="display: none;">
