@@ -20,3 +20,11 @@
   height: 25vh;
   font-family:'YouSheBiaoTiHei';
 }
+
+.a1024text{
+    font-size: 20px;
+    display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center;
+  font-family:'YouSheBiaoTiHei';
+}
