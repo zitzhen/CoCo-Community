@@ -9,49 +9,10 @@
                 </div>
             </div>
         </nav>
-<div style="height: 90px;"></div>
-<Center>
-<div class="banner-container">
-  <div class="banner">
-      <div class="binary-background">{{ binaryText }}</div>
-      <div class="content">
-          <h1 class="main-title">1024 程序员节</h1>
-          <p class="subtitle">{{ typedText }}</p>
-          <div class="code-elements">
-              <div 
-                  v-for="(code, index) in codeElements" 
-                  :key="index"
-                  class="code-element"
-                  @click="handleCodeClick(code)"
-              >
-                  {{ code }}
-              </div>
-          </div>
-      </div>
-      <div class="stats">
-          <div class="stat-item">
-              <span>时间:</span>
-              <span class="stat-value">{{ formattedTime }}</span>
-          </div>
-          <div class="stat-item">
-              <span>代码行数:</span>
-              <span class="stat-value">{{ linesOfCode }}</span>
-          </div>
-          <div class="stat-item">
-              <span>BUG修复:</span>
-              <span class="stat-value">{{ bugsFixed }}</span>
-          </div>
-      </div>
-      <div class="cursor">_</div>
-      <div class="keyboard">
-          <div class="key ctrl">Ctrl</div>
-          <div class="key">C</div>
-          <div class="key">V</div>
-          <div class="key">S</div>
-      </div>
-  </div>
+<div style="height: 65px;"></div>
+<div class="a1024card">
+  <h2 class="a1024title">🎉今天是我们的节日——1024🎉</h2>
 </div>
-</Center>
     <br style="display: none;" id="error_br">
     <!-- From Uiverse.io by kennyotsu --> 
     <div class="notifications-container" id="github_error" style="display: none;">
