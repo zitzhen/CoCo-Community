@@ -11,6 +11,7 @@
         </nav>
 <div style="height: 65px;"></div>
 <div class="a1024card">
+  <div class="Positioning"></div>
   <h2 class="a1024title">🎉今天是我们的节日——1024🎉</h2>
   <p class="a1024text">快来同未满一起庆祝我们的程序员节</p>
 </div>
