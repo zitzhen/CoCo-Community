@@ -11,6 +11,7 @@
         </nav>
     </div>
 
+    <div style="height: 65px;"></div>
 <div class="a1024card" v-show="a1024Banner">
   <div class="Positioning"></div>
   <h2 class="a1024title">🎉今天是我们的节日——1024🎉</h2>
@@ -20,25 +21,27 @@
 <div class="a1024card" v-show="Next1024">
   <div class="Positioning"></div>
   <h2 class="a1024title">距离下一次1024还有</h2>
-  <div class="countdown-container">
-    <div class="countdown-item">
-      <span class="countdown-number">{{ days }}</span>
-      <span class="countdown-label">天</span>
-    </div>
-    <div class="countdown-separator">:</div>
-    <div class="countdown-item">
-      <span class="countdown-number">{{ hours }}</span>
-      <span class="countdown-label">时</span>
-    </div>
-    <div class="countdown-separator">:</div>
-    <div class="countdown-item">
-      <span class="countdown-number">{{ minutes }}</span>
-      <span class="countdown-label">分</span>
-    </div>
-    <div class="countdown-separator">:</div>
-    <div class="countdown-item">
-      <span class="countdown-number">{{ seconds }}</span>
-      <span class="countdown-label">秒</span>
+  <div class="countdown-wrapper">
+    <div class="countdown-container">
+      <div class="countdown-item">
+        <span class="countdown-number">{{ days }}</span>
+        <span class="countdown-label">天</span>
+      </div>
+      <div class="countdown-separator">:</div>
+      <div class="countdown-item">
+        <span class="countdown-number">{{ hours }}</span>
+        <span class="countdown-label">时</span>
+      </div>
+      <div class="countdown-separator">:</div>
+      <div class="countdown-item">
+        <span class="countdown-number">{{ minutes }}</span>
+        <span class="countdown-label">分</span>
+      </div>
+      <div class="countdown-separator">:</div>
+      <div class="countdown-item">
+        <span class="countdown-number">{{ seconds }}</span>
+        <span class="countdown-label">秒</span>
+      </div>
     </div>
   </div>
   <p class="a1024text">快来同我们一起庆祝我们的程序员节</p>
