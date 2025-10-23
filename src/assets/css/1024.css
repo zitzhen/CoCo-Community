@@ -102,3 +102,71 @@
   justify-content: center;
   cursor: pointer;
 }
+
+.card-1024 {
+  width: 95%;
+  max-width: 1200px;
+  margin: 20px auto;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+  text-align: left;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+.card-1024 h1,
+.card-1024 h2,
+.card-1024 h3 {
+  text-align: center;
+}
+
+.card-1024 h1 {
+  font-size: 2.2rem;
+  margin: 0;
+}
+
+.card-1024 h2 {
+  font-size: 1.8rem;
+  margin-top: 1.5rem;
+}
+
+.card-1024 h3 {
+  font-size: 1.4rem;
+  margin-top: 1.2rem;
+}
+
+.card-1024 p {
+  line-height: 1.6;
+  margin: 0.8rem 0;
+}
+
+.card-1024 ul,
+.card-1024 ol {
+  margin: 0.8rem 0;
+  padding-left: 1.5rem;
+}
+
+.card-1024 li {
+  margin-bottom: 0.5rem;
+}
+
+.card-1024 hr {
+  margin: 1.5rem 0;
+  border: 0;
+  border-top: 1px solid #eee;
+}
+
+.card-1024 blockquote {
+  border-left: 4px solid #3498db;
+  padding: 0.5rem 1rem;
+  margin: 1rem 0;
+  background-color: #f8f9fa;
+}
+
+.card-1024 pre {
+  background: #eee;
+  padding: 10px;
+  overflow-x: auto;
+  border-radius: 4px;
+}
