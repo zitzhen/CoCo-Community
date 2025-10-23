@@ -41,3 +41,42 @@
   justify-content: center;
   cursor: pointer;
 }
+
+.countdown-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  font-family: 'YouSheBiaoTiHei';
+}
+
+.countdown-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 10px;
+}
+
+.countdown-number {
+  font-size: 36px;
+  font-weight: bold;
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  padding: 10px 15px;
+  border-radius: 10px;
+  color: white;
+  min-width: 60px;
+  text-align: center;
+}
+
+.countdown-label {
+  font-size: 16px;
+  margin-top: 5px;
+  color: #333;
+}
+
+.countdown-separator {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0 5px;
+  color: #333;
+}

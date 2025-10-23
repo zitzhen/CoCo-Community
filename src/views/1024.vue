@@ -20,6 +20,27 @@
 <div class="a1024card" v-show="Next1024">
   <div class="Positioning"></div>
   <h2 class="a1024title">距离下一次1024还有</h2>
+  <div class="countdown-container">
+    <div class="countdown-item">
+      <span class="countdown-number">{{ days }}</span>
+      <span class="countdown-label">天</span>
+    </div>
+    <div class="countdown-separator">:</div>
+    <div class="countdown-item">
+      <span class="countdown-number">{{ hours }}</span>
+      <span class="countdown-label">时</span>
+    </div>
+    <div class="countdown-separator">:</div>
+    <div class="countdown-item">
+      <span class="countdown-number">{{ minutes }}</span>
+      <span class="countdown-label">分</span>
+    </div>
+    <div class="countdown-separator">:</div>
+    <div class="countdown-item">
+      <span class="countdown-number">{{ seconds }}</span>
+      <span class="countdown-label">秒</span>
+    </div>
+  </div>
   <p class="a1024text">快来同我们一起庆祝我们的程序员节</p>
 </div>
 </template>
@@ -38,6 +59,18 @@ function isOctober24th() {
     return today.getMonth() === 9 && today.getDate() === 24;
 }
 
+function getNextOctober24th() {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const nextOctober24th = new Date(currentYear, 9, 24); // 10月是索引9
+    
+    // 如果今年的10月24日已经过了，就计算明年的
+    if (now > nextOctober24th) {
+        return new Date(currentYear + 1, 9, 24);
+    }
+    return nextOctober24th;
+}
+
 export default {
   name: '404',
   data() {
@@ -45,6 +78,12 @@ export default {
       avatar:"/images/user.png",
       username:"未登录用户",
       a1024Banner:false,
+      Next1024:false,
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+      countdownInterval: null
     }
   },
   mounted() {
@@ -62,8 +101,33 @@ export default {
   });
   if (isOctober24th()){
     this.a1024Banner = true;
+    this.Next1024 = false;
     }else{
     this.a1024Banner = false;
+    this.Next1024 = true;
+    this.startCountdown();
+    }
+  },
+  methods: {
+    startCountdown() {
+      this.updateCountdown();
+      this.countdownInterval = setInterval(this.updateCountdown, 1000);
+    },
+    updateCountdown() {
+      const now = new Date();
+      const nextOctober24th = getNextOctober24th();
+      const diff = nextOctober24th - now;
+      
+      // 计算天、小时、分钟、秒
+      this.days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      this.hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      this.minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      this.seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    }
+  },
+  beforeDestroy() {
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
     }
   }
 }
