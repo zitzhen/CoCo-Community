@@ -9,7 +9,12 @@
                 </div>
             </div>
         </nav>
-<div style="height: 90px;"></div>
+<div style="height: 65px;"></div>
+<div class="a1024card" v-show="a1024Banner">
+  <div class="Positioning"></div>
+  <h2 class="a1024title">🎉今天是我们的节日——1024🎉</h2>
+  <p class="a1024text">快来同我们一起庆祝我们的程序员节</p>
+</div>
     <br style="display: none;" id="error_br">
     <!-- From Uiverse.io by kennyotsu --> 
     <div class="notifications-container" id="github_error" style="display: none;">
@@ -116,10 +121,16 @@
 import axios from 'axios';
 import { checkLoginStatus } from '@/script/login';
 
+function isOctober24th() {
+    const today = new Date();
+    return today.getMonth() === 9 && today.getDate() === 24;
+}
+
 export default {
   name: 'Home',
   data() {
     return {
+      a1024Banner: false,
       avatar:"/images/user.png",
       username:"未登录用户",
       loading: true,
@@ -206,11 +217,16 @@ export default {
       this.username = logininformation.user.name || logininformation.user.login;
       this.avatar = logininformation.user.avatar_url || '/images/user.png';
     }
-  }).catch((err) => {
+  }).catch((err) => {isVisible
     console.error("登录检查失败：", err);
     this.username = '登录信息检查失败';
   });
 
+if (isOctober24th()){
+  this.a1024Banner = true;
+}else{
+  this.a1024Banner = false;
+}
 
   }
 }
@@ -222,6 +238,7 @@ export default {
 @import '../../src/assets/style/home/Loading.css';
 @import '../../src/assets/style/control/error.css';
 @import '../../src/assets/style/home/pay_button.css';
+@import '@/assets/css/1024.css';
 </style>
 
 <script setup>
