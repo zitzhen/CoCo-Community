@@ -118,6 +118,16 @@ export default {
     },
     updateCountdown() {
       const now = new Date();
+      
+      // 检查是否已经进入10月24日
+      if (isOctober24th()) {
+        // 如果是10月24日，停止倒计时并显示节日页面
+        this.stopCountdown();
+        this.a1024Banner = true;
+        this.Next1024 = false;
+        return;
+      }
+      
       const nextOctober24th = getNextOctober24th();
       const diff = nextOctober24th - now;
       
@@ -126,6 +136,12 @@ export default {
       this.hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       this.minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       this.seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    },
+    stopCountdown() {
+      if (this.countdownInterval) {
+        clearInterval(this.countdownInterval);
+        this.countdownInterval = null;
+      }
     }
   },
   beforeDestroy() {
