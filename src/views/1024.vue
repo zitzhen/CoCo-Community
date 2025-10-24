@@ -10,32 +10,27 @@
             </div>
         </nav>
     </div>
-<div style="height: 90px;"></div>
-<div class="container">
-        <div class="error-content">
-            <div class="error-icon">
-                <i class="fas fa-exclamation-triangle"></i>
-            </div>
-            <h2 class="error-title">此页面为节日限定页面</h2>
-            <p class="error-message">
-                抱歉，现在是非访问时段，不能访问此页面。
-            </p>
-        </div>
-    </div>
-    <footer>
-        <div class="container">
-            <p>© 2025 ZIT-CoCo-Community</p>
-        </div>
-    </footer>
+
+<div class="a1024card" v-show="a1024Banner">
+  <div class="Positioning"></div>
+  <h2 class="a1024title">🎉今天是我们的节日——1024🎉</h2>
+  <p class="a1024text">快来同未满一起庆祝我们的程序员节</p>
+</div>
 </template>
 
 <style>
 @import url(@/assets/style/404/style.css);
 @import url(@/assets/css/Navigation-bar.css);
+@import url(@/assets/css/1024.css);
 </style>
 
 <script>
 import { checkLoginStatus } from '@/script/login';
+
+function isOctober24th() {
+    const today = new Date();
+    return today.getMonth() === 9 && today.getDate() === 24;
+}
 
 export default {
   name: '404',
@@ -43,6 +38,7 @@ export default {
     return {
       avatar:"/images/user.png",
       username:"未登录用户",
+      a1024Banner:false,
     }
   },
   mounted() {
@@ -58,6 +54,11 @@ export default {
     console.error("登录检查失败：", err);
     this.username = '登录信息检查失败';
   });
+  if (isOctober24th()){
+    this.a1024Banner = true;
+    }else{
+    this.a1024Banner = false;
+    }
   }
 }
 </script>
