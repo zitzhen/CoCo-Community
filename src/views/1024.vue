@@ -14,7 +14,13 @@
 <div class="a1024card" v-show="a1024Banner">
   <div class="Positioning"></div>
   <h2 class="a1024title">🎉今天是我们的节日——1024🎉</h2>
-  <p class="a1024text">快来同未满一起庆祝我们的程序员节</p>
+  <p class="a1024text">快来同我们一起庆祝我们的程序员节</p>
+</div>
+
+<div class="a1024card" v-show="Next1024">
+  <div class="Positioning"></div>
+  <h2 class="a1024title">距离下一次1024还有</h2>
+  <p class="a1024text">快来同我们一起庆祝我们的程序员节</p>
 </div>
 </template>
 
