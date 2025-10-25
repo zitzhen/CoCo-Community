@@ -44,22 +44,21 @@
     <div :class="['tab-content-me', { 'active-me': activeTab === 'files' }]" id="files">
       <h2 class="section-title-me">你的控件</h2>
       <div class="file-list-me" id="display_controls">
-        <!-- 控件列表 -->
-        <div v-if="controls.length > 0">
-          <div v-for="control in controls" :key="control.id" class="file-card-me">
-            <div class="file-icon-me">📁</div>
-            <div class="file-info-me">
-              <div class="file-name-me">{{ control.name }}</div>
-              <div class="file-meta-me">版本: {{ control.version }}</div>
-            </div>
-            <div class="file-actions-me">
-              <button class="download-btn-me">查看</button>
-            </div>
+        <div class="file-card-me" v-for="(control, index) in controlList" :key="index">
+          <div class="file-icon-me">
+            <i class="far fa-file-code"></i>
+          </div>
+          <div class="file-info-me">
+            <div class="file-name-me">{{ control }}</div>
+          </div>
+          <div class="file-actions-me">
+            <a :href="`https://cc.zitzhen.cn/control/${control}`">
+              <button class="download-btn-me">去详情</button>
+            </a>
           </div>
         </div>
-        <div v-else class="empty-state">
-          <p>暂无控件</p>
-        </div>
+        <p v-if="controlList.length === 0 && !loading">暂无控件</p>
+        <p v-if="loading">请稍后，我们正在处理数据……</p>
       </div>
     </div>
 
@@ -260,11 +259,13 @@ export default {
     const username = ref("未登录用户");
     const Nickname = ref("");
     const bio = ref("");
-    const Control_number = ref(0);
+    const Control_number = ref('');
     const githubUrl = ref("");
     
     // 控件列表
     const controls = ref([]);
+    const controlList = ref([]);
+    const loading = ref(true);
     
     // 标签页状态
     const activeTab = ref("files");
@@ -333,12 +334,40 @@ export default {
           Nickname.value = logininformation.user.name || "";
           bio.value = logininformation.user.bio || "";
           githubUrl.value = logininformation.user.html_url || "";          
+          
+          // 获取用户的控件信息
+          await fetch_user_information(logininformation.user.login);
         }
       } catch (err) {
         console.error("登录检查失败：", err);
         username.value = "登录信息检查失败";
       }
     };
+    
+    // 获取用户控件信息
+    async function fetch_user_information(username) {
+      try {
+        const url = `https://${window.location.host}/information/user/${username}.json`;
+        const res = await fetch(url);
+        if (res.ok) {
+          const user_introduction = await res.json();
+          Control_number.value = user_introduction ? user_introduction.number_of_controls : '0';
+          if (user_introduction?.list_of_controls) {
+            controlList.value = user_introduction.list_of_controls;
+          }
+        } else {
+          console.error('无法获取用户控件信息');
+          Control_number.value = '0';
+          controlList.value = [];
+        }
+      } catch (error) {
+        console.error('获取用户控件信息出错:', error);
+        Control_number.value = '0';
+        controlList.value = [];
+      } finally {
+        loading.value = false;
+      }
+    }
     
     // 添加键盘事件监听
     onMounted(() => {
@@ -364,6 +393,8 @@ export default {
       
       // 控件列表
       controls,
+      controlList,
+      loading,
       
       // 标签页状态
       activeTab,
