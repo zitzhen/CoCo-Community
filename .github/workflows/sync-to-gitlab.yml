@@ -8,19 +8,24 @@ on:
 jobs:
   sync:
     runs-on: ubuntu-latest
+
     steps:
+      # 1️⃣ 拉取完整 GitHub 仓库
       - name: Checkout GitHub repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # <- 关键，完整历史
 
-      - name: Mirror push to GitLab
+      # 2️⃣ 添加 GitLab 远程仓库并推送
+      - name: Push to GitLab
         env:
           GITLAB_URL: gitlab.com
-          GITLAB_USERNAME: zitzhen #  GitLab 用户名
-          GITLAB_REPO: zitzhen/CoCo-Community  # 项目路径
+          GITLAB_USERNAME: zitzhen           # <- 群组名
+          GITLAB_REPO: zitzhen/CoCo-Community  # <- 群组路径/项目名
           GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
-
+          # 添加 GitLab 远程
           git remote add gitlab https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@${GITLAB_URL}/${GITLAB_REPO}.git
+
+          # 推送全部分支和标签
           git push --mirror gitlab
