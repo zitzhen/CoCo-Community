@@ -19,12 +19,17 @@ jobs:
       # 2️⃣ Push to Gitee
       - name: Push to Gitee
         env:
-          GITEE_USERNAME: zitzhen
-          GITEE_REPO: CoCo-Community
-          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+          GITEE_USERNAME: hello-oliver          # Gitee 登录名
+          GITEE_REPO: CoCo-Community       # Gitee 仓库名
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}  # Gitee Personal Access Token
         run: |
-          git remote add gitee https://${GITEE_USERNAME}:${GITEE_TOKEN}@gitee.com/${GITEE_USERNAME}/${GITEE_REPO}.git
-          
+          # 添加 Gitee 远程
+          git remote add gitee https://gitee.com/${GITEE_USERNAME}/${GITEE_REPO}.git
+
+          # 配置 HTTPS token 认证
+          git config credential.helper store
+          echo "https://${GITEE_USERNAME}:${GITEE_TOKEN}@gitee.com" > ~/.git-credentials
+
           # 推送所有分支和标签
           git push gitee --all 
           git push gitee --tags 
