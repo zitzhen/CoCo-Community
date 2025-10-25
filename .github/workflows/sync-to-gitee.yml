@@ -22,8 +22,7 @@ jobs:
           GITEE_REPO: CoCo-Community            # 仓库名
           GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
         run: |
-          git remote add gitee https://${GITEE_USERNAME}:${GITEE_TOKEN}@gitee.com/${GITEE_ORG}/${GITEE_REPO}.git
-
+          git remote add gitee "https://${GITEE_USERNAME}:${GITEE_TOKEN}@gitee.com/${GITEE_ORG}/${GITEE_REPO}.git"
           git config credential.helper store
           echo "https://${GITEE_USERNAME}:${GITEE_TOKEN}@gitee.com" > ~/.git-credentials
 
