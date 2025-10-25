@@ -4,7 +4,7 @@
           <nav class="navbar">
               <div class="nav-container">
                   <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
-                  <div class="user-info">
+                  <div class="user-info" @click="gome">
                       <img :src="avatar" alt="用户头像" class="user-avatar">
                       <div class="user-name">{{ username }}</div>
                   </div>
@@ -40,6 +40,10 @@ export default {
       username:"未登录用户",
     }
   },
+  methods: {
+    gome() {
+      this.$router.push('/me') // 跳转到我的页面
+    }},
   async mounted() {
     try {
       const response = await axios.get('https://cc.zitzhen.cn/agreement/privacypolicy/content.md')
