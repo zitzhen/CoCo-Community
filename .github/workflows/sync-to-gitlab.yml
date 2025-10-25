@@ -3,29 +3,27 @@ name: Sync to GitLab
 on:
   push:
     branches:
-      - main  # 监听 main 分支
+      - main
 
 jobs:
   sync:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ 拉取完整 GitHub 仓库
       - name: Checkout GitHub repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # <- 关键，完整历史
+          fetch-depth: 0
 
-      # 2️⃣ 添加 GitLab 远程仓库并推送
       - name: Push to GitLab
         env:
           GITLAB_URL: gitlab.com
-          GITLAB_USERNAME: zitzhen           # <- 群组名
-          GITLAB_REPO: zitzhen/CoCo-Community  # <- 群组路径/项目名
+          GITLAB_USERNAME: zitzhen
+          GITLAB_REPO: zitzhen/CoCo-Community
           GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
         run: |
-          # 添加 GitLab 远程
           git remote add gitlab https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@${GITLAB_URL}/${GITLAB_REPO}.git
 
-          # 推送全部分支和标签
-          git push --mirror gitlab
+          # 只推送所有本地分支和标签
+          git push gitlab --all
+          git push gitlab --tags
