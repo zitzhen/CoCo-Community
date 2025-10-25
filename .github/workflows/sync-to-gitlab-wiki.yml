@@ -1,32 +1,33 @@
-name: Sync to GitLab (Wiki)
+name: Sync GitHub Wiki to GitLab Wiki
 
 on:
   push:
     branches:
-      - main  # 监听主分支，触发同步
+      - main
 
 jobs:
   sync-wiki:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ 拉取 GitHub 仓库
-      - name: Checkout GitHub repo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      # 1️⃣ Clone GitHub Wiki 仓库
+      - name: Checkout GitHub Wiki
+        run: |
+          git clone https://github.com/zitzhen/CoCo-Community.wiki.git
+          cd wiki
+          git fetch --all
 
-      # 2️⃣ 添加 GitLab Wiki 远程仓库并推送
+      # 2️⃣ Push to GitLab Wiki
       - name: Push to GitLab Wiki
         env:
           GITLAB_URL: gitlab.com
-          GITLAB_USERNAME: zitzhen                  # <- 群组名
-          GITLAB_WIKI_REPO: zitzhen/coco-community.wiki  # <- Wiki 仓库路径
+          GITLAB_USERNAME: zitzhen
+          GITLAB_WIKI_REPO: zitzhen/coco-community.wiki
           GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
         run: |
-          # 添加 GitLab Wiki 远程
+          cd wiki
           git remote add gitlab-wiki https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@${GITLAB_URL}/${GITLAB_WIKI_REPO}.git
 
-          # 推送所有本地分支和标签到 Wiki（强制推送）
-            git push gitlab-wiki --all --force
-            git push gitlab-wiki --tags --force
+          # 推送所有分支和标签，第一次强制覆盖
+          git push gitlab-wiki --all --force
+          git push gitlab-wiki --tags --force
