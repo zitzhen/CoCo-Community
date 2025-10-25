@@ -27,6 +27,6 @@ jobs:
           # 添加 GitLab Wiki 远程
           git remote add gitlab-wiki https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@${GITLAB_URL}/${GITLAB_WIKI_REPO}.git
 
-          # 推送所有本地分支和标签到 Wiki
-          git push gitlab-wiki --all
-          git push gitlab-wiki --tags
+          # 推送所有本地分支和标签到 Wiki（强制推送）
+            git push gitlab-wiki --all --force
+            git push gitlab-wiki --tags --force
