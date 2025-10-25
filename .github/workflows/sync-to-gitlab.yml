@@ -1,0 +1,26 @@
+name: Sync to GitLab
+
+on:
+  push:
+    branches:
+      - main  # 监听 main 分支
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub repo
+        uses: actions/checkout@v4
+
+      - name: Mirror push to GitLab
+        env:
+          GITLAB_URL: gitlab.com
+          GITLAB_USERNAME: zitzhen #  GitLab 用户名
+          GITLAB_REPO: zitzhen/CoCo-Community  # 项目路径
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+
+          git remote add gitlab https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@${GITLAB_URL}/${GITLAB_REPO}.git
+          git push --mirror gitlab
