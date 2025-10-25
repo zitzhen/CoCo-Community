@@ -1,0 +1,30 @@
+name: Sync GitHub Repo to Gitee
+
+on:
+  push:
+    branches:
+      - main  # 监听 main 分支
+
+jobs:
+  sync-gitee:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout GitHub 仓库
+      - name: Checkout GitHub repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 完整克隆，保证历史记录
+
+      # 2️⃣ Push to Gitee
+      - name: Push to Gitee
+        env:
+          GITEE_USERNAME: zitzhen
+          GITEE_REPO: CoCo-Community
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+        run: |
+          git remote add gitee https://${GITEE_USERNAME}:${GITEE_TOKEN}@gitee.com/${GITEE_USERNAME}/${GITEE_REPO}.git
+          
+          # 推送所有分支和标签
+          git push gitee --all 
+          git push gitee --tags 
