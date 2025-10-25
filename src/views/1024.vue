@@ -3,7 +3,7 @@
         <nav class="navbar">
             <div class="nav-container">
                 <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
-                <div class="user-info">
+                <div class="user-info" @click="gome">
                     <img :src="avatar" alt="用户头像" class="user-avatar">
                     <div class="user-name">{{ username }}</div>
                 </div>
@@ -176,6 +176,9 @@ export default {
     }
   },
   methods: {
+    gome() {
+      this.$router.push('/me') // 跳转到我的页面
+    },
     startCountdown() {
       this.updateCountdown();
       this.countdownInterval = setInterval(this.updateCountdown, 1000);
@@ -214,4 +217,18 @@ export default {
     }
   }
 }
+</script>
+
+<script setup>
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: '欢庆1024',
+  meta: [
+    {content: `1024是程序员节，让我们一起欢快程序员节。1024 是计算机世界的基石，也是程序员们共同的信仰符号。
+它连接了数学、科技与人文精神，提醒我们：
+无论技术如何发展，背后的逻辑与热爱从未改变。在这个数字的背后，藏着的是整个互联网时代的灵魂。
+祝所有热爱代码的人，1024 快乐！` }
+  ]
+})
 </script>
