@@ -65,3 +65,14 @@ export default {
   }
 }
 </script>
+
+<script setup>
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: '404页面未找到|CoCo-Community',
+  meta: [
+    {content: '抱歉，您访问的页面不存在或已被移除。可能是URL地址输入错误，或者页面已被删除。' }
+  ]
+})
+</script>
