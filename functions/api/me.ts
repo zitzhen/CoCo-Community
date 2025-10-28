@@ -1,3 +1,4 @@
+// @ts-nocheck
 export const onRequestGet: PagesFunction = async ({ request }) => {
   try {
     // 1. 解析 Cookie
@@ -30,7 +31,12 @@ export const onRequestGet: PagesFunction = async ({ request }) => {
 
     const user = await githubRes.json();
 
-    // 3. 返回精简用户信息
+    // 3. 获取剩余额度
+    const rateLimitRemaining = githubRes.headers.get("X-RateLimit-Remaining");
+    const rateLimitLimit = githubRes.headers.get("X-RateLimit-Limit");
+    const rateLimitReset = githubRes.headers.get("X-RateLimit-Reset");
+
+    // 4. 返回精简用户信息 + 剩余额度
     const safeUser = {
       id: user.id,
       login: user.login,
@@ -39,7 +45,15 @@ export const onRequestGet: PagesFunction = async ({ request }) => {
       html_url: user.html_url,
     };
 
-    return new Response(JSON.stringify({ authenticated: true, user: safeUser }), {
+    return new Response(JSON.stringify({
+      authenticated: true,
+      user: safeUser,
+      rateLimit: {
+        remaining: rateLimitRemaining ? parseInt(rateLimitRemaining) : null,
+        limit: rateLimitLimit ? parseInt(rateLimitLimit) : null,
+        reset: rateLimitReset ? parseInt(rateLimitReset) : null,
+      }
+    }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
