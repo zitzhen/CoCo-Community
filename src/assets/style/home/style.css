@@ -7,6 +7,15 @@
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
+        :root.dark-mode {
+            --primary-color: #5dade2;
+            --secondary-color: #2e86c1;
+            --background-color: #1a1a1a;
+            --card-color: #2d2d2d;
+            --text-color: #f0f0f0;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;

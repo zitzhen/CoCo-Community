@@ -1,13 +1,20 @@
 <template>
   <div id="app">
-    <header>
-      <div class="container">
-        <h1>ZIT-CoCo-Community CoCo编辑器的小圳社区 自定义控件下载中心</h1>
-        <p>本服务由小圳社区提供</p>
-        <p>ZIT-CoCo-Community</p>
-      </div>
-    </header>
-
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
+                <div class="user-info" @click="gome">
+                    <img :src="avatar" alt="用户头像" class="user-avatar">
+                    <div class="user-name">{{ username }}</div>
+                </div>
+            </div>
+        </nav>
+<div style="height: 65px;"></div>
+<div class="a1024card" v-show="a1024Banner">
+  <div class="Positioning"></div>
+  <h2 class="a1024title">🎉今天是我们的节日——1024🎉</h2>
+  <p class="a1024text">快来同我们一起庆祝我们的程序员节</p>
+</div>
     <br style="display: none;" id="error_br">
     <!-- From Uiverse.io by kennyotsu --> 
     <div class="notifications-container" id="github_error" style="display: none;">
@@ -90,13 +97,6 @@
               </svg>
             </button>
           </a>
-          <a href="https://jihulab.com/zitzhen/CoCo-Community">
-            <button class="btn bins">
-              <svg width="40" height="40" fill="#FC6D26" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="gitlab">
-                <image href="/src/assets/images/icon/gitlab.svg" width="24" height="24" x="0" y="0"/>
-              </svg>
-            </button>
-          </a>
         </div>
         <br>
         <div style="margin: 0 auto;">
@@ -110,8 +110,8 @@
           </a>
         </div>
         <p>请优先使用GitHub查看ZIT-CoCo-Community的开源项目</p>
-        <router-link to="/agreement/useragreement">用户协议</router-link>
-        <router-link to="/agreement/privacypolicy">隐私协议</router-link>
+        <router-link to="/agreement/useragreement"><button class="button-book">用户协议</button></router-link>
+        <router-link to="/agreement/privacypolicy"><button class="button-book">隐私协议</button></router-link>
       </div>
     </footer>
   </div>
@@ -119,24 +119,27 @@
 
 <script>
 import axios from 'axios';
+import { checkLoginStatus } from '@/script/login';
+
+function isOctober24th() {
+    const today = new Date();
+    return today.getMonth() === 9 && today.getDate() === 24;
+}
 
 export default {
   name: 'Home',
   data() {
     return {
+      a1024Banner: false,
+      avatar:"/images/user.png",
+      username:"未登录用户",
       loading: true,
       searchTerm: '',
       files: [],
       filteredFiles: [],
       // 文件类型对应的图标
       fileIcons: {
-        pdf: "fa-file-pdf",
-        exe: "fa-file-code",
-        zip: "fa-file-archive",
-        word: "fa-file-word",
-        video: "fa-file-video",
-        code: "fa-file-code",
-        default: "fa-file"
+        code: "fa-file-code"
       }
     }
   },
@@ -150,17 +153,14 @@ export default {
         file.name.toLowerCase().includes(term)
       );
     },
+    gome() {
+      this.$router.push('/me') // 跳转到我的页面
+    },
     async getSubDirs() {
-      const owner = 'zitzhen';
-      const repo = 'CoCo-Community';
-      const path = 'control';
-      const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
-      
       try {
-        const { data } = await axios.get(url);
-        let dirs = data.filter(item => item.type === "dir").map(item => item.name);
-        // 过滤掉 CS 和 JS 文件夹
-        dirs = dirs.filter(name => name !== 'css' && name !== 'js');
+        // 使用本地 list.json 文件获取控件列表
+        const { data } = await axios.get('/list.json');
+        const dirs = data.list || [];
         console.log("Directories:", dirs);
         
         const fileObjs = dirs.map(name => ({
@@ -180,6 +180,17 @@ export default {
         document.getElementById("no_fetch").style.display = 'block';
         this.loading = false;
       }
+    },
+    applyDarkMode(isDark) {
+      if (isDark) {
+        document.documentElement.classList.add('dark-mode');
+      } else {
+        document.documentElement.classList.remove('dark-mode');
+      }
+    },
+    checkSystemDarkMode() {
+      const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      this.applyDarkMode(isDark);
     }
   },
   mounted() {
@@ -187,6 +198,39 @@ export default {
       document.getElementById("github_error").style.display = 'block';
     }
     this.getSubDirs();
+    
+    // 检查系统深色模式偏好
+    this.checkSystemDarkMode();
+    
+    // 监听系统主题变化
+    if (window.matchMedia) {
+      const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
+      this.applyDarkMode(mediaQueryList.matches);
+      
+      mediaQueryList.addEventListener('change', (e) => {
+        this.applyDarkMode(e.matches);
+      });
+    }
+
+    checkLoginStatus().then((logininformation) => {
+    if (!logininformation || !logininformation.authenticated) {
+      this.username = '未登录用户';
+      this.avatar = '/images/user.png';
+    } else {
+      this.username = logininformation.user.name || logininformation.user.login;
+      this.avatar = logininformation.user.avatar_url || '/images/user.png';
+    }
+  }).catch((err) => {isVisible
+    console.error("登录检查失败：", err);
+    this.username = '登录信息检查失败';
+  });
+
+if (isOctober24th()){
+  this.a1024Banner = true;
+}else{
+  this.a1024Banner = false;
+}
+
   }
 }
 </script>
@@ -197,4 +241,41 @@ export default {
 @import '../../src/assets/style/home/Loading.css';
 @import '../../src/assets/style/control/error.css';
 @import '../../src/assets/style/home/pay_button.css';
+@import '@/assets/css/1024.css';
+</style>
+
+<script setup>
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: 'ZIT-CoCo-Community|CoCo编辑器的小圳社区|自定义控件下载中心',
+  meta: [
+    {content: 'CoCo-Community，全称为ZIT-CoCo-Community。这是由于ZIT小圳创科工作室的创造的编程猫CoCo编辑器社区，目前提供自定义控件下载服务，后续会支持论坛的交流。' }
+  ]
+})
+</script>
+
+
+<style>
+@import url(@/assets/css/Navigation-bar.css);
+/*协议/**/ 
+    .button-book {
+    font-size: 17px;
+    padding: 0.5em 2em;
+    border: transparent;
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+    background: dodgerblue;
+    color: white;
+    border-radius: 4px;
+}
+
+.button-book:hover {
+    background: rgb(2,0,36);
+    background: linear-gradient(90deg, rgba(30,144,255,1) 0%, rgba(0,212,255,1) 100%);
+}
+
+.button-book:active {
+    transform: translate(0em, 0.2em);
+}
+
 </style>

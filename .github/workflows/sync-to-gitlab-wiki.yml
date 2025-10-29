@@ -1,0 +1,33 @@
+name: Sync GitHub Wiki to GitLab Wiki
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync-wiki:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1 Clone GitHub Wiki 仓库到本地 wiki 目录
+      - name: Checkout GitHub Wiki
+        run: |
+          git clone https://github.com/zitzhen/CoCo-Community.wiki.git wiki
+          cd wiki
+          git fetch --all
+
+      # 2 Push 到 GitLab Wiki 仓库
+      - name: Push to GitLab Wiki
+        env:
+          GITLAB_URL: gitlab.com
+          GITLAB_USERNAME: zitzhen                  # 群组名
+          GITLAB_WIKI_REPO: zitzhen/coco-community.wiki
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+        run: |
+          cd wiki
+          git remote add gitlab-wiki https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@${GITLAB_URL}/${GITLAB_WIKI_REPO}.git
+
+          # 推送所有分支和标签，第一次强制覆盖
+          git push gitlab-wiki --all --force
+          git push gitlab-wiki --tags --force

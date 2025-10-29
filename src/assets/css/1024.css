@@ -1,0 +1,172 @@
+@font-face {
+    font-family: 'YouSheBiaoTiHei'; /* 自定义字体名称 */
+    src: url('@/assets/Font/YouSheBiaoTiHei-2.ttf') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap; /* 优化字体加载 */
+}
+
+.a1024card{
+    width: 100%;
+    background-color: #5dade2;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    overflow: hidden;
+    box-sizing: border-box;
+    position: relative;
+    padding: 10px 0;
+}
+
+.a1024title{
+    font-size: 28px;
+    text-align: center;
+    font-family:'YouSheBiaoTiHei';
+    margin: 10px 0;
+    padding: 0 15px;
+    line-height: 1.2;
+    max-width: 100%;
+    word-wrap: break-word;
+}
+
+.a1024text{
+    font-size: 20px;
+    text-align: center;
+    font-family:'YouSheBiaoTiHei';
+    margin: 10px 0;
+    padding: 0 15px;
+    line-height: 1.2;
+    max-width: 100%;
+    word-wrap: break-word;
+}
+
+.countdown-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 10px 0;
+  flex: 0 0 auto; /* 不允许伸缩 */
+}
+
+.countdown-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'YouSheBiaoTiHei';
+  flex-wrap: wrap;
+}
+
+.countdown-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 5px;
+}
+
+.countdown-number {
+  font-size: 24px;
+  font-weight: bold;
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  padding: 6px 12px;
+  border-radius: 8px;
+  color: white;
+  min-width: 40px;
+  text-align: center;
+}
+
+.countdown-label {
+  font-size: 14px;
+  margin-top: 4px;
+  color: #333;
+}
+
+.countdown-separator {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0 4px;
+  color: #333;
+}
+
+.Positioning {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.card-1024 {
+  width: 95%;
+  max-width: 1200px;
+  margin: 20px auto;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+  text-align: left;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+.card-1024 h1,
+.card-1024 h2,
+.card-1024 h3 {
+  text-align: center;
+}
+
+.card-1024 h1 {
+  font-size: 2.2rem;
+  margin: 0;
+}
+
+.card-1024 h2 {
+  font-size: 1.8rem;
+  margin-top: 1.5rem;
+}
+
+.card-1024 h3 {
+  font-size: 1.4rem;
+  margin-top: 1.2rem;
+}
+
+.card-1024 p {
+  line-height: 1.6;
+  margin: 0.8rem 0;
+}
+
+.card-1024 ul,
+.card-1024 ol {
+  margin: 0.8rem 0;
+  padding-left: 1.5rem;
+}
+
+.card-1024 li {
+  margin-bottom: 0.5rem;
+}
+
+.card-1024 hr {
+  margin: 1.5rem 0;
+  border: 0;
+  border-top: 1px solid #eee;
+}
+
+.card-1024 blockquote {
+  border-left: 4px solid #3498db;
+  padding: 0.5rem 1rem;
+  margin: 1rem 0;
+  background-color: #f8f9fa;
+}
+
+.card-1024 pre {
+  background: #eee;
+  padding: 10px;
+  overflow-x: auto;
+  border-radius: 4px;
+}

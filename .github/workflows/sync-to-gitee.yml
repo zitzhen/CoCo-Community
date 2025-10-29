@@ -1,0 +1,50 @@
+name: Sync to Gitee
+
+on:
+  push:
+    branches:
+      - main  # 监听 main 分支推送事件
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout GitHub repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 获取完整历史，便于镜像推送
+
+      - name: Prepare variables
+        run: |
+          echo "🧩 检查环境变量..."
+          echo "GitHub repo: ${{ github.repository }}"
+          echo "Gitee target: https://gitee.com/${GITEE_ORG}/${GITEE_REPO}.git"
+          echo "用户名: ${GITEE_USERNAME}"
+          if [ -z "${GITEE_TOKEN}" ]; then
+            echo "❌ GITEE_TOKEN 未设置"; exit 1;
+          fi
+
+      - name: Mirror push to Gitee
+        run: |
+          set -e
+          echo "🚀 克隆源仓库..."
+          git clone --mirror "https://github.com/${{ github.repository }}" repo
+          cd repo
+
+          echo "🔗 添加 Gitee 远程仓库..."
+          git remote remove gitee 2>/dev/null || true
+          git remote add gitee "https://${GITEE_USERNAME}:${GITEE_TOKEN}@gitee.com/${GITEE_ORG}/${GITEE_REPO}.git"
+
+          echo "✅ 验证远程："
+          git remote -v
+
+          echo "⬆️ 开始推送到 Gitee..."
+          git push gitee --mirror || { echo "❌ 推送失败"; exit 1; }
+
+          echo "🎉 推送完成！"
+        env:
+          GITEE_USERNAME: hello-oliver          # 你的 Gitee 用户名（个人账号）
+          GITEE_ORG: zitzhen                    # Gitee 组织名
+          GITEE_REPO: CoCo-Community            # 仓库名
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }} # Personal Access Token
