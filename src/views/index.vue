@@ -194,7 +194,8 @@ export default {
     }
   },
   mounted() {
-    if (window.location.origin.includes("github.io")) {
+    const host = new URL(window.location.origin).hostname;
+    if (host === 'github.io' || host.endsWith('.github.io')) {
       document.getElementById("github_error").style.display = 'block';
     }
     this.getSubDirs();
