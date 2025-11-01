@@ -163,13 +163,13 @@ export default {
         const dirs = data.list || [];
         console.log("Directories:", dirs);
         
-        const fileObjs = dirs.map(name => ({
-          name: name,
+        const fileObjs = dirs.map(information => ({
+          name: information.name,
           type: "code",
-          size: "未知",
+          size: information.size || "未知",
           date: "未知",
           downloads: "未知",
-          url: `${window.location.origin}/control/${name}`
+          url: `${window.location.origin}/control/${information.name}`
         }));
         
         this.files = fileObjs;
