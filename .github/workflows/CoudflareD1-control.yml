@@ -3,7 +3,7 @@ name: CoudflareD1-control
 on:
   push:
     branches:
-      - main
+      'public/control/***'  # 监听 control 目录下的文件变化
 
 jobs:
   sync:
