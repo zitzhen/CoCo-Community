@@ -10,7 +10,7 @@
   <div id="app">
           <nav class="navbar">
               <div class="nav-container">
-                  <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
+                  <div class="logo" @click="gohome">ZIT<span>-CoCo-Community</span></div>
                   <div class="user-info" @click="gome">
                       <img :src="avatar_ber" alt="用户头像" class="user-avatar">
                       <div class="user-name">{{ username }}</div>
@@ -244,6 +244,9 @@ export default {
     gome() {
       this.$router.push('/me') // 跳转到我的页面
     }},
+    gohome(){
+      this.$router.push('/Home')
+    },
   mounted() {
     checkLoginStatus().then((logininformation) => {
     if (!logininformation || !logininformation.authenticated) {
