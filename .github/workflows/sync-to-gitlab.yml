@@ -1,30 +1,34 @@
-name: Sync to GitLab
+name: Sync GitHub Wiki to Gitee Wiki
 
 on:
-  workflow_dispatch:
   push:
     branches:
-      - main
+      - main  # 或你希望触发 Wiki 同步的分支
 
 jobs:
-  sync:
+  sync-wiki:
     runs-on: ubuntu-latest
+    env:
+      GITEE_USERNAME: hello-oliver
+      GITEE_ORG: zitzhen
+      GITEE_REPO: CoCo-Community.wiki
+      GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
 
     steps:
-      - name: Checkout GitHub repo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Push to GitLab
-        env:
-          GITLAB_URL: gitlab.com
-          GITLAB_USERNAME: zitzhen
-          GITLAB_REPO: zitzhen/CoCo-Community
-          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+      - name: Clone GitHub Wiki repo
         run: |
-          git remote add gitlab https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@${GITLAB_URL}/${GITLAB_REPO}.git
+          echo "🚀 克隆 GitHub Wiki 仓库..."
+          git clone --bare https://github.com/zitzhen/CoCo-Community.wiki.git wiki-repo
+          cd wiki-repo
 
-          # 只推送所有本地分支和标签
-          git push gitlab --all
-          git push gitlab --tags
+          echo "🔗 添加 Gitee Wiki 远程仓库..."
+          git remote remove gitee 2>/dev/null || true
+          git remote add gitee "https://${GITEE_USERNAME}:${GITEE_TOKEN}@gitee.com/${GITEE_ORG}/${GITEE_REPO}.git"
+
+          echo "✅ 验证远程："
+          git remote -v
+
+          echo "⬆️ 推送 Wiki 到 Gitee..."
+          git push gitee --mirror || { echo "❌ 推送失败"; exit 1; }
+
+          echo "🎉 Wiki 推送完成！"
