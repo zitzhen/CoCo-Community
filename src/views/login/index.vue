@@ -48,6 +48,7 @@ export default{
         } else {
         this.username = logininformation.user.name || logininformation.user.login;
         this.avatar = logininformation.user.avatar_url || '/images/user.png';
+        this.$router.push({ path: '/me' });
         }
     }).catch((err) => {
         console.error("登录检查失败：", err);

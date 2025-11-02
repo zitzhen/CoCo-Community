@@ -326,8 +326,7 @@ export default {
       try {
         const logininformation = await checkLoginStatus();
         if (!logininformation || !logininformation.authenticated) {
-          username.value = "未登录用户";
-          avatar.value = "/images/user.png";
+          this.$router.push({ path: '/login' });
         } else {
           username.value = logininformation.user.name || logininformation.user.login;
           avatar.value = logininformation.user.avatar_url || "/images/user.png";
@@ -340,7 +339,7 @@ export default {
         }
       } catch (err) {
         console.error("登录检查失败：", err);
-        username.value = "登录信息检查失败";
+        this.$router.push({ path: '/login' });
       }
     };
     
