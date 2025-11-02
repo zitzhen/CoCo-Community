@@ -68,13 +68,31 @@
       <h2 style="text-align: center;" id="Loading_text" v-show="loading">请稍后，正在加载</h2>
       <div class="file-list" id="fileList">
         <div class="file-card" v-for="file in filteredFiles" :key="file.name">
-          <div class="file-icon">
-            <i class="fas" :class="getFileIconClass(file.type)"></i>
+          <div class="file-header">
+            <div class="file-icon">
+              <i class="fas" :class="getFileIconClass(file.type)"></i>
+            </div>
+            <div class="file-meta">
+              <div class="file-name">{{ file.name }}</div>
+              <div class="file-author">作者：{{ file.Author }}</div>
+            </div>
           </div>
-          <div class="file-name">{{ file.name }}</div>
-          <a :href="file.url" class="download-btn">
-            <i class="fas fa-download"></i> 去详情页面
-          </a>
+
+          <div class="file-stats">
+            <div><i class="fas fa-file"></i> {{ file.size }}</div>
+            <div><i class="fas fa-download"></i> {{ file.downloads }}</div>
+            <div><i class="fas fa-thumbs-up"></i> 0</div>
+            <div><i class="fas fa-star"></i> 0</div>
+          </div>
+
+          <div class="button-group">
+            <a :href="file.url" class="icon-btn" title="下载">
+              <i class="fas fa-download"></i>
+            </a>
+            <a :href="file.url" class="text-btn">
+              <i class="fas fa-eye"></i> 去详情页面
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -165,10 +183,11 @@ export default {
         
         const fileObjs = dirs.map(information => ({
           name: information.name,
+          Author: information.Author || "未知",
           type: "code",
           size: information.size || "未知",
           date: "未知",
-          downloads: "未知",
+          downloads: information.downloads || 0,
           url: `${window.location.origin}/control/${information.name}`
         }));
         
@@ -237,6 +256,7 @@ if (isOctober24th()){
 
 <style>
 @import '../../src/assets/style/home/style.css';
+@import '../../src/assets/css/card.css';
 @import '../../src/assets/style/home/Custom_button.css';
 @import '../../src/assets/style/home/Loading.css';
 @import '../../src/assets/style/control/error.css';
