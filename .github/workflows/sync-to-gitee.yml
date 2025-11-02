@@ -8,6 +8,11 @@ on:
 jobs:
   sync:
     runs-on: ubuntu-latest
+    env:
+      GITEE_USERNAME: hello-oliver                # Gitee 用户名
+      GITEE_ORG: zitzhen                          # Gitee 组织名
+      GITEE_REPO: CoCo-Community                  # Gitee 仓库名
+      GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}     # Gitee Token，从 GitHub Secrets 获取
 
     steps:
       - name: Checkout GitHub repo
@@ -43,8 +48,3 @@ jobs:
           git push gitee --mirror || { echo "❌ 推送失败"; exit 1; }
 
           echo "🎉 推送完成！"
-        env:
-          GITEE_USERNAME: hello-oliver          # 你的 Gitee 用户名（个人账号）
-          GITEE_ORG: zitzhen                    # Gitee 组织名
-          GITEE_REPO: CoCo-Community            # 仓库名
-          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }} # Personal Access Token
