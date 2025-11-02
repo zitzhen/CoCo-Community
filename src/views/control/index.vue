@@ -65,9 +65,7 @@
               <h2 class="file-name">{{ filename }}</h2>
               <div class="file-meta"><span>大小: {{ fileSize }} KiB</span></div>
             </div>
-            <a :href="downloadUrl" download>
-              <button class="download-btn"><i class="fas fa-download"></i> 下载</button>
-            </a>
+            <button class="download-btn" @click="handleDownload"><i class="fas fa-download"></i> 下载</button>
             <a :href="sourceUrl">
               <button class="download-btn"><i class="fas fa-file-code"></i> 源代码</button>
             </a>
@@ -216,6 +214,23 @@ function throwError(msg) {
   errorVisible.value = true
   errorVisibleSmall.value = true
   loading.value = false
+}
+
+async function handleDownload() {
+  try {
+    // 首先发送额外的GET请求到API
+    const apiUrl = `https://cc.zitzhen.cn/api/download?name=${encodeURIComponent(filename.value)}`;
+    await fetch(apiUrl, { method: 'GET' });
+    
+    // 然后触发文件下载
+    const link = document.createElement('a');
+    link.href = downloadUrl.value;
+    link.download = filename.value;
+    link.click();
+  } catch (error) {
+    console.error('下载过程中出错:', error);
+    throwError('下载失败: ' + (error.message || '未知错误'));
+  }
 }
 
 onMounted(() => {
