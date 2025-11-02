@@ -15,29 +15,6 @@
   <h2 class="a1024title">🎉今天是我们的节日——1024🎉</h2>
   <p class="a1024text">快来同我们一起庆祝我们的程序员节</p>
 </div>
-    <br style="display: none;" id="error_br">
-    <!-- From Uiverse.io by kennyotsu --> 
-    <div class="notifications-container" id="github_error" style="display: none;">
-      <div class="error-alert">
-        <div class="flex">
-          <div class="flex-shrink-0">
-            <svg aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" class="error-svg">
-              <path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" fill-rule="evenodd"></path>
-            </svg>
-          </div>
-          <div class="error-prompt-container">
-            <p class="error-prompt-heading">我们发现您正在使用GitHub Pages链接访问ZIT-CoCo-Community
-            </p>
-            <div class="error-prompt-wrap">
-              <ul class="error-prompt-list" role="list">
-                <li>经过我们的测试通过Github Pages链接访问ZIT-CoCo-Community的错误率会比<a href="https://cc.zitzhen.cn">ZIT-CoCo-Community官方链接</a>高，为了统一性，我们不再处理Github Pages访问出错的错误，建议您使用<a href="https://cc.zitzhen.cn">ZIT-CoCo-Community</a>官方链接访问我们的网站</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="notifications-container" id="no_fetch" style="display: none;">
       <div class="error-alert">
         <div class="flex">
@@ -213,9 +190,6 @@ export default {
     }
   },
   mounted() {
-    if (window.location.origin.includes("github.io")) {
-      document.getElementById("github_error").style.display = 'block';
-    }
     this.getSubDirs();
     
     // 检查系统深色模式偏好
