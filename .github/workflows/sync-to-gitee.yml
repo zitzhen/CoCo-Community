@@ -1,4 +1,6 @@
-name: Sync to Gitee
+name: Sync GitHub Repo and Wiki to Gitee
+permissions:
+  contents: read
 
 on:
   push:
@@ -6,35 +8,20 @@ on:
       - main  # 监听 main 分支推送事件
 
 jobs:
-  sync:
+  sync-main:
+    name: Sync Main Repo to Gitee
     runs-on: ubuntu-latest
     env:
-      GITEE_USERNAME: hello-oliver                # Gitee 用户名
-      GITEE_ORG: zitzhen                          # Gitee 组织名
-      GITEE_REPO: CoCo-Community                  # Gitee 仓库名
-      GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}     # Gitee Token，从 GitHub Secrets 获取
+      GITEE_USERNAME: hello-oliver
+      GITEE_ORG: zitzhen
+      GITEE_REPO: CoCo-Community
+      GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
 
     steps:
-      - name: Checkout GitHub repo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # 获取完整历史，便于镜像推送
-
-      - name: Prepare variables
+      - name: Clone GitHub Repo
         run: |
-          echo "🧩 检查环境变量..."
-          echo "GitHub repo: ${{ github.repository }}"
-          echo "Gitee target: https://gitee.com/${GITEE_ORG}/${GITEE_REPO}.git"
-          echo "用户名: ${GITEE_USERNAME}"
-          if [ -z "${GITEE_TOKEN}" ]; then
-            echo "❌ GITEE_TOKEN 未设置"; exit 1;
-          fi
-
-      - name: Mirror push to Gitee
-        run: |
-          set -e
-          echo "🚀 克隆源仓库..."
-          git clone --mirror "https://github.com/${{ github.repository }}" repo
+          echo "🚀 克隆 GitHub 主仓库..."
+          git clone --bare https://github.com/zitzhen/CoCo-Community.git repo
           cd repo
 
           echo "🔗 添加 Gitee 远程仓库..."
@@ -44,7 +31,37 @@ jobs:
           echo "✅ 验证远程："
           git remote -v
 
-          echo "⬆️ 开始推送到 Gitee..."
-          git push gitee --mirror || { echo "❌ 推送失败"; exit 1; }
+          echo "⬆️ 推送所有分支和标签到 Gitee..."
+          git push gitee --all --verbose
+          git push gitee --tags --verbose
 
-          echo "🎉 推送完成！"
+          echo "🎉 主仓库推送完成！"
+
+  sync-wiki:
+    name: Sync Wiki Repo to Gitee Wiki
+    runs-on: ubuntu-latest
+    env:
+      GITEE_USERNAME: hello-oliver
+      GITEE_ORG: zitzhen
+      GITEE_REPO: CoCo-Community.wiki
+      GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+
+    steps:
+      - name: Clone GitHub Wiki Repo
+        run: |
+          echo "📘 克隆 GitHub Wiki 仓库..."
+          git clone --bare https://github.com/zitzhen/CoCo-Community.wiki.git wiki-repo
+          cd wiki-repo
+
+          echo "🔗 添加 Gitee Wiki 远程仓库..."
+          git remote remove gitee 2>/dev/null || true
+          git remote add gitee "https://${GITEE_USERNAME}:${GITEE_TOKEN}@gitee.com/${GITEE_ORG}/${GITEE_REPO}.git"
+
+          echo "✅ 验证远程："
+          git remote -v
+
+          echo "⬆️ 推送 Wiki 到 Gitee..."
+          git push gitee --all --verbose
+          git push gitee --tags --verbose
+
+          echo "🎉 Wiki 仓库推送完成！"
