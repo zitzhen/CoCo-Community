@@ -4,19 +4,21 @@
     <div class="progress-container" v-if="loading">
       <div class="progress-bar"></div>
     </div>
+    </div>
 
     <!-- 顶部导航栏 -->
-    <header>
-      <div class="container">
-        <div class="header-content">
-          <router-link to="/" class="back-btn">
-            <i class="fas fa-arrow-left"></i> 返回列表
-          </router-link>
-          <h1>文件详情</h1>
-          <div></div>
-        </div>
-      </div>
-    </header>
+  <div id="app">
+          <nav class="navbar">
+              <div class="nav-container">
+                  <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
+                  <div class="user-info" @click="gome">
+                      <img :src="avatar_ber" alt="用户头像" class="user-avatar">
+                      <div class="user-name">{{ username }}</div>
+                  </div>
+              </div>
+          </nav>
+  <div style="height: 65px;"></div>
+
 
     <!-- 错误提示悬浮窗 -->
     <div v-if="errorVisibleSmall" class="card">
@@ -224,4 +226,37 @@ onMounted(() => {
 <style>
 @import "@/assets/css/style.css";
 @import "@/assets/css/error.css";
+@import "@/assets/css/Navigation-bar.css";
 </style>
+
+<script>
+import { checkLoginStatus } from '@/script/login';
+
+export default {
+  name: 'user',
+  data() {
+    return {
+      avatar_ber:"/images/user.png",
+      username:"未登录用户",
+    }
+  },
+  methods: {
+    gome() {
+      this.$router.push('/me') // 跳转到我的页面
+    }},
+  mounted() {
+    checkLoginStatus().then((logininformation) => {
+    if (!logininformation || !logininformation.authenticated) {
+      this.username = '未登录用户';
+      this.avatar_ber = '/images/user.png';
+    } else {
+      this.username = logininformation.user.name || logininformation.user.login;
+      this.avatar_ber = logininformation.user.avatar_url || '/images/user.png';
+    }
+  }).catch((err) => {
+    console.error("登录检查失败：", err);
+    this.username = '登录信息检查失败';
+  });
+  }
+}
+</script>
