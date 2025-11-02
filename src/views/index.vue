@@ -183,7 +183,7 @@ export default {
         
         const fileObjs = dirs.map(information => ({
           name: information.name,
-          Author: information.Author || "未知",
+          Author: information.author || "未知",
           type: "code",
           size: information.size || "未知",
           date: "未知",
