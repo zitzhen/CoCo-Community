@@ -1,4 +1,6 @@
 name: Sync GitHub Repo and Wiki to Gitee
+permissions:
+  contents: read
 
 on:
   push:
