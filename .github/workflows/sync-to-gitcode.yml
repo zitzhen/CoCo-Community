@@ -1,0 +1,51 @@
+name: Sync GitHub Repo to Gitcode
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - main  # 监听 main 分支推送事件
+  # 允许手动触发
+  workflow_dispatch:
+
+jobs:
+  sync-main:
+    name: Sync Main Repo to Gitcode
+    runs-on: ubuntu-latest
+    env:
+      GITCODE_USERNAME: Liu_xiaozhen
+      GITCODE_ORG: zitzhen
+      GITCODE_REPO: CoCo-Community
+      GITCODE_TOKEN: ${{ secrets.GITCODE_TOKEN }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 获取所有历史记录
+          submodules: recursive  # 递归获取子模块
+
+      - name: Setup Git Config
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Clone GitHub Repo
+        run: |
+          echo "🚀 克隆 GitHub 主仓库..."
+          git clone --bare https://github.com/zitzhen/CoCo-Community.git repo
+          cd repo
+
+          echo "🔗 添加 Gitcode 远程仓库..."
+          git remote remove gitcode 2>/dev/null || true
+          git remote add gitcode "https://${GITCODE_USERNAME}:${GITCODE_TOKEN}@gitcode.com/${GITCODE_ORG}/${GITCODE_REPO}.git"
+
+          echo "✅ 验证远程："
+          git remote -v
+
+          echo "⬆️ 推送所有分支和标签到 Gitcode..."
+          git push gitcode --all --verbose || echo "⚠️ 推送分支时遇到问题"
+          git push gitcode --tags --verbose || echo "⚠️ 推送标签时遇到问题"
+
+          echo "🎉 主仓库推送到 Gitcode 完成！"
