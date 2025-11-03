@@ -31,7 +31,7 @@ CoCo-Community，全称为ZIT-CoCo-Community
 |<img src="https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png" width="50" height="50" alt="Github的图片"> | [Github](https://Github.com/zitzhen/CoCo-Community) |
 |<img src="src/assets/images/icon/Gitee-logo.png" width="50" height="50" alt="Gitee的图片">| [Gitee](https://Github.com/zitzhen/CoCo-Community) | 
 |<img src="https://about.gitlab.com/images/press/logo/png/gitlab-logo-500.png" width="50" height="50" alt="GitLab的图片"> | [GitLab](https://gitlab.com/zitzhen/CoCo-Community) |
-|<img src="https://gitcode.com/favicon.ico" width="50" height="50" alt="gitcode的图片">| [gitcode](https://gitcode.com/zitzhen/CoCo-Community) |
+|<img src="https://cdn-static.gitcode.com/static/images/logo-favicon.png" width="50" height="50" alt="gitcode的图片">| [gitcode](https://gitcode.com/zitzhen/CoCo-Community) |
 
 >[!tip]
 >请您首选Github访问CoCo-Community
