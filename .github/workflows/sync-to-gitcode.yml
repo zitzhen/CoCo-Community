@@ -26,11 +26,6 @@ jobs:
           fetch-depth: 0  # 获取所有历史记录
           submodules: recursive  # 递归获取子模块
 
-      - name: Setup Git Config
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-
       - name: Clone GitHub Repo
         run: |
           echo "🚀 克隆 GitHub 主仓库..."
