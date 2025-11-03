@@ -100,6 +100,13 @@
           </svg>
         </button>
         </a>
+        <a href="https://gitcode.com/zitzhen/CoCo-Community">
+            <button class="btn bins">
+            <svg width="40" height="40" fill="#c71d23" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="gitee">
+                <image href="/src/assets/images/icon/gitcode.svg" width="24" height="24" x="0" y="0"/>
+              </svg>
+        </button>
+        </a>
         </div>
         <br>
         <div style="margin: 0 auto;">
