@@ -60,6 +60,7 @@
             <div><i class="fas fa-download"></i> {{ file.downloads }}</div>
             <div><i class="fas fa-thumbs-up"></i> 0</div>
             <div><i class="fas fa-star"></i> 0</div>
+            <div><i class="fas fa-eye"></i>{{ file.Pageviews }}</div>
           </div>
 
           <div class="button-group">
@@ -165,6 +166,7 @@ export default {
           size: information.size || "未知",
           date: "未知",
           downloads: information.downloads || 0,
+          Pageviews: information.Pageviews || 0,
           url: `${window.location.origin}/control/${information.name}`
         }));
         
