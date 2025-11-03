@@ -235,6 +235,9 @@ async function handleDownload() {
 
 onMounted(() => {
   fetchData()
+  // 发送页面浏览统计请求
+  const apiUrl = `https://cc.zitzhen.cn/api/pageviews?name=${encodeURIComponent(filename.value)}`;
+  fetch(apiUrl, { method: 'GET' });
 })
 </script>
 
