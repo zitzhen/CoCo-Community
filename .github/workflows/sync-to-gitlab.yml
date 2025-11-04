@@ -25,7 +25,7 @@ jobs:
           GITLAB_REPO: zitzhen/coco-community
           GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
         run: |
-          cd 
+          cd code
           git remote add gitlab- https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@${GITLAB_URL}/${GITLAB_REPO}.git
 
           # 推送所有分支和标签
