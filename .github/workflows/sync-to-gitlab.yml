@@ -1,34 +1,34 @@
-name: Sync GitHub Wiki to Gitee Wiki
+name: Sync GitHub  to Gitee 
 
 on:
   push:
     branches:
-      - main  # 或你希望触发 Wiki 同步的分支
+      - main  # 或你希望触发  同步的分支
 
 jobs:
-  sync-wiki:
+  sync-:
     runs-on: ubuntu-latest
     env:
       GITEE_USERNAME: hello-oliver
       GITEE_ORG: zitzhen
-      GITEE_REPO: CoCo-Community.wiki
+      GITEE_REPO: CoCo-Community
       GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
 
     steps:
-      - name: Clone GitHub Wiki repo
+      - name: Clone GitHub  repo
         run: |
-          echo "🚀 克隆 GitHub Wiki 仓库..."
-          git clone --bare https://github.com/zitzhen/CoCo-Community.wiki.git wiki-repo
-          cd wiki-repo
+          echo "🚀 克隆 GitHub  仓库..."
+          git clone --bare https://github.com/zitzhen/CoCo-Community.git -repo
+          cd -repo
 
-          echo "🔗 添加 Gitee Wiki 远程仓库..."
+          echo "🔗 添加 Gitee  远程仓库..."
           git remote remove gitee 2>/dev/null || true
           git remote add gitee "https://${GITEE_USERNAME}:${GITEE_TOKEN}@gitee.com/${GITEE_ORG}/${GITEE_REPO}.git"
 
           echo "✅ 验证远程："
           git remote -v
 
-          echo "⬆️ 推送 Wiki 到 Gitee..."
+          echo "⬆️ 推送  到 Gitee..."
           git push gitee --mirror || { echo "❌ 推送失败"; exit 1; }
 
-          echo "🎉 Wiki 推送完成！"
+          echo "🎉  推送完成！"
