@@ -13,8 +13,8 @@ jobs:
       # 1 Clone GitHub  仓库到本地  目录
       - name: Checkout GitHub 
         run: |
-          git clone https://github.com/zitzhen/CoCo-Community.git 
-          cd 
+          git clone https://github.com/zitzhen/CoCo-Community.git code
+          cd code
           git fetch --all
 
       # 2 Push 到 GitLab  仓库
