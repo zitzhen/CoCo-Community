@@ -1,34 +1,33 @@
-name: Sync GitHub  to Gitee 
+name: Sync GitHub to Gitlab 
 
 on:
   push:
     branches:
-      - main  # 或你希望触发  同步的分支
+      - main
 
 jobs:
   sync-:
     runs-on: ubuntu-latest
-    env:
-      GITEE_USERNAME: hello-oliver
-      GITEE_ORG: zitzhen
-      GITEE_REPO: CoCo-Community
-      GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
 
     steps:
-      - name: Clone GitHub  repo
+      # 1 Clone GitHub  仓库到本地  目录
+      - name: Checkout GitHub 
         run: |
-          echo "🚀 克隆 GitHub  仓库..."
-          git clone --bare https://github.com/zitzhen/CoCo-Community.git -repo
-          cd -repo
+          git clone https://github.com/zitzhen/CoCo-Community.git 
+          cd 
+          git fetch --all
 
-          echo "🔗 添加 Gitee  远程仓库..."
-          git remote remove gitee 2>/dev/null || true
-          git remote add gitee "https://${GITEE_USERNAME}:${GITEE_TOKEN}@gitee.com/${GITEE_ORG}/${GITEE_REPO}.git"
+      # 2 Push 到 GitLab  仓库
+      - name: Push to GitLab 
+        env:
+          GITLAB_URL: gitlab.com
+          GITLAB_USERNAME: zitzhen                  # 群组名
+          GITLAB_REPO: zitzhen/coco-community
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+        run: |
+          cd 
+          git remote add gitlab- https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@${GITLAB_URL}/${GITLAB_REPO}.git
 
-          echo "✅ 验证远程："
-          git remote -v
-
-          echo "⬆️ 推送  到 Gitee..."
-          git push gitee --mirror || { echo "❌ 推送失败"; exit 1; }
-
-          echo "🎉  推送完成！"
+          # 推送所有分支和标签
+          git push gitlab- --all 
+          git push gitlab- --tags 
