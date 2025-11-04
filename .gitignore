@@ -1,4 +1,3 @@
-.vscode
 # Logs
 logs
 *.log
@@ -19,8 +18,6 @@ coverage
 /cypress/screenshots/
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
 .idea
 *.suo
 *.ntvs*
@@ -31,3 +28,5 @@ coverage
 *.tsbuildinfo
 localhost.pem
 localhost-key.pem
+
+.vscode/launch.json
