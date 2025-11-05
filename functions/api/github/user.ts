@@ -4,8 +4,30 @@ export const onRequestGet: PagesFunction = async ({ request }) => {
   const origin = request.headers.get("Origin") || "";
   const referer = request.headers.get("Referer") || "";
   const allowedDomain = "https://cc.zitzhen.cn";
-
-  if (!origin.startsWith(allowedDomain) && !referer.startsWith(allowedDomain)) {
+  // Only allow if either Origin or Referer strictly equals the allowed domain as origin
+  const isValidOrigin = (() => {
+    try {
+      if (origin) {
+        const originUrl = new URL(origin);
+        if (originUrl.origin === allowedDomain) return true;
+      }
+    } catch (e) {
+      // Ignore parsing errors; treat as invalid
+    }
+    return false;
+  })();
+  const isValidReferer = (() => {
+    try {
+      if (referer) {
+        const refererUrl = new URL(referer);
+        if (refererUrl.origin === allowedDomain) return true;
+      }
+    } catch (e) {
+      // Ignore parsing errors; treat as invalid
+    }
+    return false;
+  })();
+  if (!isValidOrigin && !isValidReferer) {
     return new Response(JSON.stringify({ error: "Forbidden: Invalid origin" }), {
       status: 403,
       headers: { "Content-Type": "application/json" },
