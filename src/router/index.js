@@ -19,6 +19,7 @@ const routes = [
   {path: '/:pathMatch(.*)*', name: 'NotFound',component: () => import('@/views/NotFound.vue')},
   { path:'/me',name:"me",component:()=>import('@/views/me/index.vue')},
   { path:'/1024',name:"1024",component:()=>import('@/views/1024.vue')},
+  { path:'/about',name:"about",component:()=>import('@/views/about/index.vue')},
 ];
 
 // 在 Cloudflare Pages 环境中使用正确的 base
