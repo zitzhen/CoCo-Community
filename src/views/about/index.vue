@@ -76,3 +76,14 @@ export default {
   }}
 
 </script>
+
+<script setup>
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: '关于我们|ZIT-CoCo-Community',
+  meta: [
+    {content: '欢迎来到CoCo-Community，CoCo-Community是附属于ZIT小圳创科工作室的产品。旨在补充第三方社区的不足。' }
+  ]
+})
+</script>
