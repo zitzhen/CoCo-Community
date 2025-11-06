@@ -255,7 +255,11 @@ function getCurrentUrlLastSegment() {
 }
 
 async function fetch_github_information(username) {
-  const url = `https://api.github.com/users/${username}`
+    if(Login_status){
+        const url = `/api/github/users/${username}`
+    }else{
+        const url = `https://api.github.com/users/${username}`
+    }
   const res = await fetch(url)
   return res.ok ? res.json() : null
 }
