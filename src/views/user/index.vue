@@ -262,7 +262,7 @@ async function fetch_github_information(username) {
   
   if (loginStatus && loginStatus.authenticated) {
     // 已登录，使用内部API
-    url = `/api/github/users/${username}`;
+    url = `/api/github/user/?username=${jsonData.author}`;
   } else {
     // 未登录，使用GitHub API
     url = `https://api.github.com/users/${username}`;

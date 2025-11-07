@@ -181,7 +181,7 @@ async function fetchData() {
         
         if (loginStatus && loginStatus.authenticated) {
           // 已登录，使用内部API
-          creatorRes = await fetch(`/api/github/users/${jsonData.author}`);
+          creatorRes = await fetch(`/api/github/user/?username=${jsonData.author}`);
         } else {
           // 未登录，使用GitHub API
           creatorRes = await fetch(`https://api.github.com/users/${jsonData.author}`);
