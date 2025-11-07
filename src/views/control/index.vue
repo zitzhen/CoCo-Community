@@ -174,7 +174,11 @@ async function fetchData() {
     // 4) Github 作者信息
     if (jsonData.author) {
       try {
-        const creatorRes = await fetch(`https://api.github.com/users/${jsonData.author}`)
+        if (Login_status){
+          const creatorRes = await fetch(`/api/github/users/${jsonData.author}`);
+        }else{
+          const creatorRes = await fetch(`https://api.github.com/users/${jsonData.author}`);
+        }
         if (creatorRes.ok) {
           const creator = await creatorRes.json()
           avatar.value = creator.avatar_url
@@ -270,13 +274,16 @@ export default {
     if (!logininformation || !logininformation.authenticated) {
       this.username = '未登录用户';
       this.avatar_ber = '/images/user.png';
+      const Login_status = false;
     } else {
       this.username = logininformation.user.name || logininformation.user.login;
       this.avatar_ber = logininformation.user.avatar_url || '/images/user.png';
+      const Login_status = true;
     }
   }).catch((err) => {
     console.error("登录检查失败：", err);
     this.username = '登录信息检查失败';
+    const Login_status = false;
   });
   }
 }
