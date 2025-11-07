@@ -251,9 +251,12 @@
 <script>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { checkLoginStatus } from '@/script/login';
+import { useRouter } from 'vue-router';
 
 export default {
   setup() {
+    const router = useRouter();
+    
     // 用户信息
     const avatar = ref("/images/user.png");
     const username = ref("未登录用户");
@@ -326,7 +329,7 @@ export default {
       try {
         const logininformation = await checkLoginStatus();
         if (!logininformation || !logininformation.authenticated) {
-          this.$router.push({ path: '/login' });
+          router.push({ path: '/login' });
         } else {
           username.value = logininformation.user.name || logininformation.user.login;
           avatar.value = logininformation.user.avatar_url || "/images/user.png";
@@ -339,7 +342,7 @@ export default {
         }
       } catch (err) {
         console.error("登录检查失败：", err);
-        this.$router.push({ path: '/login' });
+        router.push({ path: '/login' });
       }
     };
     
