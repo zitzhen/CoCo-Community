@@ -256,20 +256,30 @@ function getCurrentUrlLastSegment() {
 }
 
 async function fetch_github_information(username) {
-  // 检查登录状态
-  const loginStatus = await checkLoginStatus();
-  let url;
-  
-  if (loginStatus && loginStatus.authenticated) {
-    // 已登录，使用内部API
-    url = `/api/github/user/?username=${jsonData.author}`;
-  } else {
-    // 未登录，使用GitHub API
-    url = `https://api.github.com/users/${username}`;
+  try {
+    // 检查登录状态
+    const loginStatus = await checkLoginStatus();
+    let url;
+    
+    if (loginStatus && loginStatus.authenticated && loginStatus.user && loginStatus.user.login) {
+      // 已登录，使用内部API
+      url = `/api/github/user/?username=${loginStatus.user.login}`;
+    } else {
+      // 未登录，使用GitHub API
+      url = `https://api.github.com/users/${username}`;
+    }
+    
+    const res = await fetch(url);
+    if (!res.ok) {
+      console.error(`GitHub API 请求失败: ${res.status} ${res.statusText}, URL: ${url}`);
+      return null;
+    }
+    return await res.json();
+  } catch (error) {
+    console.error('获取GitHub信息时发生错误:', error);
+    console.error('错误堆栈:', error.stack);
+    return null;
   }
-  
-  const res = await fetch(url)
-  return res.ok ? res.json() : null
 }
 
 async function fetch_user_information(username) {
