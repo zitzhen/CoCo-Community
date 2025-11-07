@@ -225,6 +225,7 @@ footer {
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useHead } from '@vueuse/head'
+import { checkLoginStatus } from '@/script/login'
 
 const Nickname = ref('')
 const bio = ref('加载中...')
@@ -255,11 +256,18 @@ function getCurrentUrlLastSegment() {
 }
 
 async function fetch_github_information(username) {
-    if(Login_status){
-        const url = `/api/github/users/${username}`
-    }else{
-        const url = `https://api.github.com/users/${username}`
-    }
+  // 检查登录状态
+  const loginStatus = await checkLoginStatus();
+  let url;
+  
+  if (loginStatus && loginStatus.authenticated) {
+    // 已登录，使用内部API
+    url = `/api/github/users/${username}`;
+  } else {
+    // 未登录，使用GitHub API
+    url = `https://api.github.com/users/${username}`;
+  }
+  
   const res = await fetch(url)
   return res.ok ? res.json() : null
 }

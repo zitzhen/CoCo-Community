@@ -115,6 +115,7 @@ import { ref, onMounted } from "vue"
 import { useRoute } from "vue-router"
 import { marked } from "marked"
 import { useHead } from "@vueuse/head"
+import { checkLoginStatus } from "@/script/login"
 
 // -------- 响应式数据 --------
 const loading = ref(true)
@@ -174,11 +175,18 @@ async function fetchData() {
     // 4) Github 作者信息
     if (jsonData.author) {
       try {
-        if (Login_status){
-          const creatorRes = await fetch(`/api/github/users/${jsonData.author}`);
-        }else{
-          const creatorRes = await fetch(`https://api.github.com/users/${jsonData.author}`);
+        // 检查登录状态
+        const loginStatus = await checkLoginStatus();
+        let creatorRes;
+        
+        if (loginStatus && loginStatus.authenticated) {
+          // 已登录，使用内部API
+          creatorRes = await fetch(`/api/github/users/${jsonData.author}`);
+        } else {
+          // 未登录，使用GitHub API
+          creatorRes = await fetch(`https://api.github.com/users/${jsonData.author}`);
         }
+        
         if (creatorRes.ok) {
           const creator = await creatorRes.json()
           avatar.value = creator.avatar_url
