@@ -110,3 +110,15 @@ export default {
   }
 };
 </script>
+
+<script setup>
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: '请勿使用根路径访问|CoCo-Community',
+  meta: [{
+    name: 'robots',
+    content: 'noindex, nofollow',
+  }]
+})
+</script>
