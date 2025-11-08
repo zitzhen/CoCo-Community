@@ -358,7 +358,7 @@ export default {
     // 获取用户控件信息
     async function fetch_user_information(username) {
       try {
-        const url = `https://${window.location.host}/information/user/${username}.json`;
+        const url = `https://${window.location.host}/information/user/${username_github}.json`;
         const res = await fetch(url);
         if (res.ok) {
           const user_introduction = await res.json();
