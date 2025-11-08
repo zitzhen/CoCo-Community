@@ -413,15 +413,6 @@ export default {
       closeModal,
       confirmLogout
     };
-
-    function dev_mode(){
-      console.log("用户头像为："+avatar);
-      console.log("username变量值为："+username);
-      console.log("Nickname变量值为："+Nickname);
-      console.log("bio变量值为："+bio);
-      console.log("Control_number变量值为："+Control_number);
-      console.log("controlList变量值为："+controlList);
-    };
   }
 };
 </script>
