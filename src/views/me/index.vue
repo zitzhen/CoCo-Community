@@ -261,6 +261,7 @@ export default {
     // 用户信息
     const avatar = ref("/images/user.png");
     const username = ref("未登录用户");
+    const username_github = ref("@");
     const Nickname = ref("");
     const bio = ref("");
     const Control_number = ref('');
@@ -330,17 +331,23 @@ export default {
       try {
         const logininformation = await checkLoginStatus();
         if (!logininformation || !logininformation.authenticated) {
+          // 确保在非登录状态时跳转到登录页面
+          console.log("用户未登录，跳转到登录页面");
           router.push({ path: '/login' });
+          return;
         } else {
-          username_github.value = "@"+logininformation.user.login;
-          username.value = logininformation.user.name || logininformation.user.login;
+          console.log("用户已登录", logininformation);
+          username_github.value = "@" + (logininformation.user.login || "");
+          username.value = logininformation.user.name || logininformation.user.login || "未知用户";
           avatar.value = logininformation.user.avatar_url || "/images/user.png";
-          Nickname.value = logininformation.user.name || logininformation.user.name || logininformation.user.login;
+          Nickname.value = logininformation.user.name || logininformation.user.login || "";
           bio.value = logininformation.user.bio || "";
           githubUrl.value = logininformation.user.html_url || "";          
           
           // 获取用户的控件信息
-          await fetch_user_information(logininformation.user.login);
+          if (logininformation.user.login) {
+            await fetch_user_information(logininformation.user.login);
+          }
         }
       } catch (err) {
         console.error("登录检查失败：", err);
@@ -390,11 +397,11 @@ export default {
       // 用户信息
       avatar,
       username,
+      username_github,
       Nickname,
       bio,
       Control_number,
       githubUrl,
-      username_github,
       
       // 控件列表
       controls,
