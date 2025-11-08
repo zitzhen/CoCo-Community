@@ -360,6 +360,7 @@ export default {
       console.log(username_github);
       try {
         const url = `https://${window.location.host}/information/user/${username_github}.json`;
+        console.log(url);
         const res = await fetch(url);
         if (res.ok) {
           const user_introduction = await res.json();
