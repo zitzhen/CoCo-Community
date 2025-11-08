@@ -354,7 +354,7 @@ export default {
         const res = await fetch(url);
         if (res.ok) {
           const user_introduction = await res.json();
-          Control_number.value = user_introduction ? user_introduction.number_of_controls : '0';
+          Control_number.value =  user_introduction.number_of_controls;
           if (user_introduction?.list_of_controls) {
             controlList.value = user_introduction.list_of_controls;
           }
