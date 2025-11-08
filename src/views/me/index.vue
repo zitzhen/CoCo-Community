@@ -19,7 +19,7 @@
       <div class="user-info-me">
         <h1 id="user_name">{{ Nickname }}</h1>
         <!--用户GitHub名称-->
-        <p>{{ username }}</p>
+        <p>{{ username_github }}</p>
         <p id="user_introduction">{{ bio }}</p>
         <!--用户GitHub介绍-->
         <div class="stats-me">
@@ -332,6 +332,7 @@ export default {
         if (!logininformation || !logininformation.authenticated) {
           router.push({ path: '/login' });
         } else {
+          username_github.value = "@"+logininformation.user.login;
           username.value = logininformation.user.name || logininformation.user.login;
           avatar.value = logininformation.user.avatar_url || "/images/user.png";
           Nickname.value = logininformation.user.name || logininformation.user.name || logininformation.user.login;
@@ -393,6 +394,7 @@ export default {
       bio,
       Control_number,
       githubUrl,
+      username_github,
       
       // 控件列表
       controls,
