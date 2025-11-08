@@ -1,5 +1,8 @@
 name: Sync GitHub Wiki to GitLab Wiki
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
