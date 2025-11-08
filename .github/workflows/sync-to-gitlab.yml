@@ -1,4 +1,5 @@
 name: Sync GitHub to Gitlab 
+permissions: none
 
 on:
   push:
