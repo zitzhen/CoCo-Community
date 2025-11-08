@@ -11,6 +11,9 @@ on:
 jobs:
   generate-list:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.merged }}
+    permissions:
+      contents: write
+      pull-requests: write
     runs-on: ubuntu-latest
 
     steps:
