@@ -356,7 +356,7 @@ export default {
     };
     
     // 获取用户控件信息
-    async function fetch_user_information(username) {
+    async function fetch_user_information(username_github) {
       try {
         const url = `https://${window.location.host}/information/user/${username_github}.json`;
         const res = await fetch(url);
