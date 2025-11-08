@@ -19,6 +19,7 @@
       <div class="user-info-me">
         <h1 id="user_name">{{ Nickname }}</h1>
         <!--用户GitHub名称-->
+        <p>{{ username }}</p>
         <p id="user_introduction">{{ bio }}</p>
         <!--用户GitHub介绍-->
         <div class="stats-me">
@@ -333,7 +334,7 @@ export default {
         } else {
           username.value = logininformation.user.name || logininformation.user.login;
           avatar.value = logininformation.user.avatar_url || "/images/user.png";
-          Nickname.value = logininformation.user.name || "";
+          Nickname.value = logininformation.user.name || logininformation.user.name || logininformation.user.login;
           bio.value = logininformation.user.bio || "";
           githubUrl.value = logininformation.user.html_url || "";          
           
