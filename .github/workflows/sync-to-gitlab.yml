@@ -1,5 +1,8 @@
-name: Sync GitHub to Gitlab 
-permissions: none
+name: Sync GitHub to Gitlab
+
+# 给 job 最小权限访问仓库内容和 secrets
+permissions:
+  contents: read
 
 on:
   push:
@@ -7,28 +10,24 @@ on:
       - main
 
 jobs:
-  sync-:
+  sync:
     runs-on: ubuntu-latest
-
     steps:
-      # 1 Clone GitHub  仓库到本地  目录
-      - name: Checkout GitHub 
-        run: |
-          git clone https://github.com/zitzhen/CoCo-Community.git code
-          cd code
-          git fetch --all
+      # 1. Clone GitHub 仓库到本地目录
+      - name: Checkout GitHub
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0   # 获取所有分支
 
-      # 2 Push 到 GitLab  仓库
-      - name: Push to GitLab 
+      # 2. Push 到 GitLab 仓库
+      - name: Push to GitLab
         env:
           GITLAB_URL: gitlab.com
-          GITLAB_USERNAME: zitzhen                  # 群组名
+          GITLAB_USERNAME: zitzhen        # 群组名
           GITLAB_REPO: zitzhen/coco-community
           GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
         run: |
-          cd code
-          git remote add gitlab- https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@${GITLAB_URL}/${GITLAB_REPO}.git
-
+          git remote add gitlab https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@${GITLAB_URL}/${GITLAB_REPO}.git
           # 推送所有分支和标签
-          git push gitlab- --all 
-          git push gitlab- --tags 
+          git push gitlab --all
+          git push gitlab --tags
