@@ -4,7 +4,7 @@
             <div class="nav-container">
                 <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
                 <div class="user-info">
-                    <img :src="avatar" alt="用户头像" class="user-avatar">
+                    <img :src="avatar" alt="用户头像" class="user-avatar nav-avatar">
                     <div class="user-name">{{ username }}</div>
                 </div>
             </div>
@@ -16,8 +16,8 @@
 <div v-for="user in userlist" :key="user.username">
   <div class="user-card">
     <div class="user-header">
-      <div class="user-avatar">
-        <img :src="user.avatar || 'https://avatars.githubusercontent.com/u/149680880?v=4'" width="50px" height="50px" :alt="user.nickname + '的头像'">
+      <div class="user-avatar-container">
+        <img :src="user.avatar || 'https://avatars.githubusercontent.com/u/149680880?v=4'" width="50px" height="50px" :alt="user.nickname + '的头像'" class="user-avatar-img">
       </div>
       <div class="user-meta">
         <div class="user-name">{{ user.nickname || user.username }}</div>
@@ -134,10 +134,19 @@ export default {
     margin-bottom: 1rem;
 }
 
-.user-avatar {
-    font-size: 2.8rem;
-    color: var(--primary-color);
+.user-avatar-container {
+    width: 50px;
+    height: 50px;
     margin-right: 1rem;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.user-avatar-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 .user-meta {
