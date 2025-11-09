@@ -21,8 +21,8 @@ CoCo-Community，全称为ZIT-CoCo-Community
 >自2025年20月8日20:55 07b93c1提交之后，CoCo-Community登录功能正式完结上线！
 
 >[!important]
->自07.11.2025起，我们开始测试在已登录Github的用户走认证通道，加上Github令牌，未认证的仍然直接走GithubAPI未认证模式。  
->在此过程中如果您感觉是由Github登录引起的，请退出登录并给我们提交反馈。
+>我们已彻底接入GithubAPI认证系统，在请求GithubAPI时，我们会走认证通道，未认证走未认证通道。  
+>之前产生的Bug已修复。  
 ---
 ## 项目所在的所有仓库：
 此项目在GitHub为主仓库，目前在以下几个社区发布：
