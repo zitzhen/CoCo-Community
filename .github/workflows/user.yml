@@ -1,0 +1,107 @@
+name: Sync D1 Data(user)
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository (full history)
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Install tools
+        run: sudo apt-get update && sudo apt-get install -y jq curl gh
+
+      - name: Fetch and update D1 data
+        env:
+          ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          DATABASE_ID: ${{ secrets.CLOUDFLARE_D1_DATABASE_ID }}
+          API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          echo "📦 正在从 Cloudflare D1 获取数据..."
+          curl -s -X POST \
+            "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/d1/database/$DATABASE_ID/query" \
+            -H "Authorization: Bearer $API_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"sql":"SELECT * FROM user"}' | \
+          jq '.result[0].results' | jq '{list: .}' > public/userlist.json
+
+          if [ "$(jq '.list | length' public/userlist.json)" -eq 0 ]; then
+            echo "✅ 没有任何可比较的内容，运行正常，结束工作流。"
+            exit 0
+          fi
+
+      - name: Compare and push changes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+
+          git fetch origin main
+
+          OLD_FILE_EXISTS=0
+          if git ls-tree -r origin/main --name-only | grep -q '^public/userlist.json$'; then
+            git show origin/main:public/userlist.json > old_public/userlist.json
+            OLD_FILE_EXISTS=1
+          fi
+
+          if [ "$OLD_FILE_EXISTS" -eq 1 ] && cmp -s old_public/userlist.json public/userlist.json; then
+            echo "✅ public/userlist.json 与 origin/main 相同，暂无变化，结束工作流。"
+            exit 0
+          fi
+
+          BRANCH="d1-sync"
+          git checkout -B "$BRANCH"
+          git add public/userlist.json
+          git commit -m "chore: sync D1 data ($(date +%Y-%m-%d))" || echo "ℹ️ 没有文件变化可提交"
+          git push origin "$BRANCH" -f
+
+      - name: Wait for branch sync
+        run: sleep 5
+
+      - name: Create or update Pull Request (with label)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="d1-sync"
+          LABEL="CloudflareD1 auto-sync"
+
+          echo "🪄 检查是否已有 PR..."
+          EXISTING_PR=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')
+
+          # 🧠 再次确认分支是否真的有差异
+          echo "🔍 检查与 main 的差异..."
+          if [ "$(git rev-list origin/main..origin/$BRANCH | wc -l)" -eq 0 ]; then
+            echo "✅ main 与 $BRANCH 没有任何差异，跳过 PR 创建。"
+            exit 0
+          fi
+
+          if [ -n "$EXISTING_PR" ]; then
+            echo "🔄 已存在 PR #$EXISTING_PR，更新分支完成。"
+            gh pr edit "$EXISTING_PR" --add-label "$LABEL" || echo "⚠️ 无法添加标签，可能标签不存在。"
+          else
+            echo "✨ 创建新的 PR..."
+            gh pr create \
+              --title "Update D1 data ($(date +%Y-%m-%d))" \
+              --body "Automated data sync from Cloudflare D1. I need @Iamliuxiaozhen to handle this pull request." \
+              --base main \
+              --head "$BRANCH"
+
+            NEW_PR=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')
+            if [ -n "$NEW_PR" ]; then
+              echo "🏷️ 为新 PR #$NEW_PR 添加标签 $LABEL"
+              gh pr edit "$NEW_PR" --add-label "$LABEL" || echo "⚠️ 无法添加标签，可能标签不存在。"
+            fi
+          fi
