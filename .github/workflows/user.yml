@@ -53,6 +53,7 @@ jobs:
 
           OLD_FILE_EXISTS=0
           if git ls-tree -r origin/main --name-only | grep -q '^public/userlist.json$'; then
+            mkdir -p old_public
             git show origin/main:public/userlist.json > old_public/userlist.json
             OLD_FILE_EXISTS=1
           fi
@@ -81,7 +82,6 @@ jobs:
           echo "🪄 检查是否已有 PR..."
           EXISTING_PR=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')
 
-          # 🧠 再次确认分支是否真的有差异
           echo "🔍 检查与 main 的差异..."
           if [ "$(git rev-list origin/main..origin/$BRANCH | wc -l)" -eq 0 ]; then
             echo "✅ main 与 $BRANCH 没有任何差异，跳过 PR 创建。"
