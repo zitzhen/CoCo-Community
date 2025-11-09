@@ -4,8 +4,8 @@
       <div class="nav-container">
         <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
         <div class="user-info">
-          <img :src="avatar" alt="用户头像" class="avatar-img nav-avatar">
-          <div class="user-name">{{ username }}</div>
+          <img :src="avatar" alt="用户头像" class="user-avatar">
+          <div class="user-name-Nav">{{ username }}</div>
         </div>
       </div>
     </nav>
@@ -233,5 +233,11 @@ export default {
   color: #999;
   font-size: 1rem;
   margin-top: 2rem;
+}
+
+.user-name-Nav {
+    font-weight: 500;
+    color: #2c3e50;
+    font-size: 1rem;
 }
 </style>
