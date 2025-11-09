@@ -82,7 +82,7 @@ export default {
             this.userlist = (response.data.list || []).map(user => ({
                 ...user,
                 avatar: user.avatar || `https://avatars.githubusercontent.com/u/${user.github_id || '149680880'}?v=4`,
-                bio: user.bio || '暂无个人简介',
+                bio: user.bio || '此人很懒，什么都没有',
                 likes: user.likes || '未统计',
                 github: user.github || `https://github.com/${user.username}`,
                 home: user.home || `/user/${user.username}`
