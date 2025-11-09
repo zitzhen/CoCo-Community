@@ -241,3 +241,14 @@ export default {
     font-size: 1rem;
 }
 </style>
+
+<script setup>
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: '用户列表|CoCo-Community',
+  meta: [
+    {content: "这是注册了CoCo-Community的全部用户均在此处。" }
+  ]
+})
+</script>
