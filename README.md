@@ -76,6 +76,7 @@ ZIT-CoCo-Community官方链接（推荐）：https://cc.zitzhen.cn/
 | QiQi |<a href="https://github.com/Qiqi29"><img src="https://avatars.githubusercontent.com/u/112358908?v=4" width="50" height="50" alt="QiQi的图片"></a> | 22|
 | Inventocode |<a href="https://github.com/Inventocode"><img src="https://avatars.githubusercontent.com/u/138981212?v=4" width="50" height="50" alt="Inventocode的图片"></a> | 1|
 | 垃圾桶 |<a href="https://github.com/LJT-YTWH"><img src="https://avatars.githubusercontent.com/u/202535413?v=4" width="50" height="50" alt="垃圾桶的图片"></a> | 7|
+| XJ王大哥 |<a href="https://github.com/xjwangdage"><img src="https://avatars.githubusercontent.com/u/114815506?v=4" width="50" height="50" alt="XJ王大哥的头像">|10|
 
 
 ## 许可证
