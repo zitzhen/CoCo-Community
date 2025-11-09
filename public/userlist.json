@@ -3,32 +3,50 @@
     {
       "username": "Iamliuxiaozhen",
       "nickname": "Oliver",
-      "number_of_controls": "1"
+      "number_of_controls": "1",
+      "avatar": "https://avatars.githubusercontent.com/u/149680880?v=4",
+      "bio": "Hello，我叫刘小圳。是CoCo-Community的创始人与站长。",
+      "pageviews": 0
     },
     {
       "username": "xiaohong2022",
       "nickname": "XiaohongXeLa",
-      "number_of_controls": "9"
+      "number_of_controls": "9",
+      "avatar": "https://avatars.githubusercontent.com/u/97574185?v=4",
+      "bio": "a waste of space",
+      "pageviews": 0
     },
     {
       "username": "Qiqi29",
       "nickname": "Qiqi",
-      "number_of_controls": "22"
+      "number_of_controls": "22",
+      "avatar": "https://avatars.githubusercontent.com/u/112358908?v=4",
+      "bio": "𝟐𝟎𝟐𝟓 𝑵𝑬𝑾 𝑺𝑻𝑨𝑹𝑻！",
+      "pageviews": 0
     },
     {
       "username": "Inventocode",
       "nickname": null,
-      "number_of_controls": "1"
+      "number_of_controls": "1",
+      "avatar": "https://avatars.githubusercontent.com/u/138981212?v=4",
+      "bio": null,
+      "pageviews": 0
     },
     {
       "username": "LJT-YTWH",
       "nickname": null,
-      "number_of_controls": "7"
+      "number_of_controls": "7",
+      "avatar": "https://avatars.githubusercontent.com/u/202535413?v=4",
+      "bio": null,
+      "pageviews": 0
     },
     {
       "username": "xjwangdage",
       "nickname": "XJ王大哥",
-      "number_of_controls": "10"
+      "number_of_controls": "10",
+      "avatar": "https://avatars.githubusercontent.com/u/114815506?v=4",
+      "bio": null,
+      "pageviews": 0
     }
   ]
 }
