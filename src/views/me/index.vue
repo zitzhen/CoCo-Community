@@ -91,6 +91,47 @@
       <h2 class="section-title-me">设置</h2>
       <h2 class="section-title">个人信息</h2>
       <p>个人信息首次将同步您的Github信息，Github头像会自动更新，我们支持自定义头像与昵称。自2025年11月10日以后，您可能需要自行同步或设置Github个人资料（头像自动同步，除非您自行更改了头像）</p>
+      
+      <!-- 更改头像和昵称表单 -->
+      <div class="profile-edit-section">
+        <h3>更改头像和昵称</h3>
+        <form @submit.prevent="updateProfile" class="profile-form">
+          <div class="form-group">
+            <label for="nickname">昵称</label>
+            <input 
+              type="text" 
+              id="nickname" 
+              v-model="editNickname" 
+              placeholder="请输入新的昵称"
+              class="form-control"
+            />
+          </div>
+          
+          <div class="form-group">
+            <label for="avatar">头像URL</label>
+            <input 
+              type="url" 
+              id="avatar" 
+              v-model="editAvatar" 
+              placeholder="请输入头像图片URL"
+              class="form-control"
+            />
+            <div class="avatar-preview" v-if="editAvatar">
+              <img :src="editAvatar" alt="头像预览" class="avatar-preview-img" />
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="save-btn" :disabled="isUpdating">
+              {{ isUpdating ? '保存中...' : '保存更改' }}
+            </button>
+            <button type="button" class="reset-btn" @click="resetProfile" :disabled="isUpdating">
+              重置
+            </button>
+          </div>
+        </form>
+      </div>
+      
       <h2>账户及相关管理</h2>
       <button @click="openModal" class="logout-btn">退出登录</button>
     </div>
@@ -161,6 +202,77 @@
   color: #7f8c8d;
 }
 
+/* 个人资料编辑表单样式 */
+.profile-edit-section {
+  margin-bottom: 30px;
+}
+
+.profile-form {
+  margin-top: 15px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.avatar-preview {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.avatar-preview-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ddd;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.save-btn, .reset-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.save-btn {
+  background: #3498db;
+  color: white;
+}
+
+.save-btn:hover:not(:disabled) {
+  background: #2980b9;
+}
+
+.reset-btn {
+  background: #95a5a6;
+  color: white;
+}
+
+.reset-btn:hover:not(:disabled) {
+  background: #7f8c8d;
+}
+
+.save-btn:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+}
+
 /* 响应式优化 */
 @media (max-width: 768px) {
   .profile-header-me {
@@ -212,6 +324,76 @@
   
   .modal-btn:last-child {
     margin-bottom: 0;
+  }
+  
+  .profile-edit-section {
+    margin-bottom: 30px;
+  }
+  
+  .profile-form {
+    margin-top: 15px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-control {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .avatar-preview {
+    margin-top: 10px;
+    text-align: center;
+  }
+  
+  .avatar-preview-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ddd;
+  }
+  
+  .form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .save-btn, .reset-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .save-btn {
+    background: #3498db;
+    color: white;
+  }
+  
+  .save-btn:hover:not(:disabled) {
+    background: #2980b9;
+  }
+  
+  .reset-btn {
+    background: #95a5a6;
+    color: white;
+  }
+  
+  .reset-btn:hover:not(:disabled) {
+    background: #7f8c8d;
+  }
+  
+  .save-btn:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
   }
 }
 
@@ -286,6 +468,11 @@ export default {
     // 弹窗状态
     const isModalOpen = ref(false);
     
+    // 编辑用户资料相关状态
+    const editNickname = ref("");
+    const editAvatar = ref("");
+    const isUpdating = ref(false);
+    
     // 切换标签页
     const switchTab = (tabName) => {
       activeTab.value = tabName;
@@ -350,7 +537,11 @@ export default {
           avatar.value = logininformation.user.avatar_url || "/images/user.png";
           Nickname.value = logininformation.user.name || logininformation.user.login || "";
           bio.value = logininformation.user.bio || "";
-          githubUrl.value = logininformation.user.html_url || "";          
+          githubUrl.value = logininformation.user.html_url || "";
+          
+          // 初始化编辑表单
+          editNickname.value = logininformation.user.name || logininformation.user.login || "";
+          editAvatar.value = logininformation.user.avatar_url || "/images/user.png";
           
           // 获取用户的控件信息
           if (logininformation.user.login) {
@@ -361,6 +552,31 @@ export default {
         console.error("登录检查失败：", err);
         router.push({ path: '/login' });
       }
+    };
+    
+    // 更新用户资料
+    const updateProfile = async () => {
+      isUpdating.value = true;
+      try {
+        // 这里应该调用后端API来更新用户资料
+        // 目前我们只是在前端更新显示
+        Nickname.value = editNickname.value;
+        avatar.value = editAvatar.value;
+        
+        // 显示成功消息
+        alert("资料更新成功！");
+      } catch (error) {
+        console.error("更新资料失败:", error);
+        alert("更新资料失败，请稍后重试");
+      } finally {
+        isUpdating.value = false;
+      }
+    };
+    
+    // 重置用户资料表单
+    const resetProfile = () => {
+      editNickname.value = Nickname.value;
+      editAvatar.value = avatar.value;
     };
     
     // 获取用户控件信息
@@ -424,11 +640,18 @@ export default {
       // 弹窗状态
       isModalOpen,
       
+      // 编辑用户资料相关状态
+      editNickname,
+      editAvatar,
+      isUpdating,
+      
       // 方法
       switchTab,
       openModal,
       closeModal,
-      confirmLogout
+      confirmLogout,
+      updateProfile,
+      resetProfile
     };
   }
 };
