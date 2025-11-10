@@ -89,6 +89,9 @@
     <!--设置-->
     <div :class="['tab-content-me', { 'active-me': activeTab === 'settings' }]" id="settings">
       <h2 class="section-title-me">设置</h2>
+      <h2 class="section-title">个人信息</h2>
+      <p>个人信息首次将同步您的Github信息，Github头像会自动更新，我们支持自定义头像与昵称。自2025年11月10日以后，您可能需要自行同步或设置Github个人资料（头像自动同步，除非您自行更改了头像）</p>
+      <h2>账户及相关管理</h2>
       <button @click="openModal" class="logout-btn">退出登录</button>
     </div>
   </div>
@@ -338,7 +341,7 @@ export default {
         if (!logininformation || !logininformation.authenticated) {
           // 确保在非登录状态时跳转到登录页面
           console.log("用户未登录，跳转到登录页面");
-          router.push({ path: '/login' });
+          // router.push({ path: '/login' });
           return;
         } else {
           console.log("用户已登录", logininformation);
