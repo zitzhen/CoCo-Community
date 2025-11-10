@@ -31,6 +31,12 @@
 </template>
 
 <script>
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: () => `登录|ZIT-CoCo-Community`,
+})
+
 export default{
     name:'login',
     data(){
