@@ -253,6 +253,11 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { checkLoginStatus } from '@/script/login';
 import { useRouter } from 'vue-router';
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: () => `账户设置|ZIT-CoCo-Community`,
+})
 
 export default {
   setup() {

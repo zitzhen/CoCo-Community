@@ -31,6 +31,13 @@
 </template>
 
 <script>
+import { useHead } from '@vueuse/head'
+import { checkLoginStatus } from '@/script/login'
+
+useHead({
+  title: () => `登录|ZIT-CoCo-Community`,
+})
+
 export default{
     name:'login',
     data(){
