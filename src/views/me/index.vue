@@ -91,6 +91,7 @@
       <h2 class="section-title-me">设置</h2>
       <h2 class="section-title">个人信息</h2>
       <p>个人信息首次将同步您的Github信息，Github头像会自动更新，我们支持自定义头像与昵称。自2025年11月10日以后，您可能需要自行同步或设置Github个人资料（头像自动同步，除非您自行更改了头像）</p>
+      <p>更改此项目同步时间通常不超过168小时</p>
       
       <!-- 更改头像和昵称表单 -->
       <div class="profile-edit-section">
@@ -106,6 +107,11 @@
               class="form-control"
             />
           </div>
+          <button type="submit" class="save-btn" :disabled="isUpdating" @click="update_nickname">
+              {{ isUpdating ? '保存中...' : '保存更改' }}
+            </button>
+          
+            <div style="height: 20px;"></div>
           
           <div class="form-group">
             <label for="avatar">头像URL</label>
@@ -654,5 +660,23 @@ export default {
       resetProfile
     };
   }
+  ,methods:{
+    async update_nickname(){
+      const url = "/api/update_nickname";
+
+      const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+      
+    });
+    if (!response.ok) {
+    throw new Error(`请求失败：${response.status}`);
+  }
+    }
+  }
 };
+
 </script>
