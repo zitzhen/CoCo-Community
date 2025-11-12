@@ -669,6 +669,11 @@ export default {
       headers: {
         'Content-Type': 'application/json'
       },
+
+      data:{
+        //这里先传入用户名作为演示，后续传令牌更安全。
+      },
+      
       body: JSON.stringify(data)
       
     });
