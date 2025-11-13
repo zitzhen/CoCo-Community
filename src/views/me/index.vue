@@ -143,6 +143,26 @@
     </div>
   </div>
 
+  <!--不能修改昵称弹窗-->
+  <div class="modal-overlay" :class="{ active: isnicknameOpen }" @click="closeModal">
+    <div class="modal" @click.stop>
+      <div class="modal-header">
+        <h2 class="modal-title">抱歉暂时不能修改昵称</h2>
+        <button class="close-btn" @click="closeModal">×</button>
+      </div>
+      <div class="modal-body">
+        <p>抱歉，我们暂时无法修改您的昵称</p>
+        <p>这可能是此功能正在开发</p>
+        <p>如果您想立即修改昵称，CoCo-Community建议您联系Oliver强制修改</p>
+        <p>发送电邮：<a   href="https://live.com">nickname.coco-community@zit.email</a></p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-cancel" @click="closeModal">好的</button>
+      </div>
+    </div>
+  </div>
+  
+
   <!-- 退出登录弹窗 -->
   <div class="modal-overlay" :class="{ active: isModalOpen }" @click="closeModal">
     <div class="modal" @click.stop>
@@ -662,24 +682,7 @@ export default {
   }
   ,methods:{
     async update_nickname(){
-      const url = "/api/update_nickname";
-
-      const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-
-      data:{
-        //这里先传入用户名作为演示，后续传令牌更安全。
-      },
-      
-      body: JSON.stringify(data)
-      
-    });
-    if (!response.ok) {
-    throw new Error(`请求失败：${response.status}`);
-  }
+     
     }
   }
 };
