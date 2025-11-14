@@ -105,10 +105,11 @@
               v-model="editNickname" 
               placeholder="请输入新的昵称"
               class="form-control"
+              disabled
             />
           </div>
-          <button type="submit" class="save-btn" :disabled="isUpdating" @click="update_nickname">
-              {{ isUpdating ? '保存中...' : '保存更改' }}
+          <button type="button" class="save-btn" @click="update_nickname">
+              修改昵称
             </button>
           
             <div style="height: 20px;"></div>
@@ -144,20 +145,20 @@
   </div>
 
   <!--不能修改昵称弹窗-->
-  <div class="modal-overlay" :class="{ active: isnicknameOpen }" @click="closeModal">
+  <div class="modal-overlay" :class="{ active: isnicknameOpen }" @click="closeNicknameModal">
     <div class="modal" @click.stop>
       <div class="modal-header">
         <h2 class="modal-title">抱歉暂时不能修改昵称</h2>
-        <button class="close-btn" @click="closeModal">×</button>
+        <button class="close-btn" @click="closeNicknameModal">×</button>
       </div>
       <div class="modal-body">
         <p>抱歉，我们暂时无法修改您的昵称</p>
         <p>这可能是此功能正在开发</p>
         <p>如果您想立即修改昵称，CoCo-Community建议您联系Oliver强制修改</p>
-        <p>发送电邮：<a   href="https://live.com">nickname.coco-community@zit.email</a></p>
+        <p>发送电邮：<a href="https://live.com">nickname.coco-community@zit.email</a></p>
       </div>
       <div class="modal-footer">
-        <button class="modal-btn modal-btn-cancel" @click="closeModal">好的</button>
+        <button class="modal-btn modal-btn-cancel" @click="closeNicknameModal">好的</button>
       </div>
     </div>
   </div>
@@ -493,6 +494,7 @@ export default {
     
     // 弹窗状态
     const isModalOpen = ref(false);
+    const isnicknameOpen = ref(false);
     
     // 编辑用户资料相关状态
     const editNickname = ref("");
@@ -645,6 +647,20 @@ export default {
       document.body.style.overflow = '';
     });
     
+    // 显示昵称修改弹窗
+    const update_nickname = () => {
+      isnicknameOpen.value = true;
+      // 阻止背景滚动
+      document.body.style.overflow = 'hidden';
+    };
+    
+    // 关闭昵称修改弹窗
+    const closeNicknameModal = () => {
+      isnicknameOpen.value = false;
+      // 恢复背景滚动
+      document.body.style.overflow = '';
+    };
+    
     return {
       // 用户信息
       avatar,
@@ -665,6 +681,7 @@ export default {
       
       // 弹窗状态
       isModalOpen,
+      isnicknameOpen,
       
       // 编辑用户资料相关状态
       editNickname,
@@ -677,13 +694,10 @@ export default {
       closeModal,
       confirmLogout,
       updateProfile,
-      resetProfile
+      resetProfile,
+      update_nickname,
+      closeNicknameModal
     };
-  }
-  ,methods:{
-    async update_nickname(){
-     
-    }
   }
 };
 
