@@ -255,55 +255,61 @@ function getCurrentUrlLastSegment() {
   return pathSegments.length > 0 ? pathSegments[pathSegments.length - 1] : ''
 }
 
-async function fetch_github_information(username) {
+async function fetch_user_basic_information(username) {
+  // 从 public/userlist.json 获取用户基本数据
+  const url = '/userlist.json'
   try {
-    // 检查登录状态
-    const loginStatus = await checkLoginStatus();
-    let url;
-    
-    if (loginStatus && loginStatus.authenticated && loginStatus.user && loginStatus.user.login) {
-      // 已登录，使用内部API
-      url = `/api/github/user/?username=${username}`;
-    } else {
-      // 未登录，使用GitHub API
-      url = `https://api.github.com/users/${username}`;
-    }
-    
-    const res = await fetch(url);
+    const res = await fetch(url)
     if (!res.ok) {
-      console.error(`GitHub API 请求失败: ${res.status} ${res.statusText}, URL: ${url}`);
+      console.error(`获取用户列表失败: ${res.status} ${res.statusText}, URL: ${url}`);
       return null;
     }
-    return await res.json();
+    const userListData = await res.json();
+    // 在用户列表中查找匹配的用户
+    const user = userListData.list.find(user => user.username === username);
+    return user || null;
   } catch (error) {
-    console.error('获取GitHub信息时发生错误:', error);
+    console.error('获取用户列表时发生错误:', error);
     console.error('错误堆栈:', error.stack);
     return null;
   }
 }
 
-async function fetch_user_information(username) {
-  const url = `https://${window.location.host}/information/user/${username}.json`
-  const res = await fetch(url)
-  return res.ok ? res.json() : null
+async function fetch_user_detailed_information(username) {
+  // 从 public/information/user/${username}.json 获取详细信息（如控件列表）
+  const url = `/information/user/${username}.json`
+  try {
+    const res = await fetch(url)
+    return res.ok ? res.json() : null
+  } catch (error) {
+    console.error('获取用户详细信息时发生错误:', error);
+    console.error('错误堆栈:', error.stack);
+    return null;
+  }
 }
 
-function render_information(information) {
-  Nickname.value = information.name || information.login
-  bio.value = information.bio || '此人很懒，什么都没有'
-  avatar.value = information.avatar_url || ''
+function render_information(basicInformation, detailedInformation) {
+  Nickname.value = basicInformation?.nickname || basicInformation?.name || basicInformation?.username || '未知用户'
+  bio.value = basicInformation?.bio || '此人很懒，什么都没有'
+  avatar.value = basicInformation?.avatar || ''
+  Control_number.value = detailedInformation ? detailedInformation.number_of_controls : basicInformation?.number_of_controls || '0'
+  if (detailedInformation?.list_of_controls) controlList.value = detailedInformation.list_of_controls
 }
 
 onMounted(async () => {
   const username = getCurrentUrlLastSegment()
-  const user_github_information = await fetch_github_information(username)
-  const user_introduction = await fetch_user_information(username)
+  const user_basic_information = await fetch_user_basic_information(username)
+  const user_detailed_information = await fetch_user_detailed_information(username)
 
-  if (user_github_information) render_information(user_github_information)
-  else if (user_introduction) render_information(user_introduction)
-
-  Control_number.value = user_introduction ? user_introduction.number_of_controls : 'Error'
-  if (user_introduction?.list_of_controls) controlList.value = user_introduction.list_of_controls
+  if (user_basic_information) {
+    render_information(user_basic_information, user_detailed_information)
+  } else {
+    // 用户不存在于 userlist.json 中
+    Nickname.value = username
+    bio.value = '用户未找到'
+    avatar.value = ''
+    Control_number.value = '0'
+  }
 
   loading.value = false
 })

@@ -89,9 +89,97 @@
     <!--设置-->
     <div :class="['tab-content-me', { 'active-me': activeTab === 'settings' }]" id="settings">
       <h2 class="section-title-me">设置</h2>
+      <h2 class="section-title">个人信息</h2>
+      <p>个人信息首次将同步您的Github信息，Github头像会自动更新，我们支持自定义头像与昵称。自2025年11月10日以后，您可能需要自行同步或设置Github个人资料（头像自动同步，除非您自行更改了头像）</p>
+      <p>更改此项目同步时间通常不超过168小时</p>
+      
+      <!-- 更改头像和昵称表单 -->
+      <div class="profile-edit-section">
+        <h3>更改头像和昵称</h3>
+        <form class="profile-form">
+          <div class="form-group">
+            <label for="nickname">昵称</label>
+            <input 
+              type="text" 
+              id="nickname" 
+              v-model="editNickname" 
+              placeholder="请输入新的昵称"
+              class="form-control"
+              disabled
+            />
+          </div>
+          <button type="button" class="save-btn" @click="update_nickname">
+              修改昵称
+            </button>
+          
+            <div style="height: 20px;"></div>
+          
+          <div class="form-group">
+            <label for="avatar">头像URL</label>
+            <input 
+              type="url" 
+              id="avatar" 
+              v-model="editAvatar" 
+              placeholder="请输入头像图片URL"
+              class="form-control"
+              disabled
+            />
+            <div class="avatar-preview" v-if="editAvatar">
+              <img :src="editAvatar" alt="头像预览" class="avatar-preview-img" />
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="button" class="save-btn" @click="update_avatar">
+             修改头像
+            </button>
+          </div>
+        </form>
+      </div>
+      
+      <h2>账户及相关管理</h2>
       <button @click="openModal" class="logout-btn">退出登录</button>
     </div>
   </div>
+
+  <!--不能修改头像弹窗-->
+  <div class="modal-overlay" :class="{ active: isavatarOpen }" @click="closeavatarModal">
+    <div class="modal" @click.stop>
+      <div class="modal-header">
+        <h2 class="modal-title">抱歉暂时不能修改头像</h2>
+        <button class="close-btn" @click="closeavatarModal">×</button>
+      </div>
+      <div class="modal-body">
+        <p>抱歉，我们暂时无法修改您的头像</p>
+        <p>这可能是此功能正在开发</p>
+        <p>如果您想立即修改头像，CoCo-Community建议您联系Oliver强制修改</p>
+        <p>发送电邮：<a href="https://live.com">avatar.coco-community@zit.email</a></p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-cancel" @click="closeavatarModal">好的</button>
+      </div>
+    </div>
+  </div>
+
+  <!--不能修改昵称弹窗-->
+  <div class="modal-overlay" :class="{ active: isnicknameOpen }" @click="closeNicknameModal">
+    <div class="modal" @click.stop>
+      <div class="modal-header">
+        <h2 class="modal-title">抱歉暂时不能修改昵称</h2>
+        <button class="close-btn" @click="closeNicknameModal">×</button>
+      </div>
+      <div class="modal-body">
+        <p>抱歉，我们暂时无法修改您的昵称</p>
+        <p>这可能是此功能正在开发</p>
+        <p>如果您想立即修改昵称，CoCo-Community建议您联系Oliver强制修改</p>
+        <p>发送电邮：<a href="https://live.com">nickname.coco-community@zit.email</a></p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-cancel" @click="closeNicknameModal">好的</button>
+      </div>
+    </div>
+  </div>
+  
 
   <!-- 退出登录弹窗 -->
   <div class="modal-overlay" :class="{ active: isModalOpen }" @click="closeModal">
@@ -158,6 +246,77 @@
   color: #7f8c8d;
 }
 
+/* 个人资料编辑表单样式 */
+.profile-edit-section {
+  margin-bottom: 30px;
+}
+
+.profile-form {
+  margin-top: 15px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.avatar-preview {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.avatar-preview-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ddd;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.save-btn, .reset-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.save-btn {
+  background: #3498db;
+  color: white;
+}
+
+.save-btn:hover:not(:disabled) {
+  background: #2980b9;
+}
+
+.reset-btn {
+  background: #95a5a6;
+  color: white;
+}
+
+.reset-btn:hover:not(:disabled) {
+  background: #7f8c8d;
+}
+
+.save-btn:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+}
+
 /* 响应式优化 */
 @media (max-width: 768px) {
   .profile-header-me {
@@ -209,6 +368,76 @@
   
   .modal-btn:last-child {
     margin-bottom: 0;
+  }
+  
+  .profile-edit-section {
+    margin-bottom: 30px;
+  }
+  
+  .profile-form {
+    margin-top: 15px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-control {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .avatar-preview {
+    margin-top: 10px;
+    text-align: center;
+  }
+  
+  .avatar-preview-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ddd;
+  }
+  
+  .form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .save-btn, .reset-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .save-btn {
+    background: #3498db;
+    color: white;
+  }
+  
+  .save-btn:hover:not(:disabled) {
+    background: #2980b9;
+  }
+  
+  .reset-btn {
+    background: #95a5a6;
+    color: white;
+  }
+  
+  .reset-btn:hover:not(:disabled) {
+    background: #7f8c8d;
+  }
+  
+  .save-btn:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
   }
 }
 
@@ -282,6 +511,13 @@ export default {
     
     // 弹窗状态
     const isModalOpen = ref(false);
+    const isnicknameOpen = ref(false);
+    const isavatarOpen = ref(false);
+    
+    // 编辑用户资料相关状态
+    const editNickname = ref("");
+    const editAvatar = ref("");
+    const isUpdating = ref(false);
     
     // 切换标签页
     const switchTab = (tabName) => {
@@ -306,6 +542,12 @@ export default {
     const handleKeydown = (event) => {
       if (event.key === 'Escape' && isModalOpen.value) {
         closeModal();
+      }
+      if (event.key === 'Escape' && isnicknameOpen.value) {
+        closeNicknameModal();
+      }
+      if (event.key === 'Escape' && isavatarOpen.value) {
+        closeavatarModal();
       }
     };
     
@@ -347,7 +589,11 @@ export default {
           avatar.value = logininformation.user.avatar_url || "/images/user.png";
           Nickname.value = logininformation.user.name || logininformation.user.login || "";
           bio.value = logininformation.user.bio || "";
-          githubUrl.value = logininformation.user.html_url || "";          
+          githubUrl.value = logininformation.user.html_url || "";
+          
+          // 初始化编辑表单
+          editNickname.value = logininformation.user.name || logininformation.user.login || "";
+          editAvatar.value = logininformation.user.avatar_url || "/images/user.png";
           
           // 获取用户的控件信息
           if (logininformation.user.login) {
@@ -359,6 +605,7 @@ export default {
         router.push({ path: '/login' });
       }
     };
+    
     
     // 获取用户控件信息
     async function fetch_user_information(username_github) {
@@ -400,6 +647,35 @@ export default {
       document.body.style.overflow = '';
     });
     
+    // 显示昵称修改弹窗
+    const update_nickname = () => {
+      isnicknameOpen.value = true;
+      // 阻止背景滚动
+      document.body.style.overflow = 'hidden';
+    };
+
+    // 显示头像修改弹窗
+    const update_avatar = () => {
+      isavatarOpen.value = true;
+      // 阻止背景滚动
+      document.body.style.overflow = 'hidden';
+    };
+    
+    // 关闭昵称修改弹窗
+    const closeNicknameModal = () => {
+      isnicknameOpen.value = false;
+      // 恢复背景滚动
+      document.body.style.overflow = '';
+    };
+    
+    // 关闭头像修改弹窗
+    const closeavatarModal = () => {
+      isavatarOpen.value = false;
+      // 恢复背景滚动
+      document.body.style.overflow = '';
+    };
+        
+    
     return {
       // 用户信息
       avatar,
@@ -420,13 +696,25 @@ export default {
       
       // 弹窗状态
       isModalOpen,
+      isnicknameOpen,
+      isavatarOpen,
+      
+      // 编辑用户资料相关状态
+      editNickname,
+      editAvatar,
+      isUpdating,
       
       // 方法
       switchTab,
       openModal,
       closeModal,
-      confirmLogout
+      confirmLogout,
+      update_nickname,
+      update_avatar,
+      closeNicknameModal,
+      closeavatarModal
     };
   }
 };
+
 </script>
