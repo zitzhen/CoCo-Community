@@ -580,7 +580,7 @@ export default {
         if (!logininformation || !logininformation.authenticated) {
           // 确保在非登录状态时跳转到登录页面
           console.log("用户未登录，跳转到登录页面");
-          // router.push({ path: '/login' });
+          router.push({ path: '/login' });
           return;
         } else {
           console.log("用户已登录", logininformation);
