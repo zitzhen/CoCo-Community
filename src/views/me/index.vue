@@ -96,7 +96,7 @@
       <!-- 更改头像和昵称表单 -->
       <div class="profile-edit-section">
         <h3>更改头像和昵称</h3>
-        <form @submit.prevent="updateProfile" class="profile-form">
+        <form class="profile-form">
           <div class="form-group">
             <label for="nickname">昵称</label>
             <input 
@@ -133,11 +133,6 @@
             <button type="submit" class="save-btn" @click="update_avatar">
              修改头像
             </button>
-            <!--
-            <button type="button" class="reset-btn" @click="resetProfile" :disabled="isUpdating">
-              重置
-            </button>
-            -->
           </div>
         </form>
       </div>
@@ -654,7 +649,7 @@ export default {
 
     // 显示头像修改弹窗
     const update_avatar = () => {
-      isnicknameOpen.value = true;
+      isavatarOpen.value = true;
       // 阻止背景滚动
       document.body.style.overflow = 'hidden';
     };
@@ -665,6 +660,14 @@ export default {
       // 恢复背景滚动
       document.body.style.overflow = '';
     };
+    
+    // 关闭头像修改弹窗
+    const closeavatarModal = () => {
+      isavatarOpen.value = false;
+      // 恢复背景滚动
+      document.body.style.overflow = '';
+    };
+        
     
     return {
       // 用户信息
@@ -698,11 +701,10 @@ export default {
       openModal,
       closeModal,
       confirmLogout,
-      updateProfile,
-      resetProfile,
       update_nickname,
       update_avatar,
-      closeNicknameModal
+      closeNicknameModal,
+      closeavatarModal
     };
   }
 };
