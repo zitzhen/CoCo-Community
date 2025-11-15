@@ -130,7 +130,7 @@
           </div>
           
           <div class="form-actions">
-            <button type="submit" class="save-btn" @click="update_avatar">
+            <button type="button" class="save-btn" @click="update_avatar">
              修改头像
             </button>
           </div>
@@ -512,6 +512,7 @@ export default {
     // 弹窗状态
     const isModalOpen = ref(false);
     const isnicknameOpen = ref(false);
+    const isavatarOpen = ref(false);
     
     // 编辑用户资料相关状态
     const editNickname = ref("");
@@ -541,6 +542,12 @@ export default {
     const handleKeydown = (event) => {
       if (event.key === 'Escape' && isModalOpen.value) {
         closeModal();
+      }
+      if (event.key === 'Escape' && isnicknameOpen.value) {
+        closeNicknameModal();
+      }
+      if (event.key === 'Escape' && isavatarOpen.value) {
+        closeavatarModal();
       }
     };
     
@@ -690,6 +697,7 @@ export default {
       // 弹窗状态
       isModalOpen,
       isnicknameOpen,
+      isavatarOpen,
       
       // 编辑用户资料相关状态
       editNickname,
