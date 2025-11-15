@@ -122,6 +122,7 @@
               v-model="editAvatar" 
               placeholder="请输入头像图片URL"
               class="form-control"
+              disabled
             />
             <div class="avatar-preview" v-if="editAvatar">
               <img :src="editAvatar" alt="头像预览" class="avatar-preview-img" />
@@ -129,18 +130,39 @@
           </div>
           
           <div class="form-actions">
-            <button type="submit" class="save-btn" :disabled="isUpdating">
-              {{ isUpdating ? '保存中...' : '保存更改' }}
+            <button type="submit" class="save-btn" @click="update_avatar">
+             修改头像
             </button>
+            <!--
             <button type="button" class="reset-btn" @click="resetProfile" :disabled="isUpdating">
               重置
             </button>
+            -->
           </div>
         </form>
       </div>
       
       <h2>账户及相关管理</h2>
       <button @click="openModal" class="logout-btn">退出登录</button>
+    </div>
+  </div>
+
+  <!--不能修改头像弹窗-->
+  <div class="modal-overlay" :class="{ active: isavatarOpen }" @click="closeavatarModal">
+    <div class="modal" @click.stop>
+      <div class="modal-header">
+        <h2 class="modal-title">抱歉暂时不能修改头像</h2>
+        <button class="close-btn" @click="closeavatarModal">×</button>
+      </div>
+      <div class="modal-body">
+        <p>抱歉，我们暂时无法修改您的头像</p>
+        <p>这可能是此功能正在开发</p>
+        <p>如果您想立即修改头像，CoCo-Community建议您联系Oliver强制修改</p>
+        <p>发送电邮：<a href="https://live.com">avatar.coco-community@zit.email</a></p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-cancel" @click="closeavatarModal">好的</button>
+      </div>
     </div>
   </div>
 
@@ -582,30 +604,6 @@ export default {
       }
     };
     
-    // 更新用户资料
-    const updateProfile = async () => {
-      isUpdating.value = true;
-      try {
-        // 这里应该调用后端API来更新用户资料
-        // 目前我们只是在前端更新显示
-        Nickname.value = editNickname.value;
-        avatar.value = editAvatar.value;
-        
-        // 显示成功消息
-        alert("资料更新成功！");
-      } catch (error) {
-        console.error("更新资料失败:", error);
-        alert("更新资料失败，请稍后重试");
-      } finally {
-        isUpdating.value = false;
-      }
-    };
-    
-    // 重置用户资料表单
-    const resetProfile = () => {
-      editNickname.value = Nickname.value;
-      editAvatar.value = avatar.value;
-    };
     
     // 获取用户控件信息
     async function fetch_user_information(username_github) {
@@ -653,6 +651,13 @@ export default {
       // 阻止背景滚动
       document.body.style.overflow = 'hidden';
     };
+
+    // 显示头像修改弹窗
+    const update_avatar = () => {
+      isnicknameOpen.value = true;
+      // 阻止背景滚动
+      document.body.style.overflow = 'hidden';
+    };
     
     // 关闭昵称修改弹窗
     const closeNicknameModal = () => {
@@ -696,6 +701,7 @@ export default {
       updateProfile,
       resetProfile,
       update_nickname,
+      update_avatar,
       closeNicknameModal
     };
   }
