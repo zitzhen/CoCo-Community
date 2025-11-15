@@ -43,28 +43,57 @@ export default {
   methods: {
     gome() {
       this.$router.push('/me') // 跳转到我的页面
-    }},
+    },
+    async loadContent() {
+      try {
+        // 确保marked已经正确加载
+        if (typeof marked === 'undefined') {
+          console.error('Marked library not loaded')
+          this.loading = false
+          return
+        }
+        
+        // 首先尝试从远程获取
+        try {
+          const response = await axios.get('https://cc.zitzhen.cn/agreement/privacypolicy/content.md')
+          this.content = marked.parse(response.data)
+        } catch (remoteError) {
+          console.warn('远程内容获取失败，尝试使用本地内容:', remoteError)
+          // 如果远程获取失败，尝试从本地获取
+          try {
+            const localResponse = await axios.get('/agreement/privacypolicy/content.md')
+            this.content = marked.parse(localResponse.data)
+          } catch (localError) {
+            console.error('本地内容获取也失败:', localError)
+            this.content = '<p>内容加载失败，请稍后重试。</p>'
+          }
+        }
+      } catch (error) {
+        console.error('内容加载出错:', error)
+        this.content = '<p>内容加载失败，请稍后重试。</p>'
+      } finally {
+        this.loading = false
+      }
+    }
+  },
   async mounted() {
-    try {
-      const response = await axios.get('https://cc.zitzhen.cn/agreement/privacypolicy/content.md')
-      this.content = marked.parse(response.data)
-      this.loading = false
-    } catch (error) {
-      console.error('请求出错:', error)
-      this.loading = false
-    }
+    // 确保在mounted之后再加载内容
+    this.$nextTick(() => {
+      this.loadContent()
+    })
+    
     checkLoginStatus().then((logininformation) => {
-    if (!logininformation || !logininformation.authenticated) {
-      this.username = '未登录用户';
-      this.avatar = '/images/user.png';
-    } else {
-      this.username = logininformation.user.name || logininformation.user.login;
-      this.avatar = logininformation.user.avatar_url || '/images/user.png';
-    }
-  }).catch((err) => {
-    console.error("登录检查失败：", err);
-    this.username = '登录信息检查失败';
-  });
+      if (!logininformation || !logininformation.authenticated) {
+        this.username = '未登录用户';
+        this.avatar = '/images/user.png';
+      } else {
+        this.username = logininformation.user.name || logininformation.user.login;
+        this.avatar = logininformation.user.avatar_url || '/images/user.png';
+      }
+    }).catch((err) => {
+      console.error("登录检查失败：", err);
+      this.username = '登录信息检查失败';
+    });
   }
 }
 </script>
