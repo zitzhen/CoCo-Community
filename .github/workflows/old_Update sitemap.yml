@@ -1,0 +1,35 @@
+name: Label old Update sitemap PRs
+
+on:
+  workflow_dispatch:   # 手动触发
+
+jobs:
+  label-old-prs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Find and label closed/merged PRs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // 获取所有 PR（包括 closed/merged）
+            const prs = await github.paginate(
+              github.rest.pulls.list,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'all',   // 关键：包括 open/closed/merged
+                per_page: 100
+              }
+            );
+
+            for (const pr of prs) {
+              if (pr.title.includes('Update sitemap') && pr.user.login === 'github-actions[bot]') {
+                console.log(`Labeling PR #${pr.number}: ${pr.title}`);
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  labels: ['old_Update sitemap']
+                });
+              }
+            }
