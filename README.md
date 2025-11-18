@@ -1,4 +1,6 @@
 # 这是CoCo-Community
+> [!CAUTION]
+> 我们很抱歉，受到上游Cloudflare全球性网络崩溃，CoCo-Community可能暂时无法访问，恢复时间请等待通知。
 
 ![GitHub Stars](https://img.shields.io/github/stars/zitzhen/CoCo-Community?style=flat)
 ![GitHub Forks](https://img.shields.io/github/forks/zitzhen/CoCo-Community?style=flat)
