@@ -72,15 +72,18 @@ jobs:
       - name: Wait for branch sync
         run: sleep 5
 
-      - name: Create or update Pull Request (with label)
+      - name: Create or update Pull Request, then attempt auto-merge
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Optional: installation token for a GitHub App with merge rights
+          GITHUB_APP_INSTALLATION_TOKEN: ${{ secrets.GITHUB_APP_INSTALLATION_TOKEN }}
         run: |
+          set -euo pipefail
           BRANCH="d1-sync"
           LABEL="CloudflareD1 auto-sync"
 
           echo "🪄 检查是否已有 PR..."
-          EXISTING_PR=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')
+          EXISTING_PR=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number' || true)
 
           echo "🔍 检查与 main 的差异..."
           if [ "$(git rev-list origin/main..origin/$BRANCH | wc -l)" -eq 0 ]; then
@@ -88,9 +91,11 @@ jobs:
             exit 0
           fi
 
+          PR_NUM=""
           if [ -n "$EXISTING_PR" ]; then
-            echo "🔄 已存在 PR #$EXISTING_PR，更新分支完成。"
-            gh pr edit "$EXISTING_PR" --add-label "$LABEL" || echo "⚠️ 无法添加标签，可能标签不存在。"
+            PR_NUM="$EXISTING_PR"
+            echo "🔄 已存在 PR #$PR_NUM，更新分支完成。"
+            gh pr edit "$PR_NUM" --add-label "$LABEL" || echo "⚠️ 无法添加标签，可能标签不存在。"
           else
             echo "✨ 创建新的 PR..."
             gh pr create \
@@ -99,9 +104,46 @@ jobs:
               --base main \
               --head "$BRANCH"
 
-            NEW_PR=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')
-            if [ -n "$NEW_PR" ]; then
-              echo "🏷️ 为新 PR #$NEW_PR 添加标签 $LABEL"
-              gh pr edit "$NEW_PR" --add-label "$LABEL" || echo "⚠️ 无法添加标签，可能标签不存在。"
+            PR_NUM=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number' || true)
+            if [ -n "$PR_NUM" ]; then
+              echo "🏷️ 为新 PR #$PR_NUM 添加标签 $LABEL"
+              gh pr edit "$PR_NUM" --add-label "$LABEL" || echo "⚠️ 无法添加标签，可能标签不存在。"
             fi
+          fi
+
+          if [ -z "$PR_NUM" ]; then
+            echo "⚠️ 未能获取 PR 编号，退出。"
+            exit 0
+          fi
+
+          echo "🔁 尝试使用 Action 身份合并 PR #$PR_NUM（不能绕过受保护分支的强制签名）。"
+          # 首先尝试用 GH_TOKEN（actions bot）合并
+          if gh pr merge "$PR_NUM" --merge --delete-branch --body "Auto-merged by workflow" >/dev/null 2>&1; then
+            echo "✅ PR #$PR_NUM 已由 Action 身份合并。"
+            exit 0
+          fi
+
+          echo "⚠️ Action 身份合并失败（可能是受保护分支或签名要求）。尝试使用 GitHub App 安装令牌回退合并（若提供）。"
+
+          if [ -z "${GITHUB_APP_INSTALLATION_TOKEN:-}" ]; then
+            echo "ℹ️ 未配置 GITHUB_APP_INSTALLATION_TOKEN。无法使用 GitHub App 合并，保持 PR 打开供人工处理。"
+            exit 0
+          fi
+
+          # 使用 GitHub App 安装令牌通过 REST API 合并 PR。该安装令牌由你的 GitHub App 创建并放到仓库 Secrets 中（见下方说明）。
+          API_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/$PR_NUM/merge"
+          echo "PUT $API_URL"
+          merge_payload='{"commit_title":"Auto-merge D1 sync","commit_message":"Automated data sync from Cloudflare D1.","merge_method":"merge"}'
+
+          HTTP_CODE=$(curl -s -o /tmp/merge_resp -w "%{http_code}" -X PUT "$API_URL" \
+            -H "Authorization: Bearer ${GITHUB_APP_INSTALLATION_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -d "$merge_payload")
+
+          if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
+            echo "✅ PR #$PR_NUM 已由 GitHub App 安装令牌合并。"
+          else
+            echo "❌ 使用 GitHub App 合并失败 (HTTP $HTTP_CODE)："
+            cat /tmp/merge_resp || true
+            echo "保留 PR 供人工处理或其他自动化工具处理。"
           fi
