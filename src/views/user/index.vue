@@ -312,6 +312,11 @@ onMounted(async () => {
   }
 
   loading.value = false
+
+  // 发送页面浏览统计请求
+  console.log("用户名"+encodeURIComponent(username));
+  const apiUrl = `https://cc.zitzhen.cn/api/pageviews_user?username=${encodeURIComponent(username)}`;
+  fetch(apiUrl, { method: 'GET' });
 })
 </script>
 
@@ -347,10 +352,4 @@ export default {
   });
   }
 }
-
-onMounted(() => {
-  // 发送页面浏览统计请求
-  const apiUrl = `https://cc.zitzhen.cn/api/pageviews_user?username=${encodeURIComponent(username)}`;
-  fetch(apiUrl, { method: 'GET' });
-})
 </script>
