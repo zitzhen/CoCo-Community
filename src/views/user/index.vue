@@ -349,7 +349,6 @@ export default {
 }
 
 onMounted(() => {
-  fetchData()
   // 发送页面浏览统计请求
   const apiUrl = `https://cc.zitzhen.cn/api/pageviews_user?username=${encodeURIComponent(username)}`;
   fetch(apiUrl, { method: 'GET' });
