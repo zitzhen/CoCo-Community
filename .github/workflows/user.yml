@@ -20,7 +20,32 @@ jobs:
           fetch-depth: 0
 
       - name: Install tools
-        run: sudo apt-get update && sudo apt-get install -y jq curl gh
+        run: sudo apt-get update && sudo apt-get install -y jq curl gh ruby
+
+      # 生成 GitHub App Installation Token
+      - name: Generate GitHub App Installation Token
+        id: generate_token
+        run: |
+          echo "${{ secrets.GITHUB_APP_PRIVATE_KEY }}" > private-key.pem
+
+          jwt=$(ruby -ropenssl -rbase64 -rjson -e '
+            require "jwt"
+            t = Time.now.to_i
+            payload = { iat: t, exp: t + 600, iss: ENV["APP_ID"] }
+            key = OpenSSL::PKey::RSA.new(File.read("private-key.pem"))
+            puts JWT.encode(payload, key, "RS256")
+          ')
+
+          token=$(curl -s -X POST \
+            -H "Authorization: Bearer $jwt" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/app/installations/${INSTALLATION_ID}/access_tokens \
+            | jq -r .token)
+
+          echo "token=$token" >> $GITHUB_OUTPUT
+        env:
+          APP_ID: ${{ secrets.GITHUB_APP_ID }}
+          INSTALLATION_ID: ${{ secrets.GITHUB_APP_INSTALLATION_ID }}
 
       - name: Fetch and update D1 data
         env:
@@ -75,8 +100,7 @@ jobs:
       - name: Create or update Pull Request, then attempt auto-merge
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Optional: installation token for a GitHub App with merge rights
-          GITHUB_APP_INSTALLATION_TOKEN: ${{ secrets.GITHUB_APP_INSTALLATION_TOKEN }}
+          GITHUB_APP_INSTALLATION_TOKEN: ${{ steps.generate_token.outputs.token }}   # 🔄 改为动态生成的令牌
         run: |
           set -euo pipefail
           BRANCH="d1-sync"
@@ -117,22 +141,14 @@ jobs:
           fi
 
           echo "🔁 尝试使用 Action 身份合并 PR #$PR_NUM（不能绕过受保护分支的强制签名）。"
-          # 首先尝试用 GH_TOKEN（actions bot）合并
           if gh pr merge "$PR_NUM" --merge --delete-branch --body "Auto-merged by workflow" >/dev/null 2>&1; then
             echo "✅ PR #$PR_NUM 已由 Action 身份合并。"
             exit 0
           fi
 
-          echo "⚠️ Action 身份合并失败（可能是受保护分支或签名要求）。尝试使用 GitHub App 安装令牌回退合并（若提供）。"
+          echo "⚠️ Action 身份合并失败，尝试使用 GitHub App 安装令牌回退合并。"
 
-          if [ -z "${GITHUB_APP_INSTALLATION_TOKEN:-}" ]; then
-            echo "ℹ️ 未配置 GITHUB_APP_INSTALLATION_TOKEN。无法使用 GitHub App 合并，保持 PR 打开供人工处理。"
-            exit 0
-          fi
-
-          # 使用 GitHub App 安装令牌通过 REST API 合并 PR。该安装令牌由你的 GitHub App 创建并放到仓库 Secrets 中（见下方说明）。
           API_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/$PR_NUM/merge"
-          echo "PUT $API_URL"
           merge_payload='{"commit_title":"Auto-merge D1 sync","commit_message":"Automated data sync from Cloudflare D1.","merge_method":"merge"}'
 
           HTTP_CODE=$(curl -s -o /tmp/merge_resp -w "%{http_code}" -X PUT "$API_URL" \
