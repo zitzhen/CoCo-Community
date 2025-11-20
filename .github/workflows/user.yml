@@ -26,7 +26,7 @@ jobs:
       - name: Generate GitHub App Installation Token
         id: generate_token
         run: |
-          echo "${{ secrets.GITHUB_APP_PRIVATE_KEY }}" > private-key.pem
+          echo "${{ secrets.AGITHUB_APP_PRIVATE_KEY }}" > private-key.pem
 
           jwt=$(ruby -ropenssl -rbase64 -rjson -e '
             require "jwt"
@@ -44,8 +44,8 @@ jobs:
 
           echo "token=$token" >> $GITHUB_OUTPUT
         env:
-          APP_ID: ${{ secrets.GITHUB_APP_ID }}
-          INSTALLATION_ID: ${{ secrets.GITHUB_APP_INSTALLATION_ID }}
+          APP_ID: ${{ secrets.AGITHUB_APP_ID }}
+          INSTALLATION_ID: ${{ secrets.AGITHUB_APP_INSTALLATION_ID }}
 
       - name: Fetch and update D1 data
         env:
@@ -100,7 +100,7 @@ jobs:
       - name: Create or update Pull Request, then attempt auto-merge
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_APP_INSTALLATION_TOKEN: ${{ steps.generate_token.outputs.token }}   # 🔄 改为动态生成的令牌
+          GITHUB_APP_INSTALLATION_TOKEN: ${{ steps.generate_token.outputs.token }}   #  改为动态生成的令牌
         run: |
           set -euo pipefail
           BRANCH="d1-sync"
