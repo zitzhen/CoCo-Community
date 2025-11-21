@@ -56,7 +56,7 @@ def crawl_with_selenium(url, wait_time=10):
 
 # 使用示例
 if __name__ == "__main__":
-    url = "https://cc.zitzhen.cn"  # 替换为你要爬取的网址
+    url = "https://cc.zitzhen.cn"  # 爬取官网的HTML
     html = crawl_with_selenium(url)
     
     if html:
