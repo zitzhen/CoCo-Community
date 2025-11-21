@@ -36,12 +36,23 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
       `Expires=${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString()}`,
     ].join("; ");
 
+    const maximum_lifespan = [
+      `maximum_lifespan=true`, // 仅作标记使用
+      "Path=/",
+      "HttpOnly",
+      "Secure",
+      "SameSite=Lax",
+      `Expires=${new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString()}`,
+    ].join("; ");
+
+    const headers = new Headers();
+    headers.append("Set-Cookie", cookie);
+    headers.append("Set-Cookie", maximum_lifespan);
+    headers.set("Location", "/");
+
     return new Response(null, {
       status: 302,
-      headers: {
-        "Set-Cookie": cookie,
-        Location: "/", // 回调到首页
-      },
+      headers: headers,
     });
   } catch (err: any) {
     return new Response(JSON.stringify({ error: "server_error", message: err.message }), {
