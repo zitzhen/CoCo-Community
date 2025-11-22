@@ -38,7 +38,8 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
       },
     });
 
-    const username = githubRes.login;
+    const githubResData = await githubRes.json();
+    const username = githubResData.login;
     const secretKey = env.COCO_COMMUNITY_JWT;
     const maxExp = Date.now() + 30 * 24 * 60 * 60 * 1000;
 
