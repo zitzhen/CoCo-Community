@@ -86,23 +86,32 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
       html_url: user.html_url,
     };
 
-    // 8. 设置响应头更新 token 过期时间（滑动过期）
+    // 8. 实现滑动过期逻辑
     const headers = new Headers();
     headers.set("Content-Type", "application/json");
     headers.set("Cache-Control", "no-store");
     
-    // 延长 token 过期时间为 3 天（滑动过期）
-    const newTokenExpiry = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toUTCString();
-    const tokenCookie = [
-      `token=${token}`,
-      "Path=/",
-      "HttpOnly",
-      "Secure",
-      "SameSite=Lax",
-      `Expires=${newTokenExpiry}`,
-    ].join("; ");
+    // 检查是否需要续期：如果 JWT 中的登录时间在 2 天前或更早，则续期
+    // 这样可以实现文档中描述的"二次活跃=>延长Cookie到期时间为3天"的逻辑
+    const currentTime = Date.now();
+    const loginTime = decodedToken.time || 0;
+    const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000; // 2天的毫秒数
     
-    headers.append("Set-Cookie", tokenCookie);
+    // 如果登录时间超过2天，则为 token 续期
+    if (currentTime - loginTime > TWO_DAYS_MS) {
+      // 延长 token 过期时间为 3 天（滑动过期）
+      const newTokenExpiry = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toUTCString();
+      const tokenCookie = [
+        `token=${token}`,
+        "Path=/",
+        "HttpOnly",
+        "Secure",
+        "SameSite=Lax",
+        `Expires=${newTokenExpiry}`,
+      ].join("; ");
+      
+      headers.append("Set-Cookie", tokenCookie);
+    }
 
     return new Response(JSON.stringify({
       authenticated: true,
