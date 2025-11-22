@@ -46,11 +46,6 @@ def crawl_with_selenium(url, wait_time=10):
                     time.sleep(1)
                     pbar.update(1)
         
-        # 可选：等待特定元素加载（根据需要修改）
-        # WebDriverWait(driver, wait_time).until(
-        #     EC.presence_of_element_located((By.ID, "content"))
-        # )
-        
         # 获取完整HTML
         html_content = driver.page_source
         
