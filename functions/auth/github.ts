@@ -40,13 +40,15 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
 
     const username = githubRes.login;
     const secretKey = env.COCO_COMMUNITY_JWT;
+    const maxExp = Date.now() + 30 * 24 * 60 * 60 * 1000;
 
     const key_maximum_lifespan = {
       username: username,
       time: Date.now(),
+      max_exp: maxExp
     };
 
-    const maximum_lifespan_token = jwt.sign(key_maximum_lifespan, secretKey, { expiresIn: '30d' });
+    const maximum_lifespan_token = jwt.sign(key_maximum_lifespan, secretKey);
     
     const cookie = [
       `token=${accessToken}`,
