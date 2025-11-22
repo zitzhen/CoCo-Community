@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
+from tqdm import tqdm
 
 def crawl_with_selenium(url, wait_time=10):
     """
@@ -23,18 +24,27 @@ def crawl_with_selenium(url, wait_time=10):
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--window-size=1920,1080')
-    
+    chrome_options.add_argument('--blink-settings=imagesEnabled=false')  # 禁用图片加载
+
     # 初始化浏览器
     driver = webdriver.Chrome(options=chrome_options)
-    
+
     try:
         # 访问网页
         driver.get(url)
         
-        # 等待页面完全加载
-        WebDriverWait(driver, wait_time).until(
-            EC.presence_of_element_located((By.TAG_NAME, "body"))
-        )
+        # 使用tqdm来显示进度
+        with tqdm(total=wait_time, desc="等待页面加载", unit="秒") as pbar:
+            for second in range(wait_time):
+                try:
+                    # 检查页面是否加载完成
+                    WebDriverWait(driver, 1).until(
+                        EC.presence_of_element_located((By.TAG_NAME, "body"))
+                    )
+                    break
+                except:
+                    time.sleep(1)
+                    pbar.update(1)
         
         # 可选：等待特定元素加载（根据需要修改）
         # WebDriverWait(driver, wait_time).until(
