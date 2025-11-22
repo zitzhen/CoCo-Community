@@ -1,4 +1,6 @@
 // @ts-nocheck
+import { jwtVerify } from 'jose';
+
 export const onRequestGet: PagesFunction = async ({ request, env }) => {
   try {
     // 1. 解析 Cookie
@@ -48,7 +50,6 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
     }
 
     // 3. 验证 JWT 签名
-    const jwt = require('jsonwebtoken');
     const secretKey = env.COCO_COMMUNITY_JWT;
 
     if (!secretKey) {
@@ -60,7 +61,9 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
 
     let decodedToken;
     try {
-      decodedToken = jwt.verify(maximum_lifespan_token, secretKey);
+      const secret = new TextEncoder().encode(secretKey);
+      const { payload } = await jwtVerify(maximum_lifespan_token, secret);
+      decodedToken = payload;
     } catch (err) {
       return new Response(JSON.stringify({ authenticated: false, error: "invalid_maximum_lifespan_token" }), {
         status: 401,

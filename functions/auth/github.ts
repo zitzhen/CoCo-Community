@@ -1,8 +1,9 @@
+import { SignJWT } from 'jose';
+
 export const onRequestGet: PagesFunction = async ({ request, env }) => {
   try {
     const url = new URL(request.url);
     const code = url.searchParams.get("code");
-    const jwt = require('jsonwebtoken');
 
     if (!code) {
       return new Response(JSON.stringify({ error: "missing_code" }), { status: 400 });
@@ -41,15 +42,27 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
     const githubResData = await githubRes.json();
     const username = githubResData.login;
     const secretKey = env.COCO_COMMUNITY_JWT;
-    const maxExp = Date.now() + 30 * 24 * 60 * 60 * 1000;
+    
+    if (!secretKey) {
+      return new Response(JSON.stringify({ error: "server_configuration_error" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
     const key_maximum_lifespan = {
       username: username,
       time: Date.now(),
-      max_exp: maxExp
+      max_exp: Date.now() + 30 * 24 * 60 * 60 * 1000
     };
 
-    const maximum_lifespan_token = jwt.sign(key_maximum_lifespan, secretKey, { expiresIn: '30d' });
+    // 使用 jose 库创建 JWT
+    const secret = new TextEncoder().encode(secretKey);
+    const maximum_lifespan_token = await new SignJWT(key_maximum_lifespan)
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setExpirationTime('30d')
+      .sign(secret);
     
     const cookie = [
       `token=${accessToken}`,
