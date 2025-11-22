@@ -2,6 +2,7 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
   try {
     const url = new URL(request.url);
     const code = url.searchParams.get("code");
+    const jwt = require('jsonwebtoken');
 
     if (!code) {
       return new Response(JSON.stringify({ error: "missing_code" }), { status: 400 });
@@ -27,6 +28,26 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
       return new Response(JSON.stringify({ error: "no_token", detail: JSON.stringify(tokenData) }), { status: 401 });
     }
 
+
+    // 请求用户Github信息
+    const githubRes = await fetch("https://api.github.com/user", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: "application/json",
+        "User-Agent": "Cloudflare-Worker-OAuth",
+      },
+    });
+
+    const username = githubRes.login;
+    const secretKey = env.COCO_COMMUNITY_JWT;
+
+    const key_maximum_lifespan = {
+      username: username,
+      time: Date.now(),
+    };
+
+    const maximum_lifespan_token = jwt.sign(key_maximum_lifespan, secretKey, { expiresIn: '30d' });
+    
     const cookie = [
       `token=${accessToken}`,
       "Path=/",
@@ -37,7 +58,7 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
     ].join("; ");
 
     const maximum_lifespan = [
-      `maximum_lifespan=true`, // 仅作标记使用
+      `maximum_lifespan=${maximum_lifespan_token}`,
       "Path=/",
       "HttpOnly",
       "Secure",
