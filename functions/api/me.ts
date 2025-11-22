@@ -19,10 +19,32 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
 
     // 2. 验证 maximum_lifespan_token 是否存在
     if (!maximum_lifespan_token) {
-      return new Response(JSON.stringify({ authenticated: false, error: "maximum_lifespan_token_missing" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
+      // 如果没有 maximum_lifespan_token 但有 token，说明用户已超过最大生命周期，需要强制退出
+      if (token) {
+        // 设置 token 过期
+        const expiredTokenCookie = [
+          `token=`,
+          "Path=/",
+          "HttpOnly",
+          "Secure",
+          "SameSite=Lax",
+          `Expires=Thu, 01 Jan 1970 00:00:00 GMT`,
+        ].join("; ");
+        
+        const headers = new Headers();
+        headers.set("Content-Type", "application/json");
+        headers.append("Set-Cookie", expiredTokenCookie);
+        
+        return new Response(JSON.stringify({ authenticated: false, error: "maximum_lifespan_token_missing" }), {
+          status: 401,
+          headers: headers,
+        });
+      } else {
+        return new Response(JSON.stringify({ authenticated: false, error: "maximum_lifespan_token_missing" }), {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
     }
 
     // 3. 验证 JWT 签名
