@@ -49,7 +49,7 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
       max_exp: maxExp
     };
 
-    const maximum_lifespan_token = jwt.sign(key_maximum_lifespan, secretKey);
+    const maximum_lifespan_token = jwt.sign(key_maximum_lifespan, secretKey, { expiresIn: '30d' });
     
     const cookie = [
       `token=${accessToken}`,
