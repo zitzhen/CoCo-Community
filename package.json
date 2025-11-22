@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "postbuild": "mkdir -p public/agreement && cp src/assets/content/agreement/privacypolicy/content.md public/agreement/privacypolicy.md && cp src/assets/content/agreement/useragreement/content.md public/agreement/useragreement.md",
     "serve": "vite preview"
   },
   "dependencies": {
