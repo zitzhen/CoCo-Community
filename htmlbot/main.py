@@ -9,11 +9,10 @@ from tqdm import tqdm
 def crawl_with_selenium(url, wait_time=10):
     """
     使用Selenium执行JavaScript并获取完整HTML
-    
     Args:
         url (str): 要爬取的网址
         wait_time (int): 等待页面加载的时间（秒）
-    
+
     Returns:
         str: 完整的HTML内容
     """
@@ -32,38 +31,42 @@ def crawl_with_selenium(url, wait_time=10):
     try:
         # 访问网页
         driver.get(url)
-        
+
         # 使用tqdm来显示进度
         with tqdm(total=wait_time, desc="等待页面加载", unit="秒") as pbar:
             for second in range(wait_time):
+                time.sleep(1)  # 固定等待1秒
+                pbar.update(1)
                 try:
-                    # 检查页面是否加载完成
-                    WebDriverWait(driver, 1).until(
+                    # 检查页面是否加载完成（非必要，但可提前结束）
+                    WebDriverWait(driver, 0.1).until(
                         EC.presence_of_element_located((By.TAG_NAME, "body"))
                     )
+                    # 如果加载完成，可以提前结束等待
+                    pbar.set_description("页面加载完成")
                     break
                 except:
-                    time.sleep(1)
-                    pbar.update(1)
-        
+                    continue
+
         # 获取完整HTML
         html_content = driver.page_source
-        
+
         return html_content
-        
+
     except Exception as e:
         print(f"爬取过程中出现错误: {e}")
         return None
-        
+
     finally:
         # 关闭浏览器
         driver.quit()
 
 # 使用示例
 if __name__ == "__main__":
+    print("进程开始")
     url = "https://cc.zitzhen.cn"  # 爬取官网的HTML
     html = crawl_with_selenium(url)
-    
+
     if html:
         print("成功获取HTML内容")
         print(f"HTML长度: {len(html)}")
