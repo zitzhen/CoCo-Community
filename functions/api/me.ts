@@ -5,6 +5,10 @@ export const onRequestGet: PagesFunction = async ({ request }) => {
     const cookieHeader = request.headers.get("Cookie") || "";
     const tokenMatch = cookieHeader.match(/(?:^|;\s*)token=([^;]+)/);
     const token = tokenMatch ? decodeURIComponent(tokenMatch[1]) : null;
+    const maximum_lifespan_token = (request.headers.get('Cookie') || '')
+      .split(';')
+      .find(row => row.trim().startsWith('maximum_lifespan='))
+      ?.split('=')[1] || null;
 
     if (!token || token.length < 10) {
       return new Response(JSON.stringify({ authenticated: false }), {
