@@ -1,48 +1,52 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 from tqdm import tqdm
+import sys
+
 
 def crawl_with_selenium(url, wait_time=10):
     """
     使用Selenium执行JavaScript并获取完整HTML
-    Args:
-        url (str): 要爬取的网址
-        wait_time (int): 等待页面加载的时间（秒）
-
-    Returns:
-        str: 完整的HTML内容
     """
     # 配置Chrome选项
     chrome_options = Options()
-    chrome_options.add_argument('--headless')  # 无头模式
+    chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--window-size=1920,1080')
-    chrome_options.add_argument('--blink-settings=imagesEnabled=false')  # 禁用图片加载
-
-    # 初始化浏览器
-    driver = webdriver.Chrome(options=chrome_options)
+    chrome_options.add_argument('--blink-settings=imagesEnabled=false')
 
     try:
-        # 访问网页
+        # 使用webdriver-manager自动管理ChromeDriver
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+    except Exception as e:
+        print(f"Chrome驱动初始化失败: {e}")
+        return None
+
+    try:
+        print(f"正在访问: {url}")
         driver.get(url)
 
-        # 使用tqdm来显示进度
-        with tqdm(total=wait_time, desc="等待页面加载", unit="秒") as pbar:
+        # 使用tqdm显示进度条
+        print("等待页面加载中...")
+        with tqdm(total=wait_time, desc="加载进度", unit="秒", file=sys.stdout) as pbar:
             for second in range(wait_time):
-                time.sleep(1)  # 固定等待1秒
+                time.sleep(1)
                 pbar.update(1)
+
+                # 检查页面是否已加载完成
                 try:
-                    # 检查页面是否加载完成（非必要，但可提前结束）
-                    WebDriverWait(driver, 0.1).until(
-                        EC.presence_of_element_located((By.TAG_NAME, "body"))
-                    )
-                    # 如果加载完成，可以提前结束等待
+                    # 检查body元素是否存在且页面状态为complete
+                    driver.execute_script("return document.readyState") == "complete"
+                    # 可以添加更多检查条件
                     pbar.set_description("页面加载完成")
                     break
                 except:
@@ -50,28 +54,28 @@ def crawl_with_selenium(url, wait_time=10):
 
         # 获取完整HTML
         html_content = driver.page_source
-
+        print(f"页面加载完成，HTML长度: {len(html_content)}")
         return html_content
 
     except Exception as e:
         print(f"爬取过程中出现错误: {e}")
         return None
-
     finally:
-        # 关闭浏览器
         driver.quit()
+
 
 # 使用示例
 if __name__ == "__main__":
     print("进程开始")
-    url = "https://cc.zitzhen.cn"  # 爬取官网的HTML
-    html = crawl_with_selenium(url)
+    url = "https://cc.zitzhen.cn"
+
+    html = crawl_with_selenium(url, wait_time=10)
 
     if html:
         print("成功获取HTML内容")
-        print(f"HTML长度: {len(html)}")
         # 保存到文件
         with open("crawled_page.html", "w", encoding="utf-8") as f:
             f.write(html)
+        print("已保存到 crawled_page.html")
     else:
         print("获取HTML内容失败")
