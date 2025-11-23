@@ -4,6 +4,7 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 from tqdm import tqdm
+import os
 
 
 def crawl_website(url, wait_time=8):
@@ -55,6 +56,13 @@ if __name__ == "__main__":
     html_content = crawl_website(url)
 
     if html_content:
-        with open("website.html", "w", encoding="utf-8") as f:
+        # 确保上级目录的htmlbot[seo]文件夹存在
+        folder_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'htmlbot[seo]'))
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+
+        # 构建完整的文件路径
+        file_path = os.path.join(folder_path, "website.html")
+        with open(file_path, "w", encoding="utf-8") as f:
             f.write(html_content)
-        print("网页已保存为 website.html")
+        print(f"网页已保存为 {file_path}")
