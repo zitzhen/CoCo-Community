@@ -27,7 +27,7 @@
         </div>
       </div>
 
-      <div class="article-content">这是一篇测试文章</div>
+      <div class="article-content" v-html="article.content"></div>
     </div>
 
 
@@ -36,6 +36,7 @@
 <script>
 import { checkLoginStatus } from '@/script/login';
 import axios from 'axios';
+import { marked } from 'marked';
 
 export default {
   data() {
@@ -50,7 +51,8 @@ export default {
         pageviews: 0,
         Like: 0,
         collect: 0,
-        comments: 0
+        comments: 0,
+        content: ""
       }
     };
   },
@@ -85,12 +87,49 @@ export default {
     },
     goMe() {
       this.$router.push('/me');
+    },
+    async fetchArticleDetail() {
+      try {
+        // 获取文章列表
+        const response = await axios.get('/essaylist.json');
+        this.essaylist = response.data.list || [];
+        
+        // 从路由参数获取文章ID
+        const articleId = this.$route.params.id;
+        
+        // 根据ID查找对应的文章
+        // 现在使用文章的ID字段进行匹配
+        const article = this.essaylist.find(item => 
+          item.id && item.id.toString() === articleId
+        );
+        
+        if (article) {
+          // 使用marked解析Markdown内容
+          const parsedContent = marked(article.content || "");
+          this.article = {
+            name: article.name,
+            author: article.author,
+            publication_time: article.publication_time,
+            pageviews: article.pageviews || 0,
+            Like: article.Like || 0,
+            collect: article.collect || 0,
+            comments: article.comments || 0,
+            content: parsedContent
+          };
+        } else {
+          console.error(`未找到ID为 ${articleId} 的文章`);
+          // 可以跳转到404页面或显示错误信息
+          this.$router.push('/NotFound');
+        }
+      } catch (error) {
+        console.error("获取文章详情失败：", error);
+      }
     }
   },
   mounted() {
     this.updateLoginInfo();
-    // 这里可以添加获取文章详情的逻辑
-    // 例如：this.fetchArticleDetail();
+    // 获取文章详情
+    this.fetchArticleDetail();
   }
 }
 </script>
