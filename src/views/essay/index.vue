@@ -38,7 +38,7 @@
         </div>
 
         <div class="button-group">
-          <a :href="`/article/${encodeURIComponent(article.name)}`" class="text-btn">
+          <a :href="`/essay/${encodeURIComponent(article.id)}`" class="text-btn">
             <i class="fas fa-book-open"></i> 去详情页面
           </a>
         </div>
