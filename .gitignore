@@ -30,3 +30,4 @@ localhost.pem
 localhost-key.pem
 
 .vscode/launch.json
+.obsidian/
