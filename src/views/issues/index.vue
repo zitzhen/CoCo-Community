@@ -162,6 +162,7 @@ export default {
 </script>
 
 <style scoped>
+@import url(@/assets/css/Navigation-bar.css);
 .issues-container {
   max-width: 1200px;
   margin: 0 auto;
