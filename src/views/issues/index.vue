@@ -64,7 +64,12 @@ import { checkLoginStatus } from '@/script/login';
 
 async function fetch_github_issues() {
     try{
-        const response = await fetch('/api/github/issues');
+        if(this.loginstatus){
+            const response = await fetch('/api/github/issues');
+        }else{
+            const response = await fetch('https://api.github.com/repos/zitzhen/CoCo-Community/issues')
+        }
+        
         if (!response.ok) {
             throw new Error('网络响应失败');
         }
@@ -136,13 +141,16 @@ export default {
       if (!logininformation || !logininformation.authenticated) {
         this.username = '未登录用户';
         this.avatar = '/images/user.png';
+        this.loginstatus = false;
       } else {
         this.username = logininformation.user.name || logininformation.user.login;
         this.avatar = logininformation.user.avatar_url || '/images/user.png';
+        this.loginstatus = true;
       }
     }).catch((err) => {
       console.error("登录检查失败：", err);
       this.username = '登录信息检查失败';
+      this.loginstatus = false;
     });
   }
 }
