@@ -62,6 +62,21 @@
 <script>
 import { checkLoginStatus } from '@/script/login';
 
+async function fetch_github_issues() {
+    try{
+        const response = await fetch('/api/github/issues');
+        if (!response.ok) {
+            throw new Error('网络响应失败');
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('获取 GitHub 议题失败:', error);
+        return [];
+    }
+}
+
+
 export default {
   name: 'Issues',
   data() {
@@ -73,35 +88,7 @@ export default {
         title: '',
         body: ''
       },
-      issues: [
-        {
-          id: 1,
-          title: "修复控件在移动设备上的显示问题",
-          author: "xiaozhen",
-          date: new Date(2024, 10, 15),
-          body: "在移动设备上，控件的布局会出现错位现象，需要进行响应式适配。",
-          comments: 5,
-          status: "open"
-        },
-        {
-          id: 2,
-          title: "增加新的动画效果控件",
-          author: "developer1",
-          date: new Date(2024, 10, 18),
-          body: "建议增加一些常用的CSS动画效果控件，提升用户体验。",
-          comments: 12,
-          status: "open"
-        },
-        {
-          id: 3,
-          title: "优化控件下载功能",
-          author: "user123",
-          date: new Date(2024, 10, 20),
-          body: "当前控件下载功能速度较慢，建议优化下载逻辑。",
-          comments: 7,
-          status: "closed"
-        }
-      ]
+      issues: []
     }
   },
   methods: {
