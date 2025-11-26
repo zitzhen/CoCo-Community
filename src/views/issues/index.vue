@@ -94,20 +94,6 @@
               </div>
             </div>
             <div class="issue-actions">
-              <button 
-                v-if="issue.status === 'open'" 
-                @click="closeIssue(issue)"
-                class="issue-action-btn close-btn"
-              >
-                关闭议题
-              </button>
-              <button 
-                v-if="issue.status === 'closed'" 
-                @click="openIssue(issue)"
-                class="issue-action-btn open-btn"
-              >
-                重新打开
-              </button>
             </div>
           </div>
           <div class="issue-footer">
