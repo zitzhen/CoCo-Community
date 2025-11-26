@@ -36,24 +36,109 @@
         </div>
       </div>
 
+      <!-- 过滤器和分页控制 -->
+      <div class="issues-controls">
+        <div class="filters">
+          <button 
+            :class="['filter-btn', { active: selectedFilter === 'all' }]" 
+            @click="selectedFilter = 'all'"
+          >
+            全部
+          </button>
+          <button 
+            :class="['filter-btn', { active: selectedFilter === 'open' }]" 
+            @click="selectedFilter = 'open'"
+          >
+            打开 {{ openIssuesCount }}
+          </button>
+          <button 
+            :class="['filter-btn', { active: selectedFilter === 'closed' }]" 
+            @click="selectedFilter = 'closed'"
+          >
+            已关闭 {{ closedIssuesCount }}
+          </button>
+        </div>
+        
+        <!-- 分页控制 -->
+        <div class="pagination" v-if="totalPages > 1">
+          <button 
+            :disabled="currentPage === 1" 
+            @click="changePage(currentPage - 1)"
+            class="pagination-btn"
+          >
+            上一页
+          </button>
+          <span class="page-info">
+            第 {{ currentPage }} 页，共 {{ totalPages }} 页
+          </span>
+          <button 
+            :disabled="currentPage === totalPages" 
+            @click="changePage(currentPage + 1)"
+            class="pagination-btn"
+          >
+            下一页
+          </button>
+        </div>
+      </div>
+
       <!-- 议题列表 -->
       <div class="issues-list">
-        <div class="issue-card" v-for="issue in issues" :key="issue.id">
+        <div class="issue-card" v-for="issue in paginatedIssues" :key="issue.id">
           <div class="issue-header">
-            <h3 class="issue-title">{{ issue.title }}</h3>
-            <div class="issue-meta">
-              <span class="issue-author">由 {{ issue.author }} 提交</span>
-              <span class="issue-date">{{ issue.date }}</span>
+            <div class="issue-main-info">
+              <h3 class="issue-title">{{ issue.title }}</h3>
+              <div class="issue-meta">
+                <span class="issue-number">#{{ issue.number }}</span>
+                <span class="issue-author">由 {{ issue.author }} 提交</span>
+                <span class="issue-date">{{ formatDate(issue.date) }}</span>
+              </div>
+            </div>
+            <div class="issue-actions">
+              <button 
+                v-if="issue.status === 'open'" 
+                @click="closeIssue(issue)"
+                class="issue-action-btn close-btn"
+              >
+                关闭议题
+              </button>
+              <button 
+                v-if="issue.status === 'closed'" 
+                @click="openIssue(issue)"
+                class="issue-action-btn open-btn"
+              >
+                重新打开
+              </button>
             </div>
           </div>
-          <div class="issue-body" v-html="(issue.body)"></div>
+          <div class="issue-body" v-html="issue.body"></div>
           <div class="issue-footer">
             <span class="issue-comments">
               <i class="fas fa-comment"></i> {{ issue.comments }} 条评论
             </span>
-            <span class="issue-status" :class="issue.status">{{ issue.status }}</span>
+            <!-- <span class="issue-status" :class="issue.status">{{ issue.status === 'open' ? '打开' : '已关闭' }}</span> -->
           </div>
         </div>
+      </div>
+
+      <!-- 分页控制（底部） -->
+      <div class="pagination" v-if="totalPages > 1">
+        <button 
+          :disabled="currentPage === 1" 
+          @click="changePage(currentPage - 1)"
+          class="pagination-btn"
+        >
+          上一页
+        </button>
+        <span class="page-info">
+          第 {{ currentPage }} 页，共 {{ totalPages }} 页
+        </span>
+        <button 
+          :disabled="currentPage === totalPages" 
+          @click="changePage(currentPage + 1)"
+          class="pagination-btn"
+        >
+          下一页
+        </button>
       </div>
     </div>
   </div>
@@ -95,7 +180,35 @@ export default {
         body: ''
       },
       issues: [],
-      loginstatus: false
+      loginstatus: false,
+      selectedFilter: 'open',
+      currentPage: 1,
+      itemsPerPage: 10
+    }
+  },
+  computed: {
+    filteredIssues() {
+      if (this.selectedFilter === 'all') {
+        return this.issues;
+      } else if (this.selectedFilter === 'open') {
+        return this.issues.filter(issue => issue.status !== 'closed');
+      } else {
+        return this.issues.filter(issue => issue.status === 'closed');
+      }
+    },
+    paginatedIssues() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.filteredIssues.slice(start, end);
+    },
+    totalPages() {
+      return Math.ceil(this.filteredIssues.length / this.itemsPerPage);
+    },
+    openIssuesCount() {
+      return this.issues.filter(issue => issue.status !== 'closed').length;
+    },
+    closedIssuesCount() {
+      return this.issues.filter(issue => issue.status === 'closed').length;
     }
   },
   methods: {
@@ -116,6 +229,7 @@ export default {
       // 创建新议题
       const issue = {
         id: this.issues.length + 1,
+        number: this.issues.length + 1,
         title: this.newIssue.title,
         author: this.username,
         date: new Date(),
@@ -127,6 +241,26 @@ export default {
       this.issues.unshift(issue);
       this.cancelNewIssue();
     },
+    changePage(page) {
+      if (page >= 1 && page <= this.totalPages) {
+        this.currentPage = page;
+      }
+    },
+    closeIssue(issue) {
+      issue.status = 'closed';
+      // 更新issue的closed_at时间
+      issue.closed_at = new Date();
+    },
+    openIssue(issue) {
+      issue.status = 'open';
+      // 移除closed_at时间
+      delete issue.closed_at;
+    },
+    formatDate(date) {
+      if (!date) return '';
+      const d = new Date(date);
+      return d.toLocaleDateString('zh-CN');
+    }
   },
   async mounted() {
     await checkLoginStatus().then((logininformation) => {
@@ -256,6 +390,70 @@ export default {
   background-color: #2ea043;
 }
 
+.issues-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 15px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.filters {
+  display: flex;
+  gap: 10px;
+}
+
+.filter-btn {
+  padding: 8px 15px;
+  border: 1px solid #ddd;
+  background-color: #f6f8fa;
+  color: #24292f;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.filter-btn:hover {
+  background-color: #eaecef;
+}
+
+.filter-btn.active {
+  background-color: #0969da;
+  color: white;
+  border-color: #0969da;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pagination-btn {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  background-color: #f6f8fa;
+  color: #24292f;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #eaecef;
+}
+
+.pagination-btn:disabled {
+  color: #888;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.page-info {
+  font-size: 14px;
+  color: #57606a;
+}
+
 .issues-list {
   display: flex;
   flex-direction: column;
@@ -271,7 +469,14 @@ export default {
 }
 
 .issue-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   margin-bottom: 15px;
+}
+
+.issue-main-info {
+  flex: 1;
 }
 
 .issue-title {
@@ -287,8 +492,46 @@ export default {
   color: #57606a;
 }
 
+.issue-number {
+  font-weight: 600;
+}
+
 .issue-author {
   font-weight: 500;
+}
+
+.issue-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.issue-action-btn {
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid;
+}
+
+.close-btn {
+  background-color: #da3633;
+  color: white;
+  border-color: #b62324;
+}
+
+.close-btn:hover {
+  background-color: #b62324;
+}
+
+.open-btn {
+  background-color: #238636;
+  color: white;
+  border-color: #196c2e;
+}
+
+.open-btn:hover {
+  background-color: #196c2e;
 }
 
 .issue-body {
