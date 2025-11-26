@@ -110,7 +110,6 @@
               </button>
             </div>
           </div>
-          <div class="issue-body" v-html="issue.body"></div>
           <div class="issue-footer">
             <span class="issue-comments">
               <i class="fas fa-comment"></i> {{ issue.comments }} 条评论
@@ -153,7 +152,7 @@ async function fetch_github_issues(loginstatus) {
         if(loginstatus){
             response = await fetch('/api/github/issues');
         }else{
-            response = await fetch('https://api.github.com/repos/zitzhen/CoCo-Community/issues')
+            response = await fetch('https://api.github.com/repos/zitzhen/CoCo-Community/issues?state=all')
         }
         
         if (!response.ok) {
