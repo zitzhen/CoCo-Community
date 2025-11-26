@@ -31,3 +31,4 @@ localhost-key.pem
 
 .vscode/launch.json
 .obsidian/
+.vscode/chrome-debug/
