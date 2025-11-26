@@ -100,7 +100,7 @@
             <span class="issue-comments">
               <i class="fas fa-comment"></i> {{ issue.comments }} 条评论
             </span>
-            <!-- <span class="issue-status" :class="issue.status">{{ issue.status === 'open' ? '打开' : '已关闭' }}</span> -->
+           <span class="issue-status" :class="issue.state">{{ issue.state === 'open' ? '打开' : '已关闭' }}</span>
           </div>
         </div>
       </div>
