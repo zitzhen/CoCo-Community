@@ -17,14 +17,15 @@ export default defineConfig({
   server: useHttps
     ? {
         https: {
-          key: fs.readFileSync('./localhost-key.pem'),
-          cert: fs.readFileSync('./localhost.pem'),
+          key: fs.readFileSync('./coco-community.test-key.pem'),
+          cert: fs.readFileSync('./coco-community-test.pem'),
         },
-        host: 'localhost',
+        host: 'coco-community.test', 
         port: 5173,
+        open: true, //自动打开浏览器
       }
     : {
-        host: 'localhost',
+        host: 'coco-community.test',
         port: 5173,
       },
   base: '/',
