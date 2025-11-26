@@ -62,13 +62,14 @@
 <script>
 import { checkLoginStatus } from '@/script/login';
 
-async function fetch_github_issues() {
+async function fetch_github_issues(loginstatus) {
     try{
-        //if(this.loginstatus){
-            //const response = await fetch('/api/github/issues');
-        //}//else{
-            const response = await fetch('https://api.github.com/repos/zitzhen/CoCo-Community/issues')
-        //}
+        let response;
+        if(loginstatus){
+            response = await fetch('/api/github/issues');
+        }else{
+            response = await fetch('https://api.github.com/repos/zitzhen/CoCo-Community/issues')
+        }
         
         if (!response.ok) {
             throw new Error('网络响应失败');
@@ -93,7 +94,8 @@ export default {
         title: '',
         body: ''
       },
-      issues: []
+      issues: [],
+      loginstatus: false
     }
   },
   methods: {
@@ -127,7 +129,7 @@ export default {
     },
   },
   async mounted() {
-    checkLoginStatus().then((logininformation) => {
+    await checkLoginStatus().then((logininformation) => {
       if (!logininformation || !logininformation.authenticated) {
         this.username = '未登录用户';
         this.avatar = '/images/user.png';
@@ -144,7 +146,7 @@ export default {
     });
     
     console.log(this.loginstatus);
-    this.issues = await fetch_github_issues();
+    this.issues = await fetch_github_issues(this.loginstatus);
     console.log(this.issues);
   }
 }
