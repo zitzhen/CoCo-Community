@@ -43,10 +43,10 @@
             <h3 class="issue-title">{{ issue.title }}</h3>
             <div class="issue-meta">
               <span class="issue-author">由 {{ issue.author }} 提交</span>
-              <span class="issue-date">{{ formatDate(issue.date) }}</span>
+              <span class="issue-date">{{ issue.date }}</span>
             </div>
           </div>
-          <div class="issue-body" v-html="formatContent(issue.body)"></div>
+          <div class="issue-body" v-html="(issue.body)"></div>
           <div class="issue-footer">
             <span class="issue-comments">
               <i class="fas fa-comment"></i> {{ issue.comments }} 条评论
@@ -64,11 +64,11 @@ import { checkLoginStatus } from '@/script/login';
 
 async function fetch_github_issues() {
     try{
-        if(this.loginstatus){
-            const response = await fetch('/api/github/issues');
-        }else{
+        //if(this.loginstatus){
+            //const response = await fetch('/api/github/issues');
+        //}//else{
             const response = await fetch('https://api.github.com/repos/zitzhen/CoCo-Community/issues')
-        }
+        //}
         
         if (!response.ok) {
             throw new Error('网络响应失败');
@@ -125,16 +125,6 @@ export default {
       this.issues.unshift(issue);
       this.cancelNewIssue();
     },
-    formatContent(content) {
-      // 简单的文本格式化，将换行转换为<br>
-      return content.replace(/\n/g, '<br>');
-    },
-    formatDate(date) {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    }
   },
   async mounted() {
     checkLoginStatus().then((logininformation) => {
@@ -152,6 +142,10 @@ export default {
       this.username = '登录信息检查失败';
       this.loginstatus = false;
     });
+    
+    console.log(this.loginstatus);
+    this.issues = await fetch_github_issues();
+    console.log(this.issues);
   }
 }
 </script>
