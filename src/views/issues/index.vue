@@ -159,7 +159,9 @@ async function fetch_github_issues(loginstatus) {
             throw new Error('网络响应失败');
         }
         const data = await response.json();
-        return data;
+        // 过滤掉PR类型的issues，只保留真正的issues
+        const filteredData = data.filter(issue => !issue.pull_request);
+        return filteredData;
     } catch (error) {
         console.error('获取 GitHub 议题失败:', error);
         return [];
