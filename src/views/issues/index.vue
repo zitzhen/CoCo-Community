@@ -236,6 +236,9 @@ export default {
     gome() {
       this.$router.push('/me');
     },
+    closenewissueModal() {
+      this.isnewissues = false;
+    },
     cancelNewIssue() {
       this.newIssue.title = '';
       this.newIssue.body = '';
