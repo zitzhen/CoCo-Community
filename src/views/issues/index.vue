@@ -326,6 +326,7 @@ export default {
 
 <style>
 @import url(@/assets/css/Navigation-bar.css);
+@import url(@/assets/css/popup.css);
 
 :root {
   --primary-color: #2ecc71;
