@@ -46,27 +46,56 @@ export const onRequestGet: PagesFunction = async ({ request }) => {
     });
   }
 
-  // ✅ 请求 GitHub API
-  const githubApiUrl = `https://api.github.com/repos/zitzhen/CoCo-Community/issues`;
-  const githubResponse = await fetch(githubApiUrl, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: "application/vnd.github+json",
-      "User-Agent": "Cloudflare-Worker",
-    },
-  });
+  // 并行请求打开和关闭的议题
+  const openIssuesUrl = `https://api.github.com/repos/zitzhen/CoCo-Community/issues?state=open`;
+  const closedIssuesUrl = `https://api.github.com/repos/zitzhen/CoCo-Community/issues?state=closed`;
+  
+  const [openResponse, closedResponse] = await Promise.all([
+    fetch(openIssuesUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github+json",
+        "User-Agent": "Cloudflare-Worker",
+      },
+    }),
+    fetch(closedIssuesUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github+json",
+        "User-Agent": "Cloudflare-Worker",
+      },
+    })
+  ]);
 
-  if (!githubResponse.ok) {
-    const errorText = await githubResponse.text();
-    return new Response(JSON.stringify({ error: "GitHub API request failed", details: errorText }), {
-      status: githubResponse.status,
+  // 检查请求是否成功
+  if (!openResponse.ok) {
+    const errorText = await openResponse.text();
+    return new Response(JSON.stringify({ error: "GitHub API request failed for open issues", details: errorText }), {
+      status: openResponse.status,
       headers: { "Content-Type": "application/json" },
     });
   }
 
-  const userData = await githubResponse.json();
+  if (!closedResponse.ok) {
+    const errorText = await closedResponse.text();
+    return new Response(JSON.stringify({ error: "GitHub API request failed for closed issues", details: errorText }), {
+      status: closedResponse.status,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
-  return new Response(JSON.stringify(userData), {
+  // 获取数据
+  const openData = await openResponse.json();
+  const closedData = await closedResponse.json();
+
+  // 过滤掉 PR（pull requests）
+  const filteredOpenIssues = openData.filter(item => !item.pull_request);
+  const filteredClosedIssues = closedData.filter(item => !item.pull_request);
+
+  // 合并打开和关闭的议题
+  const allFilteredIssues = [...filteredOpenIssues, ...filteredClosedIssues];
+
+  return new Response(JSON.stringify(allFilteredIssues), {
     status: 200,
     headers: {
       "Content-Type": "application/json",
