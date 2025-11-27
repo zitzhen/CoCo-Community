@@ -161,8 +161,25 @@ async function fetch_github_issues(loginstatus) {
       const pureOpen = openData.filter(item => !item.pull_request);
       const pureClosed = closedData.filter(item => !item.pull_request);
 
+      // 将 GitHub API 数据结构映射为前端使用的格式
+      const mapIssueData = (issue) => ({
+        id: issue.id,
+        number: issue.number,
+        title: issue.title,
+        author: issue.user ? issue.user.login : 'unknown',
+        date: issue.created_at,
+        body: issue.body || '',
+        comments: issue.comments || 0,
+        state: issue.state, // GitHub API 使用 state 字段
+        closed_at: issue.closed_at
+      });
+
+      // 映射数据结构
+      const mappedOpenIssues = pureOpen.map(mapIssueData);
+      const mappedClosedIssues = pureClosed.map(mapIssueData);
+
       // 合并返回
-      const data = pureOpen.concat(pureClosed);
+      const data = mappedOpenIssues.concat(mappedClosedIssues);
       return data;
 
     } catch (error) {
@@ -195,9 +212,9 @@ export default {
       if (this.selectedFilter === 'all') {
         return this.issues;
       } else if (this.selectedFilter === 'open') {
-        return this.issues.filter(issue => issue.status !== 'closed');
+        return this.issues.filter(issue => issue.state !== 'closed');
       } else {
-        return this.issues.filter(issue => issue.status === 'closed');
+        return this.issues.filter(issue => issue.state === 'closed');
       }
     },
     paginatedIssues() {
@@ -209,10 +226,10 @@ export default {
       return Math.ceil(this.filteredIssues.length / this.itemsPerPage);
     },
     openIssuesCount() {
-      return this.issues.filter(issue => issue.status !== 'closed').length;
+      return this.issues.filter(issue => issue.state !== 'closed').length;
     },
     closedIssuesCount() {
-      return this.issues.filter(issue => issue.status === 'closed').length;
+      return this.issues.filter(issue => issue.state === 'closed').length;
     }
   },
   methods: {
@@ -238,7 +255,7 @@ export default {
         date: new Date(),
         body: this.newIssue.body,
         comments: 0,
-        status: "open"
+        state: "open"  // 修复：使用state而不是status
       };
       
       this.issues.unshift(issue);
@@ -250,18 +267,23 @@ export default {
       }
     },
     closeIssue(issue) {
-      issue.status = 'closed';
+      issue.state = 'closed';
       // 更新issue的closed_at时间
       issue.closed_at = new Date();
     },
     openIssue(issue) {
-      issue.status = 'open';
+      issue.state = 'open';
       // 移除closed_at时间
       delete issue.closed_at;
     },
     formatDate(date) {
       if (!date) return '';
+      // 确保日期是有效的格式
       const d = new Date(date);
+      // 检查日期是否有效
+      if (isNaN(d.getTime())) {
+        return '';
+      }
       return d.toLocaleDateString('zh-CN');
     }
   },
