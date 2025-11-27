@@ -1,0 +1,76 @@
+// @ts-nocheck
+export const onRequestGet: PagesFunction = async ({ request }) => {
+  // ✅ 白名单校验：只允许 cc.zitzhen.cn
+  const origin = request.headers.get("Origin") || "";
+  const referer = request.headers.get("Referer") || "";
+  const allowedDomain = "https://cc.zitzhen.cn";
+  // Only allow if either Origin or Referer strictly equals the allowed domain as origin
+  const isValidOrigin = (() => {
+    try {
+      if (origin) {
+        const originUrl = new URL(origin);
+        if (originUrl.origin === allowedDomain) return true;
+      }
+    } catch (e) {
+      // Ignore parsing errors; treat as invalid
+    }
+    return false;
+  })();
+  const isValidReferer = (() => {
+    try {
+      if (referer) {
+        const refererUrl = new URL(referer);
+        if (refererUrl.origin === allowedDomain) return true;
+      }
+    } catch (e) {
+      // Ignore parsing errors; treat as invalid
+    }
+    return false;
+  })();
+  if (!isValidOrigin && !isValidReferer) {
+    return new Response(JSON.stringify({ error: "Forbidden: Invalid origin" }), {
+      status: 403,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  // ✅ 解析 Cookie 中的 GitHub token
+  const cookieHeader = request.headers.get("Cookie") || "";
+  const tokenMatch = cookieHeader.match(/(?:^|;\s*)token=([^;]+)/);
+  const token = tokenMatch ? decodeURIComponent(tokenMatch[1]) : null;
+
+  if (!token || token.length < 10) {
+    return new Response(JSON.stringify({ authenticated: false }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  // ✅ 请求 GitHub API
+  const githubApiUrl = `https://api.github.com/repos/zitzhen/CoCo-Community/issues`;
+  const githubResponse = await fetch(githubApiUrl, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/vnd.github+json",
+      "User-Agent": "Cloudflare-Worker",
+    },
+  });
+
+  if (!githubResponse.ok) {
+    const errorText = await githubResponse.text();
+    return new Response(JSON.stringify({ error: "GitHub API request failed", details: errorText }), {
+      status: githubResponse.status,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const userData = await githubResponse.json();
+
+  return new Response(JSON.stringify(userData), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": allowedDomain,
+    },
+  });
+};
