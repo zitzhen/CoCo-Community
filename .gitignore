@@ -26,8 +26,9 @@ coverage
 *.sw?
 
 *.tsbuildinfo
-localhost.pem
-localhost-key.pem
 
 .vscode/launch.json
 .obsidian/
+
+coco-community-test.pem
+coco-community.test-key.pem
