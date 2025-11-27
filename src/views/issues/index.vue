@@ -11,30 +11,33 @@
     </nav>
     <div style="height: 65px;"></div>
 
+<!--不能新建议题弹窗-->
+  <div class="modal-overlay" :class="{ active: isnewissues }" @click="closenewissueModal">
+    <div class="modal" @click.stop>
+      <div class="modal-header">
+        <h2 class="modal-title">抱歉暂时不能新建议题</h2>
+        <button class="close-btn" @click="closenewissueModal">×</button>
+      </div>
+      <div class="modal-body">
+        <p>抱歉，我们暂时无法新建议题</p>
+        <p>这可能是此功能正在开发</p>
+        <p>如果您想立即新建议题，请通过Github创建议题</p>
+        <p>打开Github:<a href="https://github.com/zitzhen/CoCo-Community/issues">https://github.com/zitzhen/CoCo-Community/issues</a></p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-cancel" @click="closenewissueModal">好的</button>
+      </div>
+    </div>
+  </div>
+
     <div class="issues-container">
       <div class="issues-header">
         <h1>问题反馈</h1>
-        <button class="new-issue-btn" @click="showNewIssueForm = true">
+        <button class="new-issue-btn" @click="isnewissues = true">
           <i class="fas fa-plus"></i> 新建议题
         </button>
       </div>
 
-      <!-- 新建议题表单 -->
-      <div class="new-issue-form" v-if="showNewIssueForm">
-        <h3>新建议题</h3>
-        <div class="form-group">
-          <label for="issue-title">标题</label>
-          <input type="text" id="issue-title" v-model="newIssue.title" placeholder="输入议题标题">
-        </div>
-        <div class="form-group">
-          <label for="issue-body">内容</label>
-          <textarea id="issue-body" v-model="newIssue.body" placeholder="请详细描述您遇到的问题或建议..." rows="8"></textarea>
-        </div>
-        <div class="form-actions">
-          <button class="cancel-btn" @click="cancelNewIssue">取消</button>
-          <button class="submit-btn" @click="submitIssue">提交议题</button>
-        </div>
-      </div>
 
       <!-- 过滤器和分页控制 -->
       <div class="issues-controls">
@@ -175,7 +178,7 @@ export default {
     return {
       avatar: "/images/user.png",
       username: "未登录用户",
-      showNewIssueForm: false,
+      isnewissues: false,
       newIssue: {
         title: '',
         body: ''
@@ -217,7 +220,6 @@ export default {
       this.$router.push('/me');
     },
     cancelNewIssue() {
-      this.showNewIssueForm = false;
       this.newIssue.title = '';
       this.newIssue.body = '';
     },
@@ -289,6 +291,7 @@ export default {
 
 <style scoped>
 @import url(@/assets/css/Navigation-bar.css);
+@import url(@/assets/css/popup.css);
 .issues-container {
   max-width: 1200px;
   margin: 0 auto;
