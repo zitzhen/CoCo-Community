@@ -1,132 +1,128 @@
 <template>
-  <div id="issues-page">
+  <div id="app">
+    <!-- 导航栏 -->
     <nav class="navbar">
       <div class="nav-container">
-        <a href="/" class="logo">ZIT<span>-CoCo-Community</span></a>
-        <div class="user-info" @click="gome">
+        <a href="/" class="logo" @click="goHome">ZIT<span>-CoCo-Community</span></a>
+        <div class="user-info" @click="goMe">
           <img :src="avatar" alt="用户头像" class="user-avatar">
-          <div class="user-name">{{ username }}</div>
+          <div class="user-name-Nav">{{ username }}</div>
         </div>
       </div>
     </nav>
-    <div style="height: 65px;"></div>
 
-<!--不能新建议题弹窗-->
-  <div class="modal-overlay" :class="{ active: isnewissues }" @click="closenewissueModal">
-    <div class="modal" @click.stop>
-      <div class="modal-header">
-        <h2 class="modal-title">抱歉暂时不能新建议题</h2>
-        <button class="close-btn" @click="closenewissueModal">×</button>
-      </div>
-      <div class="modal-body">
-        <p>抱歉，我们暂时无法新建议题</p>
-        <p>这可能是此功能正在开发</p>
-        <p>如果您想立即新建议题，请通过Github创建议题</p>
-        <p>打开Github:<a href="https://github.com/zitzhen/CoCo-Community/issues">https://github.com/zitzhen/CoCo-Community/issues</a></p>
-      </div>
-      <div class="modal-footer">
-        <button class="modal-btn modal-btn-cancel" @click="closenewissueModal">好的</button>
-      </div>
-    </div>
-  </div>
+    <div style="height: 90px;"></div>
 
+    <!-- Issues 页面主体 -->
     <div class="issues-container">
-      <div class="issues-header">
-        <h1>问题反馈</h1>
-        <button class="new-issue-btn" @click="isnewissues = true">
-          <i class="fas fa-plus"></i> 新建议题
-        </button>
-      </div>
-
-
-      <!-- 过滤器和分页控制 -->
-      <div class="issues-controls">
-        <div class="filters">
-          <button 
-            :class="['filter-btn', { active: selectedFilter === 'all' }]" 
-            @click="selectedFilter = 'all'"
-          >
-            全部
-          </button>
-          <button 
-            :class="['filter-btn', { active: selectedFilter === 'open' }]" 
-            @click="selectedFilter = 'open'"
-          >
-            打开 {{ openIssuesCount }}
-          </button>
-          <button 
-            :class="['filter-btn', { active: selectedFilter === 'closed' }]" 
-            @click="selectedFilter = 'closed'"
-          >
-            已关闭 {{ closedIssuesCount }}
-          </button>
+      <!-- 左侧边栏 -->
+      <div class="sidebar">
+        <div class="sidebar-section">
+          <h3>筛选选项</h3>
+          <div class="filter-group">
+            <div class="filter-item">
+              <input type="radio" id="all-issues" name="filter" value="all" v-model="filterStatus" @change="filterIssues">
+              <label for="all-issues">所有 issues</label>
+            </div>
+            <div class="filter-item">
+              <input type="radio" id="open-issues" name="filter" value="open" v-model="filterStatus" @change="filterIssues">
+              <label for="open-issues">开启</label>
+            </div>
+            <div class="filter-item">
+              <input type="radio" id="closed-issues" name="filter" value="closed" v-model="filterStatus" @change="filterIssues">
+              <label for="closed-issues">已关闭</label>
+            </div>
+          </div>
         </div>
-        
-        <!-- 分页控制 -->
-        <div class="pagination" v-if="totalPages > 1">
-          <button 
-            :disabled="currentPage === 1" 
-            @click="changePage(currentPage - 1)"
-            class="pagination-btn"
-          >
-            上一页
-          </button>
-          <span class="page-info">
-            第 {{ currentPage }} 页，共 {{ totalPages }} 页
-          </span>
-          <button 
-            :disabled="currentPage === totalPages" 
-            @click="changePage(currentPage + 1)"
-            class="pagination-btn"
-          >
-            下一页
-          </button>
+
+        <div class="sidebar-section">
+          <h3>标签</h3>
+          <div class="label-list">
+            <span 
+              class="label-badge"
+              v-for="label in uniqueLabels"
+              :key="label"
+              :style="{ backgroundColor: getLabelColor(label) }"
+            >
+              {{ label }}
+            </span>
+          </div>
         </div>
       </div>
 
-      <!-- 议题列表 -->
-      <div class="issues-list">
-        <div class="issue-card" v-for="issue in paginatedIssues" :key="issue.id">
-          <div class="issue-header">
-            <div class="issue-main-info">
-              <h3 class="issue-title">{{ issue.title }}</h3>
-              <div class="issue-meta">
-                <span class="issue-number">#{{ issue.number }}</span>
-                <span class="issue-author">由 {{ issue.author }} 提交</span>
-                <span class="issue-date">{{ formatDate(issue.date) }}</span>
+      <!-- 主内容区 -->
+      <div class="main-content">
+        <div class="issues-header">
+          <div class="issues-title-section">
+            <h1>Issues</h1>
+            <span class="issues-count">{{ filteredIssues.length }}</span>
+          </div>
+          <div class="issues-actions">
+            <button class="new-issue-btn" @click="isnewissues = true">
+              <i class="fas fa-plus"></i> 新建 Issue
+            </button>
+          </div>
+        </div>
+
+        <div class="issues-list">
+          <div 
+            class="issue-item" 
+            v-for="issue in filteredIssues" 
+            :key="issue.id"
+            @click="goToIssueDetail(issue.number)"
+          >
+            <div class="issue-left">
+              <div class="issue-state" :class="issue.state">
+                <span v-if="issue.state === 'open'" class="state-icon">●</span>
+                <span v-else class="state-icon-closed">●</span>
+              </div>
+              <div class="issue-info">
+                <h3 class="issue-title">{{ issue.title }}</h3>
+                <div class="issue-meta">
+                  <span class="issue-number">#{{ issue.number }}</span>
+                  <span class="issue-author">由 {{ issue.user?.login || issue.author || '未知用户' }} 创建于 {{ formatDate(issue.created_at || issue.date) }}</span>
+                  <span class="issue-comments" v-if="issue.comments > 0">
+                    <i class="fas fa-comment"></i> {{ issue.comments }}
+                  </span>
+                </div>
+                <div class="issue-labels" v-if="issue.labels && issue.labels.length > 0">
+                  <span 
+                    class="label-badge" 
+                    v-for="label in issue.labels" 
+                    :key="label.id"
+                    :style="{ backgroundColor: `#${label.color}` }"
+                  >
+                    {{ label.name }}
+                  </span>
+                </div>
               </div>
             </div>
-            <div class="issue-actions">
+            <div class="issue-right">
+              <img :src="issue.user?.avatar_url || issue.avatar || '/images/user.png'" alt="头像" class="issue-author-avatar">
             </div>
-          </div>
-          <div class="issue-footer">
-            <span class="issue-comments">
-              <i class="fas fa-comment"></i> {{ issue.comments }} 条评论
-            </span>
-           <span class="issue-status" :class="issue.state">{{ issue.state === 'open' ? '打开' : '已关闭' }}</span>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- 分页控制（底部） -->
-      <div class="pagination" v-if="totalPages > 1">
-        <button 
-          :disabled="currentPage === 1" 
-          @click="changePage(currentPage - 1)"
-          class="pagination-btn"
-        >
-          上一页
-        </button>
-        <span class="page-info">
-          第 {{ currentPage }} 页，共 {{ totalPages }} 页
-        </span>
-        <button 
-          :disabled="currentPage === totalPages" 
-          @click="changePage(currentPage + 1)"
-          class="pagination-btn"
-        >
-          下一页
-        </button>
+    
+    
+    <!--不能新建议题弹窗-->
+    <div v-show="isnewissues" class="modal-overlay" :class="{ active: isnewissues }" @click="closenewissueModal">
+      <div class="modal" @click.stop>
+        <div class="modal-header">
+          <h2 class="modal-title">抱歉暂时不能新建议题</h2>
+          <button class="close-btn" @click="closenewissueModal">×</button>
+        </div>
+        <div class="modal-body">
+          <p>抱歉，我们暂时无法新建议题</p>
+          <p>这可能是此功能正在开发</p>
+          <p>如果您想立即新建议题，请通过Github创建议题</p>
+          <p>打开Github:<a href="https://github.com/zitzhen/CoCo-Community/issues">https://github.com/zitzhen/CoCo-Community/issues</a></p>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn modal-btn-cancel" @click="closenewissueModal">好的</button>
+        </div>
       </div>
     </div>
   </div>
@@ -134,6 +130,7 @@
 
 <script>
 import { checkLoginStatus } from '@/script/login';
+import { marked } from 'marked';
 
 async function fetch_github_issues(loginstatus) {
     try{
@@ -193,46 +190,95 @@ export default {
   name: 'Issues',
   data() {
     return {
-      avatar: "/images/user.png",
       username: "未登录用户",
+      avatar: "/images/user.png",
+      issues: [],
+      filteredIssues: [],
+      filterStatus: "all",
+      showIssueDetail: false,
+      selectedIssue: null,
+      selectedIssueContent: "",
+      uniqueLabels: [],
       isnewissues: false,
       newIssue: {
         title: '',
         body: ''
       },
-      issues: [],
-      loginstatus: false,
-      selectedFilter: 'open',
-      currentPage: 1,
-      itemsPerPage: 10
-    }
+      loginstatus: false
+    };
   },
-  computed: {
-    filteredIssues() {
-      if (this.selectedFilter === 'all') {
-        return this.issues;
-      } else if (this.selectedFilter === 'open') {
-        return this.issues.filter(issue => issue.state !== 'closed');
-      } else {
-        return this.issues.filter(issue => issue.state === 'closed');
+  
+  methods: {
+    async updateLoginInfo() {
+      try {
+        const logininformation = await checkLoginStatus();
+        if (!logininformation || !logininformation.authenticated) {
+          this.username = '未登录用户';
+          this.avatar = '/images/user.png';
+        } else {
+          this.username = logininformation.user.name || logininformation.user.login;
+          this.avatar = logininformation.user.avatar_url || '/images/user.png';
+        }
+      } catch (err) {
+        console.error("登录检查失败：", err);
+        this.username = '登录信息检查失败';
       }
     },
-    paginatedIssues() {
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      const end = start + this.itemsPerPage;
-      return this.filteredIssues.slice(start, end);
+    formatDate(dateString) {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      });
     },
-    totalPages() {
-      return Math.ceil(this.filteredIssues.length / this.itemsPerPage);
+    goHome(event) {
+      event.preventDefault();
+      this.$router.push('/');
     },
-    openIssuesCount() {
-      return this.issues.filter(issue => issue.state !== 'closed').length;
+    goMe() {
+      this.$router.push('/me');
     },
-    closedIssuesCount() {
-      return this.issues.filter(issue => issue.state === 'closed').length;
-    }
-  },
-  methods: {
+    filterIssues() {
+      switch (this.filterStatus) {
+        case 'open':
+          this.filteredIssues = this.issues.filter(issue => issue.state !== 'closed');
+          break;
+        case 'closed':
+          this.filteredIssues = this.issues.filter(issue => issue.state === 'closed');
+          break;
+        default:
+          this.filteredIssues = [...this.issues];
+      }
+    },
+    extractUniqueLabels() {
+      const allLabels = this.issues.flatMap(issue => issue.labels || []);
+      const labelNames = [...new Set(allLabels.map(label => label.name))];
+      this.uniqueLabels = labelNames;
+    },
+    getLabelColor(labelName) {
+      // 根据标签名称生成颜色 - 简单的哈希函数
+      const colors = [
+        "#e11d21", "#d93f0b", "#d1bcf9", "#5319e7", 
+        "#84b6eb", "#0052cc", "#2e7b32", "#a2eeef", 
+        "#c6c6c6", "#fbca04"
+      ];
+      
+      let hash = 0;
+      for (let i = 0; i < labelName.length; i++) {
+        hash = labelName.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      const index = Math.abs(hash) % colors.length;
+      return colors[index];
+    },
+    goToIssueDetail(issueNumber) {
+      this.$router.push(`/issues/${issueNumber}`);
+    },
+    createNewIssue() {
+      // 在实际应用中，这里应该跳转到创建新issue的页面
+      alert('创建新 Issue 功能正在开发中');
+    },
     gome() {
       this.$router.push('/me');
     },
@@ -243,7 +289,7 @@ export default {
       this.newIssue.title = '';
       this.newIssue.body = '';
     },
-    submitIssue() {
+    async submitIssue() {
       if (!this.newIssue.title.trim() || !this.newIssue.body.trim()) {
         alert('请填写标题和内容');
         return;
@@ -263,342 +309,513 @@ export default {
       
       this.issues.unshift(issue);
       this.cancelNewIssue();
+      // 更新过滤后的 issues
+      this.filterIssues();
     },
-    changePage(page) {
-      if (page >= 1 && page <= this.totalPages) {
-        this.currentPage = page;
-      }
-    },
-    closeIssue(issue) {
-      issue.state = 'closed';
-      // 更新issue的closed_at时间
-      issue.closed_at = new Date();
-    },
-    openIssue(issue) {
-      issue.state = 'open';
-      // 移除closed_at时间
-      delete issue.closed_at;
-    },
-    formatDate(date) {
-      if (!date) return '';
-      // 确保日期是有效的格式
-      const d = new Date(date);
-      // 检查日期是否有效
-      if (isNaN(d.getTime())) {
-        return '';
-      }
-      return d.toLocaleDateString('zh-CN');
-    }
   },
   async mounted() {
-    await checkLoginStatus().then((logininformation) => {
-      if (!logininformation || !logininformation.authenticated) {
-        this.username = '未登录用户';
-        this.avatar = '/images/user.png';
-        this.loginstatus = false;
-      } else {
-        this.username = logininformation.user.name || logininformation.user.login;
-        this.avatar = logininformation.user.avatar_url || '/images/user.png';
-        this.loginstatus = true;
-      }
-    }).catch((err) => {
-      console.error("登录检查失败：", err);
-      this.username = '登录信息检查失败';
-      this.loginstatus = false;
-    });
-    
-    console.log(this.loginstatus);
+    await this.updateLoginInfo();
     this.issues = await fetch_github_issues(this.loginstatus);
-    console.log(this.issues);
+    this.filteredIssues = [...this.issues];
+    this.extractUniqueLabels();
+    // 确保在页面加载时不会显示新建议题弹窗
+    this.isnewissues = false;
   }
 }
 </script>
 
-<style scoped>
+<style>
 @import url(@/assets/css/Navigation-bar.css);
-@import url(@/assets/css/popup.css);
+
+:root {
+  --primary-color: #2ecc71;
+  --secondary-color: #27ae60;
+  --background-color: #f0f4f8;
+  --card-color: #ffffff;
+  --text-color: #2c3e50;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --border-color: #e1e4e8;
+  --open-color: #28a745;
+  --closed-color: #cb2431;
+}
+
+#app {
+  background-color: var(--background-color);
+  min-height: 100vh;
+}
+
 .issues-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 1rem;
+  display: flex;
+  gap: 2rem;
+}
+
+.sidebar {
+  width: 250px;
+  flex-shrink: 0;
+}
+
+.sidebar-section {
+  background: var(--card-color);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow);
+}
+
+.sidebar-section h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: var(--text-color);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+}
+
+.filter-item input {
+  margin-right: 0.5rem;
+}
+
+.filter-item label {
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #586069;
+}
+
+.label-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.label-badge {
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  color: white;
+  display: inline-block;
+}
+
+.main-content {
+  flex: 1;
 }
 
 .issues-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 1.5rem;
+  padding: 1rem 0;
 }
 
-.issues-header h1 {
-  font-size: 2rem;
-  color: #333;
+.issues-title-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.issues-title-section h1 {
   margin: 0;
+  font-size: 1.8rem;
+  color: var(--text-color);
+}
+
+.issues-count {
+  background-color: #eaecef;
+  color: #586069;
+  border-radius: 20px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.9rem;
+}
+
+.issues-actions {
+  display: flex;
+  gap: 1rem;
 }
 
 .new-issue-btn {
-  background-color: #238636;
+  background-color: #2ea44f;
   color: white;
   border: none;
-  padding: 10px 16px;
   border-radius: 6px;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .new-issue-btn:hover {
-  background-color: #2ea043;
-}
-
-.new-issue-form {
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 20px;
-  margin-bottom: 30px;
-}
-
-.new-issue-form h3 {
-  margin-top: 0;
-  margin-bottom: 15px;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 500;
-}
-
-.form-group input,
-.form-group textarea {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-  resize: vertical;
-}
-
-.form-actions {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-}
-
-.cancel-btn {
-  background-color: #e7e7e7;
-  color: #333;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.cancel-btn:hover {
-  background-color: #dcdcdc;
-}
-
-.submit-btn {
-  background-color: #238636;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.submit-btn:hover {
-  background-color: #2ea043;
-}
-
-.issues-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding: 15px 0;
-  border-bottom: 1px solid #ddd;
-}
-
-.filters {
-  display: flex;
-  gap: 10px;
-}
-
-.filter-btn {
-  padding: 8px 15px;
-  border: 1px solid #ddd;
-  background-color: #f6f8fa;
-  color: #24292f;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.filter-btn:hover {
-  background-color: #eaecef;
-}
-
-.filter-btn.active {
-  background-color: #0969da;
-  color: white;
-  border-color: #0969da;
-}
-
-.pagination {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.pagination-btn {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  background-color: #f6f8fa;
-  color: #24292f;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.pagination-btn:hover:not(:disabled) {
-  background-color: #eaecef;
-}
-
-.pagination-btn:disabled {
-  color: #888;
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
-.page-info {
-  font-size: 14px;
-  color: #57606a;
+  background-color: #2c834d;
 }
 
 .issues-list {
+  background: var(--card-color);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.issue-item {
   display: flex;
-  flex-direction: column;
-  gap: 15px;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-.issue-card {
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+.issue-item:hover {
+  background-color: #f6f8fa;
 }
 
-.issue-header {
+.issue-item:last-child {
+  border-bottom: none;
+}
+
+.issue-left {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 15px;
+  flex: 1;
+  align-items: center;
+  gap: 1rem;
 }
 
-.issue-main-info {
+.issue-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.issue-state.open .state-icon {
+  color: var(--open-color);
+  font-size: 1.2rem;
+}
+
+.issue-state.closed .state-icon-closed {
+  color: var(--closed-color);
+  font-size: 1.2rem;
+}
+
+.issue-info {
   flex: 1;
 }
 
 .issue-title {
-  margin: 0 0 8px 0;
-  font-size: 1.25rem;
-  color: #0969da;
+  margin: 0 0 0.2rem 0;
+  font-size: 1.1rem;
+  color: var(--text-color);
+  font-weight: 600;
 }
 
 .issue-meta {
   display: flex;
-  gap: 15px;
-  font-size: 13px;
-  color: #57606a;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: #586069;
 }
 
 .issue-number {
-  font-weight: 600;
+  color: #586069;
 }
 
 .issue-author {
-  font-weight: 500;
-}
-
-.issue-actions {
-  display: flex;
-  gap: 5px;
-}
-
-.issue-action-btn {
-  padding: 5px 12px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  border: 1px solid;
-}
-
-.close-btn {
-  background-color: #da3633;
-  color: white;
-  border-color: #b62324;
-}
-
-.close-btn:hover {
-  background-color: #b62324;
-}
-
-.open-btn {
-  background-color: #238636;
-  color: white;
-  border-color: #196c2e;
-}
-
-.open-btn:hover {
-  background-color: #196c2e;
-}
-
-.issue-body {
-  margin-bottom: 15px;
-  line-height: 1.5;
-  color: #24292f;
-}
-
-.issue-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-top: 1px solid #ddd;
-  padding-top: 15px;
-  color: #57606a;
-  font-size: 13px;
+  color: #586069;
 }
 
 .issue-comments {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 0.2rem;
 }
 
-.issue-status {
-  padding: 4px 10px;
-  border-radius: 2em;
-  font-size: 12px;
+.issue-comments i {
+  font-size: 0.9rem;
+}
+
+.issue-labels {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.issue-author-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* 模态框样式 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  padding: 2rem;
+}
+
+.modal-content {
+  background: var(--card-color);
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 800px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-issue-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.modal-issue-info h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: var(--text-color);
+}
+
+.modal-issue-info .issue-number {
+  color: #586069;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: #586069;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.close-btn:hover {
+  background-color: #f6f8fa;
+}
+
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+.issue-detail-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.issue-author-info {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.issue-author-avatar-large {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.issue-author {
+  color: #586069;
+  font-size: 0.9rem;
+}
+
+.issue-status-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.issue-state-text {
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
   font-weight: 500;
 }
 
-.issue-status.open {
-  background-color: #e5f2ff;
-  color: #0969da;
+.issue-state-text.open {
+  background-color: #e6ffec;
+  color: var(--open-color);
 }
 
-.issue-status.closed {
-  background-color: #dcffe4;
-  color: #2da44e;
+.issue-state-text.closed {
+  background-color: #ffeef0;
+  color: var(--closed-color);
+}
+
+.status-btn {
+  background-color: #f6f8fa;
+  border: 1px solid #d1d5da;
+  border-radius: 6px;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.status-btn:hover {
+  background-color: #eaecef;
+}
+
+.issue-detail-content {
+  line-height: 1.6;
+  color: #333;
+  font-size: 1rem;
+}
+
+.issue-detail-content h1,
+.issue-detail-content h2,
+.issue-detail-content h3,
+.issue-detail-content h4,
+.issue-detail-content h5,
+.issue-detail-content h6 {
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  color: var(--text-color);
+}
+
+.issue-detail-content h1 {
+  font-size: 1.6rem;
+}
+
+.issue-detail-content h2 {
+  font-size: 1.4rem;
+}
+
+.issue-detail-content h3 {
+  font-size: 1.3rem;
+}
+
+.issue-detail-content p {
+  margin-bottom: 1rem;
+}
+
+.issue-detail-content a {
+  color: var(--primary-color);
+}
+
+.issue-detail-content ul,
+.issue-detail-content ol {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.issue-detail-content li {
+  margin-bottom: 0.5rem;
+}
+
+.issue-detail-content img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+@media (max-width: 1024px) {
+  .issues-container {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .sidebar-section {
+    flex: 1;
+    min-width: 200px;
+  }
+  
+  .issue-author-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .issues-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .issue-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .issue-right {
+    align-self: flex-end;
+  }
+  
+  .issue-meta {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  
+  .modal-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .close-btn {
+    align-self: flex-end;
+  }
+  
+  .issue-detail-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .issue-status-actions {
+    align-self: flex-end;
+  }
 }
 </style>
