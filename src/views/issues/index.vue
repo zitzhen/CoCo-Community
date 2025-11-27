@@ -563,80 +563,6 @@ export default {
   object-fit: cover;
 }
 
-/* 模态框样式 */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-  padding: 2rem;
-}
-
-.modal-content {
-  background: var(--card-color);
-  border-radius: 8px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  width: 100%;
-  max-width: 800px;
-  max-height: 80vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.modal-issue-info {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.modal-issue-info h2 {
-  margin: 0;
-  font-size: 1.4rem;
-  color: var(--text-color);
-}
-
-.modal-issue-info .issue-number {
-  color: #586069;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 1.8rem;
-  cursor: pointer;
-  color: #586069;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-}
-
-.close-btn:hover {
-  background-color: #f6f8fa;
-}
-
-.modal-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1.5rem;
-}
 
 .issue-detail-header {
   display: flex;
@@ -799,11 +725,6 @@ export default {
     gap: 0.3rem;
   }
   
-  .modal-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
   
   .close-btn {
     align-self: flex-end;
