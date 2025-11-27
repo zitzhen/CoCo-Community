@@ -134,20 +134,34 @@ import { checkLoginStatus } from '@/script/login';
 
 async function fetch_github_issues(loginstatus) {
     try{
-        let response;
-        if(loginstatus){
-            response = await fetch('/api/github/issues');
-        }else{
-            response = await fetch('https://api.github.com/repos/zitzhen/CoCo-Community/issues?state=all')
-        }
-        
-        if (!response.ok) {
-            throw new Error('网络响应失败');
-        }
-        const data = await response.json();
-        // 过滤掉PR类型的issues，只保留真正的issues
-        const filteredData = data.filter(issue => !issue.pull_request);
-        return filteredData;
+      let open_issues_response;
+      let closed_issues_response;
+
+      if (loginstatus) {
+          open_issues_response = await fetch('/api/github/issues');
+          closed_issues_response = { ok: true, json: async () => [] }; // 本地 API 不区分状态，直接空数组
+      } else {
+          open_issues_response = await fetch('https://api.github.com/repos/zitzhen/CoCo-Community/issues?state=open');
+          closed_issues_response = await fetch('https://api.github.com/repos/zitzhen/CoCo-Community/issues?state=closed');
+      }
+
+      // 检查请求是否成功
+      if (!open_issues_response.ok || !closed_issues_response.ok) {
+          throw new Error('网络响应失败');
+      }
+
+      // 获取数据
+      const openData = await open_issues_response.json();
+      const closedData = await closed_issues_response.json();
+
+      // 过滤掉 PR
+      const pureOpen = openData.filter(item => !item.pull_request);
+      const pureClosed = closedData.filter(item => !item.pull_request);
+
+      // 合并返回
+      const data = pureOpen.concat(pureClosed);
+      return data;
+
     } catch (error) {
         console.error('获取 GitHub 议题失败:', error);
         return [];
