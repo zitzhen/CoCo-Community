@@ -1,17 +1,15 @@
 <template>
-  <div id="app">
-    <!-- 导航栏 -->
-    <nav class="navbar">
-      <div class="nav-container">
-        <a href="/" class="logo" @click="goHome">ZIT<span>-CoCo-Community</span></a>
-        <div class="user-info" @click="goMe">
-          <img :src="avatar" alt="用户头像" class="user-avatar">
-          <div class="user-name">{{ username }}</div>
-        </div>
-      </div>
-    </nav>
-
-    <div style="height: 90px;"></div>
+<div id="app">
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
+                <div class="user-info" @click="gome">
+                    <img :src="avatar" alt="用户头像" class="user-avatar">
+                    <div class="user-name">{{ username }}</div>
+                </div>
+            </div>
+        </nav>
+<div style="height: 65px;"></div>
 
     <!-- 搜索页面主体 -->
     <div class="search-page-container">
@@ -130,8 +128,8 @@
             <div class="user-list">
               <div class="user-item" v-for="user in searchResults.users" :key="user.id">
                 <img :src="user.avatar" :alt="user.name" class="user-avatar-small">
-                <div class="user-info">
-                  <div class="user-name">{{ user.name }}</div>
+                <div class="search-user-info">
+                  <div class="search-user-name">{{ user.name }}</div>
                   <div class="user-login">@{{ user.login }}</div>
                 </div>
                 <a :href="user.url" class="view-profile">查看资料</a>
@@ -351,7 +349,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 @import url(@/assets/css/Navigation-bar.css);
 
 .search-page-container {
@@ -621,11 +619,11 @@ export default {
   object-fit: cover;
 }
 
-.user-info {
+.search-user-info {
   flex: 1;
 }
 
-.user-name {
+.search-user-name {
   font-weight: 600;
   color: #2c3e50;
   margin-bottom: 0.2rem;
