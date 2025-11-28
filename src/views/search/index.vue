@@ -74,20 +74,20 @@
           <!-- 控件结果 -->
           <div class="result-section" v-if="activeTab === 'all' || activeTab === 'controls'">
             <h3 v-if="searchResults.controls.length > 0">控件</h3>
-            <div class="file-list" id="fileList">
-              <div class="file-card" v-for="control in searchResults.controls" :key="control.name">
-                <div class="file-header">
-                  <div class="file-icon">
-                    <i class="fas fa-file-code"></i>
+            <div class="search-control-list" id="search-controlList">
+              <div class="search-control-card" v-for="control in searchResults.controls" :key="control.name">
+                <div class="search-control-header">
+                  <div class="search-control-icon">
+                    <i class="fas fa-search-control-code"></i>
                   </div>
-                  <div class="file-meta">
-                    <div class="file-name">{{ control.name }}</div>
-                    <div class="file-author">作者：{{ control.author }}</div>
+                  <div class="search-control-meta">
+                    <div class="search-control-name">{{ control.name }}</div>
+                    <div class="search-control-author">作者：{{ control.author }}</div>
                   </div>
                 </div>
 
-                <div class="file-stats">
-                  <div><i class="fas fa-file"></i> {{ control.size }}</div>
+                <div class="search-control-stats">
+                  <div><i class="fas fa-search-control"></i> {{ control.size }}</div>
                   <div><i class="fas fa-download"></i> {{ control.downloads }}</div>
                   <div><i class="fas fa-eye"></i> {{ control.Pageviews }}</div>
                 </div>
@@ -132,7 +132,7 @@
                   <div class="search-user-name">{{ user.name }}</div>
                   <div class="user-login">@{{ user.login }}</div>
                 </div>
-                <a :href="user.url" class="view-profile">查看资料</a>
+                <a :href="user.url" class="view-prosearch-control">查看资料</a>
               </div>
             </div>
           </div>
@@ -452,13 +452,13 @@ export default {
   border-bottom: 1px solid #e1e4e8;
 }
 
-.file-list {
+.search-control-list {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.file-card {
+.search-control-card {
   background: white;
   border-radius: 8px;
   padding: 1rem;
@@ -469,19 +469,19 @@ export default {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.file-card:hover {
+.search-control-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(0,0,0,0.15);
 }
 
-.file-header {
+.search-control-header {
   display: flex;
   align-items: center;
   gap: 1rem;
   flex: 1;
 }
 
-.file-icon {
+.search-control-icon {
   width: 40px;
   height: 40px;
   background-color: #f0f4f8;
@@ -492,18 +492,18 @@ export default {
   color: #3498db;
 }
 
-.file-meta .file-name {
+.search-control-meta .search-control-name {
   font-weight: 600;
   color: #2c3e50;
   margin-bottom: 0.2rem;
 }
 
-.file-meta .file-author {
+.search-control-meta .search-control-author {
   color: #7f8c8d;
   font-size: 0.9rem;
 }
 
-.file-stats {
+.search-control-stats {
   display: flex;
   gap: 1.5rem;
   margin-right: 1rem;
@@ -634,7 +634,7 @@ export default {
   font-size: 0.9rem;
 }
 
-.view-profile {
+.view-prosearch-control {
   padding: 0.5rem 1rem;
   background-color: #f0f4f8;
   color: #3498db;
@@ -643,7 +643,7 @@ export default {
   transition: background-color 0.3s ease;
 }
 
-.view-profile:hover {
+.view-prosearch-control:hover {
   background-color: #e1e8ed;
 }
 
@@ -702,13 +702,13 @@ export default {
     width: 100%;
   }
   
-  .file-card {
+  .search-control-card {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
   }
   
-  .file-stats {
+  .search-control-stats {
     align-self: flex-start;
     margin-left: 3.5rem;
   }
