@@ -39,8 +39,9 @@
 
     <div class="container">
       <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="搜索文件..." v-model="searchTerm" @keyup.enter="searchFiles">
-        <button id="searchBtn" @click="searchFiles"><i class="fas fa-search"></i> 搜索</button>
+        <input type="text" id="searchInput" placeholder="搜索文件..." v-model="searchTerm" @keyup.enter="goToGlobalSearch">
+        <button id="searchBtn" @click="goToGlobalSearch"><i class="fas fa-search"></i> 全局搜索</button>
+        <button id="localSearchBtn" @click="searchFiles"><i class="fas fa-filter"></i> 本地搜索</button>
       </div>
       <h2 style="text-align: center;" id="Loading_text" v-show="loading">请稍后，正在加载</h2>
       <div class="file-list" id="fileList">
@@ -162,6 +163,12 @@ export default {
       this.filteredFiles = this.files.filter(file => 
         file.name.toLowerCase().includes(term)
       );
+    },
+    goToGlobalSearch() {
+      if (this.searchTerm.trim()) {
+        // 跳转到全局搜索页面并传递搜索词
+        this.$router.push(`/search?q=${encodeURIComponent(this.searchTerm.trim())}`);
+      }
     },
     gome() {
       this.$router.push('/me') // 跳转到我的页面
