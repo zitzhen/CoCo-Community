@@ -27,10 +27,6 @@
             <span>由 {{ issue.user?.login || issue.author || '未知用户' }} 创建于 {{ formatDate(issue.created_at || issue.date) }}</span>
           </div>
         </div>
-        <div class="issue-actions">
-          <span class="issue-state-text" :class="issue.state">{{ issue.state === 'open' ? '开启' : '已关闭' }}</span>
-          <button class="status-btn" v-if="issue.state === 'open'" @click="closeIssue">关闭 issue</button>
-        </div>
       </div>
       
       <div class="issue-detail-content">
