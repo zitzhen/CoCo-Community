@@ -11,20 +11,20 @@
         </nav>
     </div>
 <div style="height: 90px;"></div>
-<div class="container">
-        <div class="error-content">
+<div class="a_404_container">
+        <div class="a_404_error-content">
             <div class="error-icon">
                 <i class="fas fa-exclamation-triangle"></i>
             </div>
             <h2 class="error-title">404 - 页面未找到</h2>
-            <p class="error-message">
+            <p class="a_404_error-message">
                 抱歉，您访问的页面不存在或已被移除。<br>
                 可能是URL地址输入错误，或者页面已被删除。
             </p>
         </div>
     </div>
     <footer>
-        <div class="container">
+        <div class="a_404_container">
             <p>© 2025 ZIT-CoCo-Community | 遇到问题请联系支持团队</p>
         </div>
     </footer>

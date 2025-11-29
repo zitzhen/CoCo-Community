@@ -12,4 +12,12 @@
         color: white;
     }
 
+    /*/404页面适用/*/
+    .a_404_error-message{
+        color: black;
+    }
+    .a_404_container{
+        color: white;
+    }
+
 }
