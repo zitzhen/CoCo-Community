@@ -182,7 +182,7 @@ export default {
       loading: false,
       activeTab: 'all',
       searchTime: 0,
-      popularSearches: ['按钮', '导航栏', '输入框', '音乐播放器', '动画库']
+      popularSearches: []
     };
   },
   computed: {
