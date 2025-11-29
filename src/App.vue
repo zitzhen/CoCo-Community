@@ -9,6 +9,9 @@ export default {
 </script>
 
 <style>
+/*引入深色模式/*/
+@import 'assets/css/dark.css';
+
 /*强制修复h标签样式/*/
 h1 {
   font-size: 2em;

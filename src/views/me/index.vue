@@ -212,6 +212,7 @@
 @import url(@/assets/style/me/style.css);
 @import url(@/assets/style/me/style2.css);
 @import url(@/assets/css/popup.css);
+@import url(@/assets/css/dark.css);
 
 .github-content {
   padding: 20px 0;

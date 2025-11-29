@@ -25,6 +25,8 @@
 </template>
 <style>
 @import url(@/assets/css/Navigation-bar.css);
+@import url(@/assets/css/dark.css);
+
     :root {
     --primary-color: #3498db;
     --secondary-color: #2980b9;

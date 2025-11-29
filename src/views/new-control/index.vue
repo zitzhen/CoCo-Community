@@ -124,4 +124,5 @@
 
 <style scoped>
 @import '@/assets/style/new-control/style.css';
+@import url(@/assets/css/dark.css);
 </style>

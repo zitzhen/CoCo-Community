@@ -351,6 +351,7 @@ export default {
 
 <style scoped>
 @import url(@/assets/css/Navigation-bar.css);
+@import url(@/assets/css/dark.css);
 
 .search-page-container {
   max-width: 1200px;

@@ -57,13 +57,13 @@
 
     <!-- 文件信息 -->
     <div class="container" v-if="!errorVisible && !loading">
-      <div class="file-detail-container">
+      <div class="control-detail-container">
         <div class="main-content">
-          <div class="file-header">
-            <div class="file-icon"><i class="fas fa-file-code"></i></div>
-            <div class="file-title">
-              <h2 class="file-name">{{ filename }}</h2>
-              <div class="file-meta"><span>大小: {{ fileSize }} KiB</span></div>
+          <div class="control-header">
+            <div class="control-icon"><i class="fas fa-file-code"></i></div>
+            <div class="control-title">
+              <h2 class="control-name">{{ filename }}</h2>
+              <div class="control-meta"><span>大小: {{ fileSize }} KiB</span></div>
             </div>
             <button class="download-btn" @click="handleDownload"><i class="fas fa-download"></i> 下载</button>
             <a :href="sourceUrl">
@@ -72,8 +72,8 @@
           </div>
 
           <div class="section">
-            <h3 class="section-title"><i class="fas fa-info-circle"></i> 文件介绍</h3>
-            <div class="file-description" v-html="introduceHtml"></div>
+            <h3 class="section-title"><i class="fas fa-info-circle"></i> 控件介绍</h3>
+            <div class="control-description" v-html="introduceHtml"></div>
           </div>
 
           <div class="section">
@@ -257,6 +257,7 @@ onMounted(() => {
 @import "@/assets/css/style.css";
 @import "@/assets/css/error.css";
 @import "@/assets/css/Navigation-bar.css";
+@import url(@/assets/css/dark.css);
 </style>
 
 <script>

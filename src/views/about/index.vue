@@ -10,19 +10,24 @@
             </div>
         </nav>
 </div>
-<div style="height: 65px;"></div>
+<div style="height: 90px;"></div>
+
     <div class="card-about">
-        <h1 style="font-size: 35px;">关于我们</h1>
+        <h1>关于我们</h1>
         <p>欢迎来到CoCo-Community，CoCo-Community是附属于ZIT小圳创科工作室的产品。旨在补充第三方社区的不足。</p>
     </div>
-    <br></br>
+      
+      <div style="height: 20px;"></div>
+
     <div class="card-about" >
-        <h2 style="font-size: 30px;">CoCo-Community开发者列表</h2>
+        <h2>CoCo-Community开发者列表</h2>
         <a>- 刘小圳<img src="https://github-readme-stats.vercel.app/api?username=Iamliuxiaozhen" ></img></a>
     </div>
-    <br></br>
-    <div class="card-about">
-        <h2 style="font-size: 30px;">我们的社交频道</h2>
+
+      <div style="height: 20px;"></div>
+
+      <div class="card-about">
+          <h2>我们的社交频道</h2>
         <a href="https://discord.gg/CvT5R8ew">Discord</a>
         <br></br>
         <a href="https://qm.qq.com/cgi-bin/qm/qr?k=966509561">QQ</a>
@@ -30,20 +35,10 @@
     </div>
 </template>
 
-<style>
+<style scoped>
 @import url(@/assets/css/Navigation-bar.css);
-
-.card-about{
-    width: 95%;
-    max-width: 1200px;
-    margin: 0 auto;
-    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
-    text-align: left;
-    background-color: #ffffff;
-    border-radius: 8px;
-    padding: 1.5rem;
-    box-sizing: border-box;
-}
+@import url(@/assets/style/about/style.css);
+@import url(@/assets/css/dark.css);
 </style>
 
 <script>
