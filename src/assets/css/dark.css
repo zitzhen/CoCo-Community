@@ -58,4 +58,24 @@
     .control-description{
         color: white;
     }
+
+    /*/安全中心页面适用/*/
+    .card_safe{
+        background-color: #2d2d2d;
+    }
+    .main-content_safe{
+        background-color: #2d2d2d;
+    }
+
+    /*/打赏页面适用/*/
+    .tipping_content{
+        background-color: #2d2d2d;
+        color: white;
+    }
+    .payment-methods{
+        color: #000;
+    }
+    .tipping_intro{
+        color: white;;
+    }
 }
