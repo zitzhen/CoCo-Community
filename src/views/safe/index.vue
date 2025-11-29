@@ -333,6 +333,7 @@ export default {
 
 <style>
 @import '@/assets/style/safe/style.css';
+@import url(@/assets/css/dark.css);
 </style>
 
 <script setup>

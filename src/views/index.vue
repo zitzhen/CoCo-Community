@@ -227,6 +227,7 @@ if (isOctober24th()){
 @import '../../src/assets/style/control/error.css';
 @import '../../src/assets/style/home/pay_button.css';
 @import '@/assets/css/1024.css';
+@import '@/assets/css/dark.css';
 </style>
 
 <script setup>

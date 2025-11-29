@@ -67,6 +67,7 @@
 
 <style scoped>
 @import '../../assets/style/tipping/style.css';
+@import url(@/assets/css/dark.css);
 </style>
 
 <script setup>

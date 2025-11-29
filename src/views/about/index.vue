@@ -32,6 +32,7 @@
 
 <style>
 @import url(@/assets/css/Navigation-bar.css);
+@import url(@/assets/css/dark.css);
 
 .card-about{
     width: 95%;

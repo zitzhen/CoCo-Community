@@ -76,6 +76,8 @@
 <style>
 @import url(@/assets/css/Navigation-bar.css);
 @import url(@/assets/style/user/style.css);
+@import url(@/assets/css/dark.css);
+
 .container-user {
     max-width: 900px;
     margin: 0 auto;

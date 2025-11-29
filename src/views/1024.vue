@@ -115,6 +115,7 @@
 @import url(@/assets/style/404/style.css);
 @import url(@/assets/css/Navigation-bar.css);
 @import url(@/assets/css/1024.css);
+@import url(@/assets/css/dark.css);
 pre { background: #eee; padding: 10px; overflow-x: auto; }
 </style>
 

@@ -1,0 +1,15 @@
+@media (prefers-color-scheme: dark) {
+    /* 所有页面适用/*/
+    body{
+        background-color:black;
+        color: white;
+    }
+    /*/首页适用/*/
+    .home-control-card {
+        background-color: #2d2d2d;
+    }
+    .home-control-name{
+        color: white;
+    }
+
+}

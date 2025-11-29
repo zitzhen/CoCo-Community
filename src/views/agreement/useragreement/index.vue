@@ -101,6 +101,7 @@ export default {
 @import '../../../assets/style/agreement/style.css';
 @import '../../../assets/style/home/Loading.css';
 @import url(@/assets/css/Navigation-bar.css);
+@import url(@/assets/css/dark.css);
 @media (prefers-color-scheme: dark){
   .content{
     color: black;

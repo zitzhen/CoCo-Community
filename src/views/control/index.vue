@@ -257,6 +257,7 @@ onMounted(() => {
 @import "@/assets/css/style.css";
 @import "@/assets/css/error.css";
 @import "@/assets/css/Navigation-bar.css";
+@import url(@/assets/css/dark.css);
 </style>
 
 <script>
