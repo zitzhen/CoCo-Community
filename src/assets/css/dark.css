@@ -28,4 +28,17 @@
         background-color: #2d2d2d;
         color: white;
     }
+
+    /*/1024页面适用/*/
+    .card-1024{
+        background-color: #2d2d2d;
+        color: white;
+    }
+    pre{
+        background-color: black;
+        color: white;
+    }
+    blockquote{
+        color: black;
+    }
 }
