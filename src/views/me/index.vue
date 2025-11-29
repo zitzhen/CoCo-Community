@@ -199,12 +199,6 @@
       </div>
     </div>
   </div>
-
-  <footer>
-    <div class="container-me">
-      <p>© 2025 小圳社区 - CoCo-Community</p>
-    </div>
-  </footer>
 </template>
 
 <style>

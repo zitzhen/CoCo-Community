@@ -23,11 +23,6 @@
             </p>
         </div>
     </div>
-    <footer>
-        <div class="a_404_container">
-            <p>© 2025 ZIT-CoCo-Community | 遇到问题请联系支持团队</p>
-        </div>
-    </footer>
 </template>
 
 <style>

@@ -103,10 +103,6 @@
         </div>
       </div>
     </div>
-
-    <footer>
-      <div class="container"><p>© 2025 小圳社区 - CoCo-Community | 所有文件仅供学习交流使用</p></div>
-    </footer>
   </div>
 </template>
 
