@@ -43,19 +43,19 @@
         <button id="searchBtn" @click="goToGlobalSearch"><i class="fas fa-search"></i> 全局搜索</button>
       </div>
       <h2 style="text-align: center;" id="Loading_text" v-show="loading">请稍后，正在加载</h2>
-      <div class="file-list" id="fileList">
-        <div class="file-card" v-for="file in filteredFiles" :key="file.name">
-          <div class="file-header">
-            <div class="file-icon">
+      <div class="home-control-list" id="fileList">
+        <div class="home-control-card" v-for="file in filteredFiles" :key="file.name">
+          <div class="home-control-header">
+            <div class="home-control-icon">
               <i class="fas" :class="getFileIconClass(file.type)"></i>
             </div>
-            <div class="file-meta">
-              <div class="file-name">{{ file.name }}</div>
-              <div class="file-author">作者：{{ file.Author }}</div>
+            <div class="home-control-meta">
+              <div class="home-control-name">{{ file.name }}</div>
+              <div class="home-control-author">作者：{{ file.Author }}</div>
             </div>
           </div>
 
-          <div class="file-stats">
+          <div class="home-control-stats">
             <div><i class="fas fa-file"></i> {{ file.size }}</div>
             <div><i class="fas fa-download"></i> {{ file.downloads }}</div>
             <div><i class="fas fa-thumbs-up"></i> 0</div>
