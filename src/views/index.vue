@@ -74,56 +74,6 @@
         </div>
       </div>
     </div>
-
-    <footer>
-      <div class="container">
-        <p>© 2025 小圳社区 - CoCo自定义控件下载中心 | 所有文件仅供学习交流使用</p>
-        <div class="bottom-button">
-          <a href="https://github.com/zitzhen/CoCo-Community" target="_blank">
-            <button class="btn">
-              <svg width="40" height="40" fill="#0092E4" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1" viewBox="0 0 24 24" id="github">
-                <image href="/src/assets/images/icon/github.svg" width="24" height="24" x="0" y="0"/>
-              </svg>
-            </button>
-          </a>
-          <a href="https://gitee.com/zitzhen/CoCo-Community" target="_blank">
-            <button class="btn">
-              <svg width="40" height="40" fill="#c71d23" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="gitee">
-                <image href="/src/assets/images/icon/gitee.svg" width="24" height="24" x="0" y="0"/>
-              </svg>
-            </button>
-          </a>
-          <a href="https://gitlab.com/zitzhen/CoCo-Community">
-            <button class="btn bins">
-          <svg width="40" height="40" fill="#FC6D26" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="gitlab">
-            <path d="M22.65 14.39L12 22.13 1.35 14.39a.84.84 0 0 1-.3-.94l1.22-3.78 2.44-7.51A.42.42 0 0 1 4.82 2a.43.43 0 0 1 .58 0 .42.42 0 0 1 .11.18l2.44 7.49h8.1l2.44-7.51A.42.42 0 0 1 18.6 2a.43.43 0 0 1 .58 0 .42.42 0 0 1 .11.18l2.44 7.51L23 13.45a.84.84 0 0 1-.35.94z"/>
-          </svg>
-        </button>
-        </a>
-        <a href="https://gitcode.com/zitzhen/CoCo-Community">
-            <button class="btn bins">
-            <svg width="40" height="40" fill="#c71d23" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="gitee">
-                <image href="/src/assets/images/icon/gitcode.svg" width="24" height="24" x="0" y="0"/>
-              </svg>
-        </button>
-        </a>
-        </div>
-        <br>
-        <div style="margin: 0 auto;">
-          <a href="tipping/" style="margin: 0 auto;">
-            <button class="Btn" style="margin: 0 auto;">
-              向我们打赏
-              <svg class="svgIcon" viewBox="0 0 576 512">
-                <path d="M512 80c8.8 0 16 7.2 16 16v32H48V96c0-8.8 7.2-16 16-16H512zm16 144V416c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V224H528zM64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm56 304c-13.3 0-24 10.7-24 24s10.7 24 24 24h48c13.3 0 24-10.7 24-24s-10.7-24-24-24H120zm128 0c-13.3 0-24 10.7-24 24s10.7 24 24 24H360c13.3 0 24-10.7 24-24s-10.7-24-24-24H248z"></path>
-              </svg>
-            </button>
-          </a>
-        </div>
-        <p>请优先使用GitHub查看ZIT-CoCo-Community的开源项目</p>
-        <router-link to="/agreement/useragreement"><button class="button-book">用户协议</button></router-link>
-        <router-link to="/agreement/privacypolicy"><button class="button-book">隐私协议</button></router-link>
-      </div>
-    </footer>
   </div>
 </template>
 

@@ -114,12 +114,6 @@
             </div>
         </div>
     </div>
-
-    <footer>
-        <div class="container">
-            <p>© 2025 ZIT-CoCo-Community</p>
-        </div>
-    </footer>
 </template>
 
 <style scoped>

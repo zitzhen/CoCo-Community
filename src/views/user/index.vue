@@ -66,11 +66,6 @@
         </div>
     </div>
 </div>
-    <footer>
-      <div class="container-user">
-          <p>© 2025 小圳社区 - CoCo自定义控件下载中心 | 所有文件仅供学习交流使用</p>
-      </div>
-  </footer>
 </template>
 
 <style>
