@@ -41,7 +41,6 @@
       <div class="search-bar">
         <input type="text" id="searchInput" placeholder="搜索文件..." v-model="searchTerm" @keyup.enter="goToGlobalSearch">
         <button id="searchBtn" @click="goToGlobalSearch"><i class="fas fa-search"></i> 全局搜索</button>
-        <button id="localSearchBtn" @click="searchFiles"><i class="fas fa-filter"></i> 本地搜索</button>
       </div>
       <h2 style="text-align: center;" id="Loading_text" v-show="loading">请稍后，正在加载</h2>
       <div class="file-list" id="fileList">
@@ -157,12 +156,6 @@ export default {
   methods: {
     getFileIconClass(fileType) {
       return this.fileIcons[fileType] || this.fileIcons.default;
-    },
-    searchFiles() {
-      const term = this.searchTerm.toLowerCase();
-      this.filteredFiles = this.files.filter(file => 
-        file.name.toLowerCase().includes(term)
-      );
     },
     goToGlobalSearch() {
       if (this.searchTerm.trim()) {
