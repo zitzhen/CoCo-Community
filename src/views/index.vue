@@ -193,34 +193,9 @@ export default {
         this.loading = false;
       }
     },
-    applyDarkMode(isDark) {
-      if (isDark) {
-        document.documentElement.classList.add('dark-mode');
-      } else {
-        document.documentElement.classList.remove('dark-mode');
-      }
     },
-    checkSystemDarkMode() {
-      const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-      this.applyDarkMode(isDark);
-    }
-  },
   mounted() {
     this.getSubDirs();
-    
-    // 检查系统深色模式偏好
-    this.checkSystemDarkMode();
-    
-    // 监听系统主题变化
-    if (window.matchMedia) {
-      const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
-      this.applyDarkMode(mediaQueryList.matches);
-      
-      mediaQueryList.addEventListener('change', (e) => {
-        this.applyDarkMode(e.matches);
-      });
-    }
-
     checkLoginStatus().then((logininformation) => {
     if (!logininformation || !logininformation.authenticated) {
       this.username = '未登录用户';
