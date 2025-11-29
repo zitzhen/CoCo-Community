@@ -20,7 +20,8 @@ const routes = [
   { path:'/1024',name:"1024",component:()=>import('@/views/1024.vue')},
   { path:'/about',name:"about",component:()=>import('@/views/about/index.vue')},
   { path:'/issues/:number', name:'IssueDetail', component:()=>import('@/views/issues/detail.vue')},
-  { path:'/issues', name: 'Issues', component: () => import('@/views/issues/index.vue') }
+  { path:'/issues', name: 'Issues', component: () => import('@/views/issues/index.vue') },
+  { path: '/search', name: 'Search', component: () => import('@/views/search/index.vue') }
 ];
 
 // 在 Cloudflare Pages 环境中使用正确的 base
