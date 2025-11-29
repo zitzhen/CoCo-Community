@@ -41,4 +41,21 @@
     blockquote{
         color: black;
     }
+
+    /*/控制详情页面适用/*/
+    .main-content{
+        background-color: #2d2d2d;
+    }
+    .creator-card{
+        background-color: #2d2d2d;
+    }
+    .stats-card{
+        background-color: #2d2d2d;
+    }
+    .control-title{
+        color: white;
+    }
+    .control-description{
+        color: white;
+    }
 }
