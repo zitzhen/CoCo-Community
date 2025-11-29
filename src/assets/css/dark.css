@@ -58,4 +58,12 @@
     .control-description{
         color: white;
     }
+
+    /*/安全中心页面适用/*/
+    .card_safe{
+        background-color: #2d2d2d;
+    }
+    .main-content_safe{
+        background-color: #2d2d2d;
+    }
 }
