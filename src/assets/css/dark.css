@@ -20,4 +20,9 @@
         color: white;
     }
 
+    /*/关于页面适用/*/
+    .card-about{
+        background-color: #2d2d2d;
+        color: white;
+    }
 }
