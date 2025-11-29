@@ -14,10 +14,13 @@
 
     /*/404页面适用/*/
     .a_404_error-message{
-        color: black;
+        color: white;
     }
     .a_404_container{
         color: white;
+    }
+    .a_404_error-content{
+        background-color: #2d2d2d;
     }
 
     /*/关于页面适用/*/
