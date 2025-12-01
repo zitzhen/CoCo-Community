@@ -9,6 +9,7 @@ const routes = [
   { path: '/user/:id', name: 'User', component: () => import('@/views/user/index.vue') },
   { path: '/user', name: 'UserError', component: () => import('@/views/user/list.vue') },
   { path: '/control/:id', name: 'Control', component: () => import('@/views/control/index.vue') },
+  { path: '/control/404', name: 'ControlNotFound', component: () => import('@/views/control/NotFound.vue') },
   { path: '/control', name: 'ControlError', component: () => import('@/views/user/No-parameters.vue') },
   { path:'/essay/:id', name: 'EssayP', component: () => import('@/views/essay/essay.vue') },
   { path: '/essay', name: 'Essay', component: () => import('@/views/essay/index.vue') },
