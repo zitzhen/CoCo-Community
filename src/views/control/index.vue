@@ -108,7 +108,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import { marked } from "marked"
 import { useHead } from "@vueuse/head"
 import { checkLoginStatus } from "@/script/login"
@@ -129,6 +129,7 @@ const downloadUrl = ref("")
 const sourceUrl = ref("")
 
 const route = useRoute()
+const router = useRouter()
 
 // -------- 方法 --------
 function offError() {
@@ -148,7 +149,18 @@ async function fetchData() {
     const infoUrl = `/control/${id}/information.json`
     const infoRes = await fetch(infoUrl)
     if (!infoRes.ok) throw new Error(`未找到 information.json：${infoUrl} （HTTP ${infoRes.status}）`)
-    const jsonData = await infoRes.json()
+    const jsontext = await infoRes.text();
+  
+    let jsonData;
+    try{
+      jsonData = JSON.parse(jsontext);
+    }catch(e){
+      console.error("此控件不存在");
+      // 跳转到控件不存在页面
+      router.push('/control/404');
+      return; // 添加 return 语句，防止后续代码执行
+    }
+
 
     // 2) 控件文件（根据最新版本号）
     const latestVersion = jsonData.Current_version
