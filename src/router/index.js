@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 const routes = [
   { path: '/', name: 'Home', component: () => import('@/views/index.vue') },
+  { path: '/agreement/license', name: 'License', component: () => import('@/views/agreement/license/index.vue') },
   { path: '/agreement/useragreement', name: 'UserAgreement', component: () => import('@/views/agreement/useragreement/index.vue') },
   { path: '/agreement/privacypolicy', name: 'PrivacyPolicy', component: () => import('@/views/agreement/privacypolicy/index.vue') },
   { path: '/agreement', name: 'Agreement', component: () => import('@/views/agreement/index.vue') },
