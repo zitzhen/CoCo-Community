@@ -30,7 +30,11 @@ const base = '/';
 
 const router = createRouter({
   history: createWebHistory(base),
-  routes
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    // 始终滚动到顶部
+    return { top: 0 }
+  }
 });
 
 // 添加路由守卫处理 Cloudflare Pages SPA 回退
