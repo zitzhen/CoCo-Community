@@ -6,11 +6,11 @@
                 <div class="footer-section">
                     <h4 class="footer-section-title">CoCo-Community</h4>
                     <ul class="footer-links">
-                        <li><a href="https://cc.zitzhen.cn/issues">Issues</a></li>
-                        <li><a href="https://cc.zitzhen.cn/safe">安全</a></li>
-                        <li><a href="https://cc.zitzhen.cn/user">用户数据</a></li>
-                        <li><a href="https://cc.zitzhen.cn/agreement/useragreement">用户协议</a></li>
-                        <li><a href="https://cc.zitzhen.cn/agreement/privacypolicy">隐私政策</a></li>
+                        <li><router-link to="/issues">Issues</router-link></li>
+                        <li><router-link to="/safe">安全</router-link></li>
+                        <li><router-link to="/user">用户数据</router-link></li>
+                        <li><router-link to="/agreement/useragreement">用户协议</router-link></li>
+                        <li><router-link to="/agreement/privacypolicy">隐私政策</router-link></li>
                     </ul>
                 </div>
 
@@ -28,7 +28,7 @@
                 <div class="footer-section">
                     <h4 class="footer-section-title">支持我们</h4>
                     <ul class="footer-links">
-                        <li><a href="https://cc.zitzhen.cn/tipping/">打赏</a></li>
+                        <li><router-link to="/tipping/">打赏</router-link></li>
                     </ul>
                 </div>
             </div>
@@ -43,6 +43,13 @@
         </div>
     </footer>
 </template>
+
+<script>
+export default {
+  name: 'Footer'
+}
+</script>
+
 <style scoped>
 .footer {
     background-color: #24292e;
