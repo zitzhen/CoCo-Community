@@ -151,12 +151,14 @@ async function fetchData() {
     if (!infoRes.ok) throw new Error(`未找到 information.json：${infoUrl} （HTTP ${infoRes.status}）`)
     const jsontext = await infoRes.text();
   
+    let jsonData;
     try{
-      const jsonData = JSON.parse(jsontext);
+      jsonData = JSON.parse(jsontext);
     }catch(e){
       console.error("此控件不存在");
       // 跳转到控件不存在页面
       router.push('/control/404');
+      return; // 添加 return 语句，防止后续代码执行
     }
 
 
