@@ -78,4 +78,10 @@
     .tipping_intro{
         color: white;;
     }
+
+    /*/许可证页面适用/*/
+    .license-card{
+        background-color: #2d2d2d;
+    }
+
 }

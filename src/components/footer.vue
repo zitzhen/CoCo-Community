@@ -21,7 +21,7 @@
                         <li><a href="https://gitee.com/zitzhen/CoCo-Community">Gitee</a></li>
                         <li><a href="https://gitlab.com/zitzhen/CoCo-Community">GitLab</a></li>
                         <li><a href="https://gitcode.com/zitzhen/CoCo-Community">Gitcode</a></li>
-                        <li><a href="https://github.com/zitzhen/CoCo-Community?tab=AGPL-3.0-1-ov-file">开源协议</a></li>
+                        <li><router-link to="/agreement/license">开源协议</router-link></li>
                     </ul>
                 </div>
 
