@@ -25,7 +25,7 @@
       </div>
 
       <!-- 第二个卡片：AGPL-3.0许可证原文 -->
-      <div class="card" style="padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); background: #fff; max-height: 600px; overflow-y: auto;">
+      <div class="card" style="padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); background: #fff;">
         <h2 style="margin-top: 0; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">AGPL-3.0 许可证原文</h2>
         <div class="license-content" style="line-height: 1.8; color: #34495e; white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 14px;">
           {{ licenseContent }}
@@ -744,8 +744,6 @@ For more information on this, and how to apply and follow the GNU AGPL, see
 
 .license-content {
   line-height: 1.6;
-  max-height: 500px;
-  overflow-y: auto;
   padding: 10px;
   background-color: #f8f9fa;
   border-radius: 4px;
