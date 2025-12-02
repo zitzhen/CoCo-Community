@@ -1,16 +1,15 @@
 <template>
-  <div id="app">
-    <nav class="navbar">
-      <div class="nav-container">
-        <a href="/" class="logo">ZIT<span>-CoCo-Community</span></a>
-        <div class="user-info">
-          <img :src="avatar" alt="用户头像" class="user-avatar">
-          <div class="user-name-Nav">{{ username }}</div>
-        </div>
-      </div>
-    </nav>
-
-    <div style="height: 90px;"></div>
+<div id="app">
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
+                <div class="user-info" @click="gome">
+                    <img :src="avatar" alt="用户头像" class="user-avatar">
+                    <div class="user-name">{{ username }}</div>
+                </div>
+            </div>
+        </nav>
+<div style="height: 65px;"></div>
 
     <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 20px;">
       <h1 style="text-align: center; margin-bottom: 30px; color: #333;">开源许可证</h1>
@@ -41,7 +40,7 @@ export default {
   name: 'AGPLLicense',
   data() {
     return {
-      username: '访客',
+      username: '未登录用户',
       avatar: '/images/user.png',
       licenseContent: `                    GNU AFFERO GENERAL PUBLIC LICENSE
                        Version 3, 19 November 2007
@@ -715,7 +714,7 @@ For more information on this, and how to apply and follow the GNU AGPL, see
         const response = await fetch('/api/me');
         if (response.ok) {
           const userData = await response.json();
-          this.username = userData.nickname || userData.username || '访客';
+          this.username = userData.nickname || userData.username || '未登录用户';
           this.avatar = userData.avatar || '/images/user.png';
         }
       } catch (error) {
@@ -727,55 +726,9 @@ For more information on this, and how to apply and follow the GNU AGPL, see
 </script>
 
 <style scoped>
-.navbar {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  background-color: white;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  z-index: 1000;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-}
+@import url(@/assets/css/Navigation-bar.css);
 
-.nav-container {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
 
-.logo {
-  font-size: 20px;
-  font-weight: bold;
-  color: #2c3e50;
-  text-decoration: none;
-}
-
-.logo span {
-  color: #3498db;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-.user-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  margin-right: 10px;
-  object-fit: cover;
-}
-
-.user-name-Nav {
-  color: #2c3e50;
-  font-weight: 500;
-}
 
 .card {
   background: white;
