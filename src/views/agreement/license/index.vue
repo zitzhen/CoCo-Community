@@ -11,11 +11,11 @@
         </nav>
 <div style="height: 65px;"></div>
 
-    <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 20px;">
-      <h1 style="text-align: center; margin-bottom: 30px; color: #333;">开源许可证</h1>
+    <div class="license-container" style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+      <h1 style="text-align: center;">开源许可证</h1>
       
       <!-- 第一个卡片：社区开源信息和许可证说明 -->
-      <div class="card" style="margin-bottom: 25px; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); background: #fff;">
+      <div class="license-card" style="margin-bottom: 25px; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); background: #fff;">
         <h2 style="margin-top: 0; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">社区开源信息</h2>
         <div style="line-height: 1.8; color: #34495e; font-size: 16px;">
           <p>本社区是开源社区，主仓库位于 <a href="https://github.com/zitzhen/CoCo-Community" target="_blank" style="color: #3498db; text-decoration: none;">Github:zitzhen/CoCo-Community</a></p>
@@ -25,7 +25,7 @@
       </div>
 
       <!-- 第二个卡片：AGPL-3.0许可证原文 -->
-      <div class="card" style="padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); background: #fff;">
+      <div class="license-card" style="padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); background: #fff;">
         <h2 style="margin-top: 0; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">AGPL-3.0 许可证原文</h2>
         <div class="license-content" style="line-height: 1.8; color: #34495e; white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 14px;">
           {{ licenseContent }}
@@ -725,28 +725,8 @@ For more information on this, and how to apply and follow the GNU AGPL, see
 }
 </script>
 
-<style scoped>
+<style>
 @import url(@/assets/css/Navigation-bar.css);
-
-
-
-.card {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  padding: 20px;
-  margin-bottom: 20px;
-}
-
-.container {
-  padding: 20px;
-}
-
-.license-content {
-  line-height: 1.6;
-  padding: 10px;
-  background-color: #f8f9fa;
-  border-radius: 4px;
-  border: 1px solid #e9ecef;
-}
+@import url(@/assets/css/dark.css);
+@import url(@/assets/style/license/style.css);
 </style>
