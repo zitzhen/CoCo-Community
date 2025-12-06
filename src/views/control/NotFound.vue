@@ -19,16 +19,6 @@
 @import url(@/assets/css/dark.css);
 </style>
 
-<script>
-import { checkLoginStatus } from '@/script/login';
-
-export default {
-  name: '404',
-  data() {
-  },
-  }
-</script>
-
 <script setup>
 import { useHead } from '@vueuse/head'
 

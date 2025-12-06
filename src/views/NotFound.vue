@@ -20,7 +20,6 @@
 </style>
 
 <script>
-import { checkLoginStatus } from '@/script/login';
 
 export default {
   name: '404',

@@ -70,7 +70,6 @@
 
 <script>
 import axios from 'axios';
-import { checkLoginStatus } from '@/script/login';
 
 function isOctober24th() {
     const today = new Date();

@@ -258,14 +258,3 @@ onMounted(() => {
 @import "@/assets/css/Navigation-bar.css";
 @import url(@/assets/css/dark.css);
 </style>
-
-<script>
-import { checkLoginStatus } from '@/script/login';
-
-export default {
-  methods: {},
-    gohome(){
-      this.$router.push('/Home')
-    },
-}
-</script>

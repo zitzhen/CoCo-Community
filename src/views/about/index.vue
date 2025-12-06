@@ -29,21 +29,6 @@
 @import url(@/assets/css/dark.css);
 </style>
 
-<script>
-import { checkLoginStatus } from '@/script/login';
-
-export default {
-  name: 'Home',
-  data() {
-    return {
-      avatar:"/images/user.png",
-      username:"未登录用户",
-    }
-  },
-  }
-
-</script>
-
 <script setup>
 import { useHead } from '@vueuse/head'
 

@@ -48,7 +48,6 @@
 </template>
 
 <script>
-import { checkLoginStatus } from '@/script/login';
 import axios from 'axios';
 
 export default {

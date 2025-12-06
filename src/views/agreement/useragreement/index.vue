@@ -16,16 +16,13 @@
 <script>
 import axios from 'axios'
 import { marked } from 'marked'
-import { checkLoginStatus } from '@/script/login';
 
 export default {
   name: 'UserAgreement',
   data() {
     return {
       loading: true,
-      content: '',
-      avatar:"/images/user.png",
-      username:"未登录用户"
+      content: ''
     }
   },
   methods: {

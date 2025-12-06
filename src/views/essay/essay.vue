@@ -24,7 +24,6 @@
   </div>
 </template>
 <script>
-import { checkLoginStatus } from '@/script/login';
 import axios from 'axios';
 import { marked } from 'marked';
 

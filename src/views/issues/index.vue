@@ -117,7 +117,6 @@
 </template>
 
 <script>
-import { checkLoginStatus } from '@/script/login';
 import { marked } from 'marked';
 
 async function fetch_github_issues(loginstatus) {

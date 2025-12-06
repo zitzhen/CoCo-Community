@@ -156,7 +156,6 @@
 
 <script>
 import axios from 'axios';
-import { checkLoginStatus } from '@/script/login';
 
 export default {
   name: 'Search',

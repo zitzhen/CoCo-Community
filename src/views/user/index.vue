@@ -306,9 +306,3 @@ onMounted(async () => {
 })
 </script>
 
-<script>
-import { checkLoginStatus } from '@/script/login';
-
-export default {
-  name: 'user',}
-</script>
