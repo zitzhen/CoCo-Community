@@ -9,6 +9,7 @@
 <script>
 import Footer from '@/components/footer.vue';
 import Navigation from '@/components/Navigation-bar.vue';
+import { ref, onMounted } from 'vue'
 
 export default {
   name: 'App',
@@ -17,6 +18,12 @@ export default {
     Navigation
   }
 }
+
+onMounted(async () => {
+  //发送记录请求
+  const apiUrl = `https://cc.zitzhen.cn/api/log?url=${window.location.href}`;
+  fetch(apiUrl, { method: 'GET' });
+})
 </script>
 
 <style>
