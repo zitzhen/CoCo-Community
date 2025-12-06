@@ -1,16 +1,4 @@
 <template>
-  <div id="app">
-    <!-- 导航栏 -->
-    <nav class="navbar">
-      <div class="nav-container">
-        <a href="/" class="logo" @click="goHome">ZIT<span>-CoCo-Community</span></a>
-        <div class="user-info" @click="goMe">
-          <img :src="avatar" alt="用户头像" class="user-avatar">
-          <div class="user-name-Nav">{{ username }}</div>
-        </div>
-      </div>
-    </nav>
-
     <div style="height: 90px;"></div>
 
     <!-- Issue 详情页面主体 -->
@@ -71,7 +59,6 @@
     <div class="loading" v-else>
       <p>正在加载 issue...</p>
     </div>
-  </div>
 </template>
 
 <script>

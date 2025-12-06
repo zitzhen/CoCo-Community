@@ -1,15 +1,5 @@
 <template>
-<div id="app">
-        <nav class="navbar">
-            <div class="nav-container">
-                <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
-                <div class="user-info">
-                    <img :src="avatar" alt="用户头像" class="user-avatar">
-                    <div class="user-name">{{ username }}</div>
-                </div>
-            </div>
-        </nav>
-</div>
+
 <div style="height: 90px;"></div>
     <div class="container-error-card">
         <div class="error-content">

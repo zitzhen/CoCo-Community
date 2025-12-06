@@ -8,15 +8,6 @@
 
     <!-- 顶部导航栏 -->
   <div id="app">
-          <nav class="navbar">
-              <div class="nav-container">
-                  <div class="logo" @click="gohome">ZIT<span>-CoCo-Community</span></div>
-                  <div class="user-info" @click="gome">
-                      <img :src="avatar_ber" alt="用户头像" class="user-avatar">
-                      <div class="user-name">{{ username }}</div>
-                  </div>
-              </div>
-          </nav>
   <div style="height: 65px;"></div>
 
 

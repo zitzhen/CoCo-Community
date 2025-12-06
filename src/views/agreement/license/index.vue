@@ -1,14 +1,5 @@
 <template>
 <div id="app">
-        <nav class="navbar">
-            <div class="nav-container">
-                <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
-                <div class="user-info" @click="gome">
-                    <img :src="avatar" alt="用户头像" class="user-avatar">
-                    <div class="user-name">{{ username }}</div>
-                </div>
-            </div>
-        </nav>
 <div style="height: 65px;"></div>
 
     <div class="license-container" style="max-width: 1200px; margin: 0 auto; padding: 20px;">
