@@ -1,16 +1,4 @@
 <template>
-  <div id="app">
-    <!-- 导航栏 -->
-    <nav class="navbar">
-      <div class="nav-container">
-        <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
-        <div class="user-info">
-          <img :src="avatar" alt="用户头像" class="user-avatar" />
-          <div class="user-name">{{ username }}</div>
-        </div>
-      </div>
-    </nav>
-  </div>
   <div style="height: 90px;"></div>
   <div class="container-me" id="avatar">
     <!-- 用户信息头部 -->
@@ -202,7 +190,6 @@
 </template>
 
 <style>
-@import url(@/assets/css/Navigation-bar.css);
 @import url(@/assets/style/me/style.css);
 @import url(@/assets/style/me/style2.css);
 @import url(@/assets/css/popup.css);

@@ -1,14 +1,5 @@
 <template>
 <div id="app">
-        <nav class="navbar">
-            <div class="nav-container">
-                <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
-                <div class="user-info" @click="gome">
-                    <img :src="avatar" alt="用户头像" class="user-avatar">
-                    <div class="user-name">{{ username }}</div>
-                </div>
-            </div>
-        </nav>
 <div style="height: 65px;"></div>
 
     <div class="license-container" style="max-width: 1200px; margin: 0 auto; padding: 20px;">
@@ -707,26 +698,11 @@ For more information on this, and how to apply and follow the GNU AGPL, see
   },
   mounted() {
     this.fetchUserInfo();
-  },
-  methods: {
-    async fetchUserInfo() {
-      try {
-        const response = await fetch('/api/me');
-        if (response.ok) {
-          const userData = await response.json();
-          this.username = userData.nickname || userData.username || '未登录用户';
-          this.avatar = userData.avatar || '/images/user.png';
-        }
-      } catch (error) {
-        console.error('获取用户信息失败:', error);
-      }
-    }
   }
-}
+};
 </script>
 
 <style>
-@import url(@/assets/css/Navigation-bar.css);
 @import url(@/assets/css/dark.css);
 @import url(@/assets/style/license/style.css);
 </style>

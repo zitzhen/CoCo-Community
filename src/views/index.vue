@@ -1,14 +1,5 @@
 <template>
   <div id="app">
-        <nav class="navbar">
-            <div class="nav-container">
-                <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
-                <div class="user-info" @click="gome">
-                    <img :src="avatar" alt="用户头像" class="user-avatar">
-                    <div class="user-name">{{ username }}</div>
-                </div>
-            </div>
-        </nav>
 <div style="height: 65px;"></div>
 <div class="a1024card" v-show="a1024Banner">
   <div class="Positioning"></div>
@@ -79,7 +70,6 @@
 
 <script>
 import axios from 'axios';
-import { checkLoginStatus } from '@/script/login';
 
 function isOctober24th() {
     const today = new Date();
@@ -91,8 +81,6 @@ export default {
   data() {
     return {
       a1024Banner: false,
-      avatar:"/images/user.png",
-      username:"未登录用户",
       loading: true,
       searchTerm: '',
       files: [],
@@ -112,9 +100,6 @@ export default {
         // 跳转到全局搜索页面并传递搜索词
         this.$router.push(`/search?q=${encodeURIComponent(this.searchTerm.trim())}`);
       }
-    },
-    gome() {
-      this.$router.push('/me') // 跳转到我的页面
     },
     async getSubDirs() {
       try {
@@ -146,19 +131,6 @@ export default {
     },
   mounted() {
     this.getSubDirs();
-    checkLoginStatus().then((logininformation) => {
-    if (!logininformation || !logininformation.authenticated) {
-      this.username = '未登录用户';
-      this.avatar = '/images/user.png';
-    } else {
-      this.username = logininformation.user.name || logininformation.user.login;
-      this.avatar = logininformation.user.avatar_url || '/images/user.png';
-    }
-  }).catch((err) => {isVisible
-    console.error("登录检查失败：", err);
-    this.username = '登录信息检查失败';
-  });
-
 if (isOctober24th()){
   this.a1024Banner = true;
 }else{
@@ -193,7 +165,6 @@ useHead({
 
 
 <style>
-@import url(@/assets/css/Navigation-bar.css);
 /*协议/**/ 
     .button-book {
     font-size: 17px;
