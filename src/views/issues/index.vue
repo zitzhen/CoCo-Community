@@ -208,9 +208,6 @@ export default {
       event.preventDefault();
       this.$router.push('/');
     },
-    goMe() {
-      this.$router.push('/me');
-    },
     filterIssues() {
       switch (this.filterStatus) {
         case 'open':
@@ -249,9 +246,6 @@ export default {
     createNewIssue() {
       // 在实际应用中，这里应该跳转到创建新issue的页面
       alert('创建新 Issue 功能正在开发中');
-    },
-    gome() {
-      this.$router.push('/me');
     },
     closenewissueModal() {
       this.isnewissues = false;
