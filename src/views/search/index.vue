@@ -162,8 +162,6 @@ export default {
   name: 'Search',
   data() {
     return {
-      username: "未登录用户",
-      avatar: "/images/user.png",
       searchTerm: '',
       searchResults: {
         controls: [],
@@ -189,21 +187,6 @@ export default {
     }
   },
   methods: {
-    async updateLoginInfo() {
-      try {
-        const logininformation = await checkLoginStatus();
-        if (!logininformation || !logininformation.authenticated) {
-          this.username = '未登录用户';
-          this.avatar = '/images/user.png';
-        } else {
-          this.username = logininformation.user.name || logininformation.user.login;
-          this.avatar = logininformation.user.avatar_url || '/images/user.png';
-        }
-      } catch (err) {
-        console.error("登录检查失败：", err);
-        this.username = '登录信息检查失败';
-      }
-    },
     async performSearch() {
       if (!this.searchTerm.trim()) return;
       

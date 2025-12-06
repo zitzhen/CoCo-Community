@@ -311,31 +311,9 @@ import { checkLoginStatus } from '@/script/login';
 
 export default {
   name: 'user',
-  data() {
-    return {
-      avatar_ber:"/images/user.png",
-      username:"未登录用户",
-    }
-  },
   methods: {
     gome() {
       this.$router.push('/me') // 跳转到我的页面
     }},
-  mounted() {
-    checkLoginStatus().then((logininformation) => {
-    if (!logininformation || !logininformation.authenticated) {
-      this.username = '未登录用户';
-      this.avatar_ber = '/images/user.png';
-      const Login_status = false;
-    } else {
-      this.username = logininformation.user.name || logininformation.user.login;
-      this.avatar_ber = logininformation.user.avatar_url || '/images/user.png';
-      const Login_status = true;
-    }
-  }).catch((err) => {
-    console.error("登录检查失败：", err);
-    this.username = '登录信息检查失败';
-  });
   }
-}
 </script>

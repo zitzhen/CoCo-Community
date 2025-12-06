@@ -698,22 +698,8 @@ For more information on this, and how to apply and follow the GNU AGPL, see
   },
   mounted() {
     this.fetchUserInfo();
-  },
-  methods: {
-    async fetchUserInfo() {
-      try {
-        const response = await fetch('/api/me');
-        if (response.ok) {
-          const userData = await response.json();
-          this.username = userData.nickname || userData.username || '未登录用户';
-          this.avatar = userData.avatar || '/images/user.png';
-        }
-      } catch (error) {
-        console.error('获取用户信息失败:', error);
-      }
-    }
   }
-}
+};
 </script>
 
 <style>
