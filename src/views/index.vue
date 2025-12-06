@@ -104,9 +104,6 @@ export default {
         this.$router.push(`/search?q=${encodeURIComponent(this.searchTerm.trim())}`);
       }
     },
-    gome() {
-      this.$router.push('/me') // 跳转到我的页面
-    },
     async getSubDirs() {
       try {
         // 使用本地 list.json 文件获取控件列表

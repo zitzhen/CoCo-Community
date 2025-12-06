@@ -310,10 +310,5 @@ onMounted(async () => {
 import { checkLoginStatus } from '@/script/login';
 
 export default {
-  name: 'user',
-  methods: {
-    gome() {
-      this.$router.push('/me') // 跳转到我的页面
-    }},
-  }
+  name: 'user',}
 </script>

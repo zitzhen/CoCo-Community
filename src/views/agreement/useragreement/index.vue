@@ -29,9 +29,6 @@ export default {
     }
   },
   methods: {
-    gome() {
-      this.$router.push('/me') // 跳转到我的页面
-    },
     async loadContent() {
       try {
         // 确保marked已经正确加载

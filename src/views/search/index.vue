@@ -293,9 +293,6 @@ export default {
       event.preventDefault();
       this.$router.push('/');
     },
-    goMe() {
-      this.$router.push('/me');
-    },
     formatDate(dateString) {
       if (!dateString) return '';
       const date = new Date(dateString);

@@ -49,9 +49,5 @@ export default {
       username:"未登录用户",
     }
   },
-  methods: {
-    gome() {
-      this.$router.push('/me') // 跳转到我的页面
-    }},
 }
 </script>

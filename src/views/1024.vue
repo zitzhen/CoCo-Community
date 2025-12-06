@@ -149,9 +149,6 @@ export default {
     }
   },
   methods: {
-    gome() {
-      this.$router.push('/me') // 跳转到我的页面
-    },
     startCountdown() {
       this.updateCountdown();
       this.countdownInterval = setInterval(this.updateCountdown, 1000);

@@ -25,10 +25,7 @@ import { checkLoginStatus } from '@/script/login';
 export default {
   name: '404',
   data() {
-  },methods: {
-    gome() {
-      this.$router.push('/me') // 跳转到我的
-    }},
+  },
   }
 </script>
 

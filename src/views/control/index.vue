@@ -263,10 +263,7 @@ onMounted(() => {
 import { checkLoginStatus } from '@/script/login';
 
 export default {
-  methods: {
-    gome() {
-      this.$router.push('/me') // 跳转到我的页面
-    }},
+  methods: {},
     gohome(){
       this.$router.push('/Home')
     },

@@ -166,11 +166,7 @@ export default {
     goHome(event) {
       event.preventDefault();
       this.$router.push('/');
-    },
-    goMe() {
-      this.$router.push('/me');
-    },
-    
+    },    
     commentBodyContent(comment) {
       return comment.body ? marked.parse(comment.body) : '';
     }

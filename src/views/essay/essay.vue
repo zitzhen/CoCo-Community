@@ -68,9 +68,6 @@ export default {
       event.preventDefault();
       this.$router.push('/');
     },
-    goMe() {
-      this.$router.push('/me');
-    },
     async fetchArticleDetail() {
       try {
         // 获取文章列表
