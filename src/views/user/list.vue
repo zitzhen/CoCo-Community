@@ -1,17 +1,5 @@
 <template>
-  <div id="app">
-    <nav class="navbar">
-      <div class="nav-container">
-        <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
-        <div class="user-info">
-          <img :src="avatar" alt="用户头像" class="user-avatar">
-          <div class="user-name-Nav">{{ username }}</div>
-        </div>
-      </div>
-    </nav>
-
     <div style="height: 90px;"></div>
-
     <div v-if="userlist.length === 0" class="empty-tip">
       暂无用户数据，请稍后再试。
     </div>
@@ -43,7 +31,6 @@
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
