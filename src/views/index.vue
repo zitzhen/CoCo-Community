@@ -184,7 +184,6 @@ useHead({
 
 
 <style>
-@import url(@/assets/css/Navigation-bar.css);
 /*协议/**/ 
     .button-book {
     font-size: 17px;

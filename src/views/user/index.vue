@@ -60,7 +60,6 @@
 </template>
 
 <style>
-@import url(@/assets/css/Navigation-bar.css);
 @import url(@/assets/style/user/style.css);
 @import url(@/assets/css/dark.css);
 

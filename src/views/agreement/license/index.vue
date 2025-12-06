@@ -717,7 +717,6 @@ For more information on this, and how to apply and follow the GNU AGPL, see
 </script>
 
 <style>
-@import url(@/assets/css/Navigation-bar.css);
 @import url(@/assets/css/dark.css);
 @import url(@/assets/style/license/style.css);
 </style>

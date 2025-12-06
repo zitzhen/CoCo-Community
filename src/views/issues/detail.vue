@@ -207,7 +207,6 @@ export default {
 </script>
 
 <style>
-@import url(@/assets/css/Navigation-bar.css);
 @import url(@/assets/css/dark.css);
 
 :root {

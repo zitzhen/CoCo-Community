@@ -190,7 +190,6 @@
 </template>
 
 <style>
-@import url(@/assets/css/Navigation-bar.css);
 @import url(@/assets/style/me/style.css);
 @import url(@/assets/style/me/style2.css);
 @import url(@/assets/css/popup.css);

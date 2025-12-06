@@ -34,7 +34,6 @@ useHead({
 </script>
 
 <style>
-@import url(@/assets/css/Navigation-bar.css);
 @import '@/assets/style/home/style.css';
 @import url(@/assets/css/dark.css);
 </style>

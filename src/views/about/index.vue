@@ -25,7 +25,6 @@
 </template>
 
 <style scoped>
-@import url(@/assets/css/Navigation-bar.css);
 @import url(@/assets/style/about/style.css);
 @import url(@/assets/css/dark.css);
 </style>

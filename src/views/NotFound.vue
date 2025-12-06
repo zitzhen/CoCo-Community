@@ -16,7 +16,6 @@
 
 <style>
 @import url(@/assets/style/404/style.css);
-@import url(@/assets/css/Navigation-bar.css);
 @import url(@/assets/css/dark.css);
 </style>
 

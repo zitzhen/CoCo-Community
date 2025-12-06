@@ -101,7 +101,6 @@
 
 <style>
 @import url(@/assets/style/1024/style.css);
-@import url(@/assets/css/Navigation-bar.css);
 @import url(@/assets/css/1024.css);
 @import url(@/assets/css/dark.css);
 </style>

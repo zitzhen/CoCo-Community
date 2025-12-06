@@ -341,7 +341,6 @@ export default {
 </script>
 
 <style scoped>
-@import url(@/assets/css/Navigation-bar.css);
 @import url(@/assets/css/dark.css);
 
 .search-page-container {
