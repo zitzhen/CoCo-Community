@@ -19,6 +19,8 @@ export default {
   }
 }
 
+</script>
+<script setup>
 onMounted(async () => {
   //发送记录请求
   const apiUrl = `https://cc.zitzhen.cn/api/log?url=${window.location.href}`;
