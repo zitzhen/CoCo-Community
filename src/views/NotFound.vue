@@ -19,14 +19,7 @@
 @import url(@/assets/css/dark.css);
 </style>
 
-<script>
 
-export default {
-  name: '404',
-  data() {
-  },
-}
-</script>
 
 <script setup>
 import { useHead } from '@vueuse/head'
