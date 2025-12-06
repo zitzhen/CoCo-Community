@@ -28,7 +28,9 @@ export default {
       this.$router.push('/me') // 跳转到我的
     }},
   mounted() {
-    checkLoginStatus().then((logininformation) => {
+    const domain = window.location.hostname;
+    if (!domain.includes("test") && !domain.includes("127.0.0.1") && !domain.includes("localhost")){
+      checkLoginStatus().then((logininformation) => {
     if (!logininformation || !logininformation.authenticated) {
       this.username = '未登录用户';
       this.avatar = '/images/user.png';
@@ -40,6 +42,10 @@ export default {
     console.error("登录检查失败：", err);
     this.username = '登录信息检查失败';
   });
+    }else{
+      this.username = '开发环境';
+      this.avatar = '/images/dev.png';
+    }
   }
 }
 </script>
