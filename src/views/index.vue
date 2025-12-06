@@ -81,8 +81,6 @@ export default {
   data() {
     return {
       a1024Banner: false,
-      avatar:"/images/user.png",
-      username:"未登录用户",
       loading: true,
       searchTerm: '',
       files: [],
