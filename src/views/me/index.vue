@@ -1,5 +1,4 @@
 <template>
-  <div style="height: 90px;"></div>
   <div class="container-me" id="avatar">
     <!-- 用户信息头部 -->
     <div class="profile-header-me">

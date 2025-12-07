@@ -1,7 +1,5 @@
 <template>
   <div id="app">
-    <div style="height: 90px;"></div>
-
     <div class="article-detail">
       <div class="article-header">
         <h1 class="article-title">{{ article.name }}</h1>

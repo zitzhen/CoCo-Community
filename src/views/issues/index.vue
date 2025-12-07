@@ -1,7 +1,4 @@
 <template>
-
-    <div style="height: 90px;"></div>
-
     <!-- Issues 页面主体 -->
     <div class="issues-container">
       <!-- 左侧边栏 -->

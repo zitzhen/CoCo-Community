@@ -1,8 +1,5 @@
 <template>
-    <div id="app">
-        
-        <div style="height: 90px;"></div>
-        
+    <div id="app">       
         <div class="login-container">
             <div class="login-box">
                 <h2 class="login-title">{{ Welcome_text }}</h2>

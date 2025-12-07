@@ -1,6 +1,4 @@
 <template>
-<div style="height: 90px;"></div>
-
     <div class="card-about">
         <h1>关于我们</h1>
         <p>欢迎来到CoCo-Community，CoCo-Community是附属于ZIT小圳创科工作室的产品。旨在补充第三方社区的不足。</p>

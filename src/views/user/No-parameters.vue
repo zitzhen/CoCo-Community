@@ -1,6 +1,4 @@
 <template>
-
-<div style="height: 90px;"></div>
     <div class="container-error-card">
         <div class="error-content">
             <div class="error-icon">

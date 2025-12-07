@@ -1,6 +1,4 @@
 <template>
-    <div style="height: 90px;"></div>
-
     <!-- Issue 详情页面主体 -->
     <div class="issue-detail-container" v-if="issue">
       <div class="issue-detail-header">
