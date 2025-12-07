@@ -1,7 +1,5 @@
 <template>
 <div id="app">
-<div style="height: 65px;"></div>
-
     <div class="license-container" style="max-width: 1200px; margin: 0 auto; padding: 20px;">
       <h1 style="text-align: center;">开源许可证</h1>
       

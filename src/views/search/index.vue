@@ -1,7 +1,4 @@
 <template>
-<div id="app">
-<div style="height: 65px;"></div>
-
     <!-- 搜索页面主体 -->
     <div class="search-page-container">
       <div class="search-container">
@@ -151,7 +148,6 @@
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
