@@ -1,6 +1,7 @@
 <template>
   <div class="app-container">
     <Navigation />
+    <lines />
     <router-view></router-view>
     <Footer />
   </div>
@@ -9,13 +10,15 @@
 <script>
 import Footer from '@/components/footer.vue';
 import Navigation from '@/components/Navigation-bar.vue';
+import lines from '@/components/Navigation-lines.vue';
 import { ref, onMounted } from 'vue'
 
 export default {
   name: 'App',
   components: {
     Footer,
-    Navigation
+    Navigation,
+    lines,
   }
 }
 

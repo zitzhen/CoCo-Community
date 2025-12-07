@@ -1,5 +1,4 @@
 <template>
-<div style="height: 90px;"></div>
 <div class="a_404_container">
         <div class="a_404_error-content">
             <div class="error-icon">

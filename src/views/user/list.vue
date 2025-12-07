@@ -1,5 +1,4 @@
 <template>
-    <div style="height: 90px;"></div>
     <div v-if="userlist.length === 0" class="empty-tip">
       暂无用户数据，请稍后再试。
     </div>

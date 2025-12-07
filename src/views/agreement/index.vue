@@ -1,6 +1,4 @@
 <template>
-    <div style="height: 90px;"></div>
-
 <router-link :to="{ name: 'UserAgreement'}" class="file-link">
     <span class="file-list">
         <span class="file-card doc">

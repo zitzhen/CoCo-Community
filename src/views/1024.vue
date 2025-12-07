@@ -1,5 +1,4 @@
 <template>
-    <div style="height: 65px;"></div>
 <div class="a1024card" v-show="a1024Banner">
   <div class="Positioning"></div>
   <h2 class="a1024title">🎉今天是我们的节日——1024🎉</h2>

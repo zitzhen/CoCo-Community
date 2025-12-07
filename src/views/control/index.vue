@@ -6,11 +6,6 @@
     </div>
     </div>
 
-    <!-- 顶部导航栏 -->
-  <div id="app">
-  <div style="height: 65px;"></div>
-
-
     <!-- 错误提示悬浮窗 -->
     <div v-if="errorVisibleSmall" class="card">
       <div class="icon-container">
@@ -94,7 +89,6 @@
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script setup>
