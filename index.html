@@ -21,31 +21,64 @@
       })();
     </script>
   </head>
-    <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0WPS98EZ34"></script>
   <script>
+(function() {
+    const hostname = window.location.hostname;
+    
+    // 检测开发环境（包含你的测试域名）
+    const isDev = 
+        hostname.includes('localhost') ||
+        hostname.includes('127.0.0.1') ||
+        hostname.endsWith('.test') ||  // 修复：检测以.test结尾
+        /^\d+\.\d+\.\d+\.\d+$/.test(hostname);
+
+    if (isDev) {
+        console.log("开发环境 - 统计已禁用");
+        // 初始化空函数防止报错
+        window.dataLayer = window.dataLayer || [];
+        window._hmt = window._hmt || [];
+        window.gtag = window.gtag || function() { 
+            window.dataLayer.push(arguments);
+        };
+        window.clarity = window.clarity || function() {};
+        return;
+    }
+
+    console.log("生产环境 - 加载统计");
+    // 生产环境加载所有统计代码
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-0WPS98EZ34');
-  </script>
-
-  <!--百度统计-->
-    <script>
-  var _hmt = _hmt || [];
-  (function() {
+    
+    // GA4
+    var ga = document.createElement('script');
+    ga.async = true;
+    ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-0WPS98EZ34';
+    document.head.appendChild(ga);
+    
+    // 百度统计
+    window._hmt = window._hmt || [];
     var hm = document.createElement("script");
     hm.src = "https://hm.baidu.com/hm.js?ae1ade4c15fc8aa67d79f24de0ce05e3";
     var s = document.getElementsByTagName("script")[0]; 
     s.parentNode.insertBefore(hm, s);
-  })();
-  </script>
-  
-  <!-- Cloudflare Web Analytics -->
-  <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d8055c442d5e48bf8f293ff8554998f9"}'></script>
-  <!-- End Cloudflare Web Analytics -->
-
+    
+    // Cloudflare
+    var cf = document.createElement('script');
+    cf.defer = true;
+    cf.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+    cf.setAttribute('data-cf-beacon', '{"token": "d8055c442d5e48bf8f293ff8554998f9"}');
+    document.head.appendChild(cf);
+    
+    // Microsoft Clarity
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "uhjtx2ek1y");
+})();
+</script>
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
