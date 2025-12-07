@@ -23,8 +23,11 @@ export default {
 <script setup>
 onMounted(async () => {
   //发送记录请求
+  const domain = window.location.hostname;
+  if (!domain.includes("test") && !domain.includes("127.0.0.1") && !domain.includes("localhost")){
   const apiUrl = `https://cc.zitzhen.cn/api/log?url=${window.location.href}`;
   fetch(apiUrl, { method: 'GET' });
+  }
 })
 </script>
 
