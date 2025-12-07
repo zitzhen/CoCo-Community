@@ -55,7 +55,7 @@ export default {
           github: user.github || `https://github.com/${user.username}`,
           home: user.home || `/user/${user.username}`
         }));
-        console.log("用户列表:", this.userlist);
+        //console.log("用户列表:", this.userlist);
       } catch (error) {
         console.error("获取用户列表失败：", error);
       }
