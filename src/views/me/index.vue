@@ -561,11 +561,11 @@ export default {
         const logininformation = await checkLoginStatus();
         if (!logininformation || !logininformation.authenticated) {
           // 确保在非登录状态时跳转到登录页面
-          console.log("用户未登录，跳转到登录页面");
+          // console.log("用户未登录，跳转到登录页面");
           router.push({ path: '/login' });
           return;
         } else {
-          console.log("用户已登录", logininformation);
+          // console.log("用户已登录", logininformation);
           username_github.value = "@" + (logininformation.user.login || "");
           username.value = logininformation.user.name || logininformation.user.login || "未知用户";
           avatar.value = logininformation.user.avatar_url || "/images/user.png";
@@ -591,10 +591,10 @@ export default {
     
     // 获取用户控件信息
     async function fetch_user_information(username_github) {
-      console.log(username_github);
+      //console.log(username_github);
       try {
         const url = `https://${window.location.host}/information/user/${username_github}.json`;
-        console.log(url);
+        //console.log(url);
         const res = await fetch(url);
         if (res.ok) {
           const user_introduction = await res.json();

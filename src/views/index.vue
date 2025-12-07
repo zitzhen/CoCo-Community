@@ -106,7 +106,7 @@ export default {
         // 使用本地 list.json 文件获取控件列表
         const { data } = await axios.get('/control/list.json');
         const dirs = data.list || [];
-        console.log("Directories:", dirs);
+        //console.log("控件:", dirs);
         
         const fileObjs = dirs.map(information => ({
           name: information.name,

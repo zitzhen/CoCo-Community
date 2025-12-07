@@ -58,7 +58,6 @@ export default {
           comments: article.comments || 0,
           content: article.content || ''
         }));
-        console.log("文章列表:", this.essaylist);
       } catch (error) {
         console.error("获取文章列表失败：", error);
       }
