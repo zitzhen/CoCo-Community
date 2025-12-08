@@ -15,9 +15,11 @@
 
       <div class="card-about">
           <h2>我们的社交频道</h2>
-        <a href="https://discord.gg/CvT5R8ew">Discord</a>
+        <a href="https://discord.gg/ptcgnKJ6xN">Discord</a>
         <br></br>
         <a href="https://qm.qq.com/cgi-bin/qm/qr?k=966509561">QQ</a>
+        <br></br>
+        <li><a href="https://t.me/+XykN0Q77R2dlZTc1">Telegram</a></li>
         <p></p>
     </div>
 </template>
