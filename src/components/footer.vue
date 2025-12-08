@@ -31,6 +31,15 @@
                         <li><router-link to="/tipping/">打赏</router-link></li>
                     </ul>
                 </div>
+
+                <div class="footer-section">
+                    <h4 class="footer-section-title">我们的社交频道</h4>
+                    <ul class="footer-links">
+                        <li><a herf="https://qm.qq.com/cgi-bin/qm/qr?k=966509561">QQ(966509561)</a></li>
+                        <li><a href="https://discord.gg/ptcgnKJ6xN">Discord</a></li>
+                        <li><a href="https://t.me/+XykN0Q77R2dlZTc1">Telegram</a></li>
+                    </ul>
+                </div>
             </div>
 
             <!-- 底部信息区域 -->
