@@ -1,16 +1,6 @@
 <template>
 <div id="app">
-        <nav class="navbar">
-            <div class="nav-container">
-                <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
-                <div class="user-info"@click="gome">
-                    <img :src="avatar_ber" alt="用户头像" class="user-avatar">
-                    <div class="user-name">{{ username }}</div>
-                </div>
-            </div>
-    </nav>
 </div>
-<div style="height: 90px;"></div>
     <div class="container-user" id="avatar">
     <!-- 用户信息头部 -->
     <div class="profile-header-user">
@@ -66,15 +56,9 @@
         </div>
     </div>
 </div>
-    <footer>
-      <div class="container-user">
-          <p>© 2025 小圳社区 - CoCo自定义控件下载中心 | 所有文件仅供学习交流使用</p>
-      </div>
-  </footer>
 </template>
 
 <style>
-@import url(@/assets/css/Navigation-bar.css);
 @import url(@/assets/style/user/style.css);
 @import url(@/assets/css/dark.css);
 
@@ -321,36 +305,3 @@ onMounted(async () => {
 })
 </script>
 
-<script>
-import { checkLoginStatus } from '@/script/login';
-
-export default {
-  name: 'user',
-  data() {
-    return {
-      avatar_ber:"/images/user.png",
-      username:"未登录用户",
-    }
-  },
-  methods: {
-    gome() {
-      this.$router.push('/me') // 跳转到我的页面
-    }},
-  mounted() {
-    checkLoginStatus().then((logininformation) => {
-    if (!logininformation || !logininformation.authenticated) {
-      this.username = '未登录用户';
-      this.avatar_ber = '/images/user.png';
-      const Login_status = false;
-    } else {
-      this.username = logininformation.user.name || logininformation.user.login;
-      this.avatar_ber = logininformation.user.avatar_url || '/images/user.png';
-      const Login_status = true;
-    }
-  }).catch((err) => {
-    console.error("登录检查失败：", err);
-    this.username = '登录信息检查失败';
-  });
-  }
-}
-</script>

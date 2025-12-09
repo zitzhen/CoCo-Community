@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 const routes = [
   { path: '/', name: 'Home', component: () => import('@/views/index.vue') },
+  { path: '/agreement/license', name: 'License', component: () => import('@/views/agreement/license/index.vue') },
   { path: '/agreement/useragreement', name: 'UserAgreement', component: () => import('@/views/agreement/useragreement/index.vue') },
   { path: '/agreement/privacypolicy', name: 'PrivacyPolicy', component: () => import('@/views/agreement/privacypolicy/index.vue') },
   { path: '/agreement', name: 'Agreement', component: () => import('@/views/agreement/index.vue') },
@@ -9,6 +10,7 @@ const routes = [
   { path: '/user/:id', name: 'User', component: () => import('@/views/user/index.vue') },
   { path: '/user', name: 'UserError', component: () => import('@/views/user/list.vue') },
   { path: '/control/:id', name: 'Control', component: () => import('@/views/control/index.vue') },
+  { path: '/control/404', name: 'ControlNotFound', component: () => import('@/views/control/NotFound.vue') },
   { path: '/control', name: 'ControlError', component: () => import('@/views/user/No-parameters.vue') },
   { path:'/essay/:id', name: 'EssayP', component: () => import('@/views/essay/essay.vue') },
   { path: '/essay', name: 'Essay', component: () => import('@/views/essay/index.vue') },
@@ -29,7 +31,17 @@ const base = '/';
 
 const router = createRouter({
   history: createWebHistory(base),
-  routes
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+  //发送记录请求
+  const domain = window.location.hostname;
+  if (!domain.includes("test") && !domain.includes("127.0.0.1") && !domain.includes("localhost")){
+    const apiUrl = `https://cc.zitzhen.cn/api/log?url=${window.location.href}`;
+    fetch(apiUrl, { method: 'GET' });
+  }
+    // 始终滚动到顶部
+    return { top: 0 }
+  }
 });
 
 // 添加路由守卫处理 Cloudflare Pages SPA 回退

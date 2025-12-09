@@ -1,17 +1,4 @@
 <template>
-  <div id="app">
-    <!-- 导航栏 -->
-    <nav class="navbar">
-      <div class="nav-container">
-        <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
-        <div class="user-info">
-          <img :src="avatar" alt="用户头像" class="user-avatar" />
-          <div class="user-name">{{ username }}</div>
-        </div>
-      </div>
-    </nav>
-  </div>
-  <div style="height: 90px;"></div>
   <div class="container-me" id="avatar">
     <!-- 用户信息头部 -->
     <div class="profile-header-me">
@@ -199,16 +186,9 @@
       </div>
     </div>
   </div>
-
-  <footer>
-    <div class="container-me">
-      <p>© 2025 小圳社区 - CoCo-Community</p>
-    </div>
-  </footer>
 </template>
 
 <style>
-@import url(@/assets/css/Navigation-bar.css);
 @import url(@/assets/style/me/style.css);
 @import url(@/assets/style/me/style2.css);
 @import url(@/assets/css/popup.css);
@@ -580,11 +560,11 @@ export default {
         const logininformation = await checkLoginStatus();
         if (!logininformation || !logininformation.authenticated) {
           // 确保在非登录状态时跳转到登录页面
-          console.log("用户未登录，跳转到登录页面");
+          // console.log("用户未登录，跳转到登录页面");
           router.push({ path: '/login' });
           return;
         } else {
-          console.log("用户已登录", logininformation);
+          // console.log("用户已登录", logininformation);
           username_github.value = "@" + (logininformation.user.login || "");
           username.value = logininformation.user.name || logininformation.user.login || "未知用户";
           avatar.value = logininformation.user.avatar_url || "/images/user.png";
@@ -610,10 +590,10 @@ export default {
     
     // 获取用户控件信息
     async function fetch_user_information(username_github) {
-      console.log(username_github);
+      //console.log(username_github);
       try {
         const url = `https://${window.location.host}/information/user/${username_github}.json`;
-        console.log(url);
+        //console.log(url);
         const res = await fetch(url);
         if (res.ok) {
           const user_introduction = await res.json();

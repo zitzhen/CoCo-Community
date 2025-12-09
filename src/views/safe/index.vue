@@ -174,12 +174,6 @@
         </div>
       </div>
     </div>
-
-    <footer>
-      <div>
-        <p>&copy; 2025 ZIT-CoCo-Community | 安全部门</p>
-      </div>
-    </footer>
   </div>
 </template>
 

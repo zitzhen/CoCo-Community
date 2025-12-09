@@ -1,16 +1,4 @@
 <template>
-<div id="app">
-        <nav class="navbar">
-            <div class="nav-container">
-                <a href="#" class="logo">ZIT<span>-CoCo-Community</span></a>
-                <div class="user-info" @click="gome">
-                    <img :src="avatar" alt="用户头像" class="user-avatar">
-                    <div class="user-name">{{ username }}</div>
-                </div>
-            </div>
-        </nav>
-<div style="height: 65px;"></div>
-
     <!-- 搜索页面主体 -->
     <div class="search-page-container">
       <div class="search-container">
@@ -160,19 +148,15 @@
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
 import axios from 'axios';
-import { checkLoginStatus } from '@/script/login';
 
 export default {
   name: 'Search',
   data() {
     return {
-      username: "未登录用户",
-      avatar: "/images/user.png",
       searchTerm: '',
       searchResults: {
         controls: [],
@@ -198,21 +182,6 @@ export default {
     }
   },
   methods: {
-    async updateLoginInfo() {
-      try {
-        const logininformation = await checkLoginStatus();
-        if (!logininformation || !logininformation.authenticated) {
-          this.username = '未登录用户';
-          this.avatar = '/images/user.png';
-        } else {
-          this.username = logininformation.user.name || logininformation.user.login;
-          this.avatar = logininformation.user.avatar_url || '/images/user.png';
-        }
-      } catch (err) {
-        console.error("登录检查失败：", err);
-        this.username = '登录信息检查失败';
-      }
-    },
     async performSearch() {
       if (!this.searchTerm.trim()) return;
       
@@ -319,9 +288,6 @@ export default {
       event.preventDefault();
       this.$router.push('/');
     },
-    goMe() {
-      this.$router.push('/me');
-    },
     formatDate(dateString) {
       if (!dateString) return '';
       const date = new Date(dateString);
@@ -336,9 +302,7 @@ export default {
       this.performSearch();
     }
   },
-  mounted() {
-    this.updateLoginInfo();
-    
+  mounted() {  
     // 如果URL中有搜索参数，执行搜索
     const query = this.$route.query.q;
     if (query) {
@@ -350,7 +314,6 @@ export default {
 </script>
 
 <style scoped>
-@import url(@/assets/css/Navigation-bar.css);
 @import url(@/assets/css/dark.css);
 
 .search-page-container {
