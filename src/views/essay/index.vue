@@ -68,7 +68,6 @@ export default {
     }
   },
   mounted() {
-    this.updateLoginInfo();
     this.fetchEssaylist();
   }
 };
