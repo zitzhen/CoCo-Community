@@ -33,6 +33,12 @@ const router = createRouter({
   history: createWebHistory(base),
   routes,
   scrollBehavior(to, from, savedPosition) {
+  //发送记录请求
+  const domain = window.location.hostname;
+  if (!domain.includes("test") && !domain.includes("127.0.0.1") && !domain.includes("localhost")){
+    const apiUrl = `https://cc.zitzhen.cn/api/log?url=${window.location.href}`;
+    fetch(apiUrl, { method: 'GET' });
+  }
     // 始终滚动到顶部
     return { top: 0 }
   }
