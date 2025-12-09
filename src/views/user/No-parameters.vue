@@ -66,15 +66,7 @@
 }
 </style>
 
-<script>
-import axios from 'axios';
 
-export default {
-  mounted() {
-    this.updateLoginInfo(); // 页面加载时调用
-  }
-};
-</script>
 
 <script setup>
 import { useHead } from '@vueuse/head'

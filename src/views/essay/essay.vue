@@ -94,7 +94,6 @@ export default {
     }
   },
   mounted() {
-    this.updateLoginInfo();
     // 获取文章详情
     this.fetchArticleDetail();
   }

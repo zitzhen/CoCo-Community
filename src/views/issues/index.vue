@@ -275,7 +275,6 @@ export default {
     },
   },
   async mounted() {
-    await this.updateLoginInfo();
     this.issues = await fetch_github_issues(this.loginstatus);
     this.filteredIssues = [...this.issues];
     this.extractUniqueLabels();

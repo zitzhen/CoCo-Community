@@ -168,9 +168,7 @@ export default {
       return comment.body ? marked.parse(comment.body) : '';
     }
   },
-  async mounted() {
-    await this.updateLoginInfo();
-    
+  async mounted() {    
     const issueNumber = this.$route.params.number;
     if (issueNumber) {
       this.issue = await fetchIssueDetails(issueNumber, this.loginstatus);

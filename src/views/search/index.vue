@@ -302,9 +302,7 @@ export default {
       this.performSearch();
     }
   },
-  mounted() {
-    this.updateLoginInfo();
-    
+  mounted() {  
     // 如果URL中有搜索参数，执行搜索
     const query = this.$route.query.q;
     if (query) {
