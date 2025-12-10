@@ -200,10 +200,6 @@ export default {
         day: '2-digit'
       });
     },
-    goHome(event) {
-      event.preventDefault();
-      this.$router.push('/');
-    },
     filterIssues() {
       switch (this.filterStatus) {
         case 'open':

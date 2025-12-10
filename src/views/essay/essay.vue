@@ -109,10 +109,6 @@ export default {
         day: '2-digit'
       });
     },
-    goHome(event) {
-      event.preventDefault();
-      this.$router.push('/');
-    },
     async fetchArticleDetail() {
       try {
         // 获取文章列表
@@ -180,16 +176,6 @@ export default {
         hour: '2-digit',
         minute: '2-digit'
       });
-    },
-    goHome(event) {
-      event.preventDefault();
-      this.$router.push('/');
-    },
-    goMe() {
-      this.$router.push('/me');
-    },
-    goLogin() {
-      this.$router.push('/login');
     },
     async fetchArticleDetail() {
       try {
