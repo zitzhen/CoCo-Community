@@ -86,8 +86,8 @@ export default {
     return {
       essaylist: [],
       article: {
-        name: "测试",
-        author: "测试工程师",
+        name: "",
+        author: "",
         publication_time: new Date().toISOString(),
         pageviews: 0,
         Like: 0,
