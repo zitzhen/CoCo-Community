@@ -228,6 +228,22 @@ export default {
         console.error("获取文章详情失败：", error);
       }
     },
+    async fetch_comment(){
+      try{
+        const response  = await axios.get('https://cc.zitzhen.cn/api/fetch-comment-essay');
+        if (!response.ok){
+          throw Error 
+        }
+
+        const data = response.json();
+        
+        return data;
+
+      }catch(error){
+        console.error(error);
+        return [];
+      }
+    },
     submitComment() {
       if (!this.isLoggedIn) {
         this.goLogin();
@@ -262,6 +278,7 @@ export default {
   mounted() {
     // 获取文章详情
     this.fetchArticleDetail();
+    comments = this.fetch_comment();
   }
 }
 </script>
