@@ -244,7 +244,7 @@ export default {
         return [];
       }
     },
-    submitComment() {
+    async submitComment() {
       if (!this.isLoggedIn) {
         this.goLogin();
         return;
@@ -255,24 +255,21 @@ export default {
         return;
       }
       
-      // 创建新评论
-      const newCommentObj = {
-        id: this.comments.length + 1,
-        username: this.username,
-        avatar: this.avatar,
-        content: this.newComment,
-        time: new Date().toISOString(),
-        likes: 0
-      };
-      
-      // 添加到评论列表
-      this.comments.unshift(newCommentObj);
-      
-      // 清空输入框
-      this.newComment = "";
-      
-      // 更新文章评论数
-      this.article.comments = this.comments.length;
+      // 将评论请求至服务器
+      try{
+        const response = await fetch("https://cc.zitzhen.cn/api/comment-essay",{
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            essayid: essayid,
+            content: newComment
+          })
+        })
+      }catch(error){
+        console.error("发送评论失败："+"\n" + error);
+      }
     }
   },
   mounted() {
