@@ -67,7 +67,6 @@
               <button class="like-comment-btn">
                 <i class="fas fa-thumbs-up"></i> {{ comment.likes || 0 }}
               </button>
-              <button class="reply-comment-btn">回复</button>
             </div>
           </div>
         </div>
