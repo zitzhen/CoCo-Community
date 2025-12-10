@@ -95,32 +95,7 @@ export default {
         content: ""
       },
       newComment: "",
-      comments: [
-        {
-          id: 1,
-          username: "测试用户1",
-          avatar: "/images/user.png",
-          content: "这是一篇很棒的文章！",
-          time: new Date().toISOString(),
-          likes: 2
-        },
-        {
-          id: 2,
-          username: "测试用户2",
-          avatar: "/images/user.png",
-          content: "感谢分享，很有启发性。",
-          time: new Date(Date.now() - 3600000).toISOString(), // 1小时前
-          likes: 0
-        },
-        {
-          id: 3,
-          username: "测试用户3",
-          avatar: "/images/user.png",
-          content: "期待更多相关内容。",
-          time: new Date(Date.now() - 86400000).toISOString(), // 1天前
-          likes: 5
-        }
-      ]
+      comments: []
     };
   },
   methods: {
