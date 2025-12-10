@@ -100,24 +100,6 @@ export default {
     };
   },
   methods: {
-    async updateLoginInfo() {
-      try {
-        const logininformation = await checkLoginStatus();
-        if (!logininformation || !logininformation.authenticated) {
-          this.username = '未登录用户';
-          this.avatar = '/images/user.png';
-          this.isLoggedIn = false;
-        } else {
-          this.username = logininformation.user.name || logininformation.user.login;
-          this.avatar = logininformation.user.avatar_url || '/images/user.png';
-          this.isLoggedIn = true;
-        }
-      } catch (err) {
-        console.error("登录检查失败：", err);
-        this.username = '登录信息检查失败';
-        this.isLoggedIn = false;
-      }
-    },
     formatDate(dateString) {
       if (!dateString) return '';
       const date = new Date(dateString);
