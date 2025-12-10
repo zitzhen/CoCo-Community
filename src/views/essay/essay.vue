@@ -278,7 +278,7 @@ export default {
   mounted() {
     // 获取文章详情
     this.fetchArticleDetail();
-    comments = this.fetch_comment();
+    this.comments = this.fetch_comment();
   }
 }
 </script>
