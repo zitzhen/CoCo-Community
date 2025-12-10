@@ -1,17 +1,4 @@
 <template>
-  <div id="app">
-    <nav class="navbar">
-      <div class="nav-container">
-        <a href="/" class="logo">ZIT<span>-CoCo-Community</span></a>
-        <div class="user-info">
-          <img :src="avatar" alt="用户头像" class="user-avatar">
-          <div class="user-name-Nav">{{ username }}</div>
-        </div>
-      </div>
-    </nav>
-
-    <div style="height: 90px;"></div>
-
     <div v-if="essaylist.length === 0" class="empty-tip">
       暂无文章数据，请稍后再试。
     </div>
@@ -44,37 +31,18 @@
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
-import { checkLoginStatus } from '@/script/login';
 import axios from 'axios';
 
 export default {
   data() {
     return {
-      username: "未登录用户",
-      avatar: "/images/user.png",
       essaylist: []
     };
   },
   methods: {
-    async updateLoginInfo() {
-      try {
-        const logininformation = await checkLoginStatus();
-        if (!logininformation || !logininformation.authenticated) {
-          this.username = '未登录用户';
-          this.avatar = '/images/user.png';
-        } else {
-          this.username = logininformation.user.name || logininformation.user.login;
-          this.avatar = logininformation.user.avatar_url || '/images/user.png';
-        }
-      } catch (err) {
-        console.error("登录检查失败：", err);
-        this.username = '登录信息检查失败';
-      }
-    },
     async fetchEssaylist() {
       try {
         const response = await axios.get('/essaylist.json');
@@ -88,7 +56,6 @@ export default {
           comments: article.comments || 0,
           content: article.content || ''
         }));
-        console.log("文章列表:", this.essaylist);
       } catch (error) {
         console.error("获取文章列表失败：", error);
       }
@@ -101,14 +68,13 @@ export default {
     }
   },
   mounted() {
-    this.updateLoginInfo();
     this.fetchEssaylist();
   }
 };
 </script>
 
 <style>
-@import url(@/assets/css/Navigation-bar.css);
+@import url(@/assets/css/dark.css);
 
 :root {
   --primary-color: #2ecc71;

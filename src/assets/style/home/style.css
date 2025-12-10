@@ -1,161 +1,159 @@
-        :root {
-            --primary-color: #3498db;
-            --secondary-color: #2980b9;
-            --background-color: #f5f7fa;
-            --card-color: #ffffff;
-            --text-color: #333333;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2980b9;
+    --background-color: #f5f7fa;
+    --card-color: #ffffff;
+    --text-color: #333333;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 
-        :root.dark-mode {
-            --primary-color: #5dade2;
-            --secondary-color: #2e86c1;
-            --background-color: #1a1a1a;
-            --card-color: #2d2d2d;
-            --text-color: #f0f0f0;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-        }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--background-color);
-            margin: 0;
-            padding: 0;
-        }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    margin: 0;
+    padding: 0;
+}
 
-        header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 1.5rem 0;
-            text-align: center;
-            box-shadow: var(--shadow);
-        }
+header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 1.5rem 0;
+    text-align: center;
+    box-shadow: var(--shadow);
+}
 
-        .container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
+.container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
 
-        h1 {
-            margin: 0;
-            font-size: 2.2rem;
-        }
+h1 {
+    margin: 0;
+    font-size: 2.2rem;
+}
 
-        .search-bar {
-            margin: 2rem 0;
-            display: flex;
-            justify-content: center;
-        }
+.search-bar {
+    margin: 2rem 0;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
 
-        .search-bar input {
-            padding: 0.8rem 1rem;
-            width: 60%;
-            max-width: 500px;
-            border: 1px solid #ddd;
-            border-radius: 4px 0 0 4px;
-            font-size: 1rem;
-            outline: none;
-        }
+.search-bar input {
+    padding: 0.8rem 1rem;
+    width: 60%;
+    max-width: 400px;
+    border: 1px solid #ddd;
+    border-radius: 4px 0 0 4px;
+    font-size: 1rem;
+    outline: none;
+}
 
-        .search-bar button {
-            padding: 0.8rem 1.5rem;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 0 4px 4px 0;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s;
-        }
+.search-bar button {
+    padding: 0.8rem 1rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+    white-space: nowrap;
+}
 
-        .search-bar button:hover {
-            background-color: var(--secondary-color);
-        }
+.search-bar button:hover {
+    background-color: var(--secondary-color);
+}
 
-        .file-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
+#searchBtn {
+    border-radius: 0 4px 4px 0;
+}
 
-        .file-card {
-            background-color: var(--card-color);
-            border-radius: 8px;
-            padding: 1.5rem;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s, box-shadow 0.3s;
-            display: flex;
-            flex-direction: column;
-        }
+.home-control-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
 
-        .file-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
+.home-control-card {
+    background-color: var(--card-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+}
 
-        .file-icon {
-            font-size: 3rem;
-            color: var(--primary-color);
-            text-align: center;
-            margin-bottom: 1rem;
-        }
+.home-control-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
 
-        .file-name {
-            font-weight: bold;
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-            word-break: break-word;
-        }
+.home-control-icon {
+    font-size: 3rem;
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 1rem;
+}
 
-        .file-info {
-            display: flex;
-            justify-content: space-between;
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-        }
+.home-control-name {
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    word-break: break-word;
+}
 
-        .download-btn {
-            display: inline-block;
-            background-color: var(--primary-color);
-            color: white;
-            text-align: center;
-            padding: 0.6rem 1rem;
-            border-radius: 4px;
-            text-decoration: none;
-            margin-top: auto;
-            transition: background-color 0.3s;
-        }
+.home-control-info {
+    display: flex;
+    justify-content: space-between;
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
 
-        .download-btn:hover {
-            background-color: var(--secondary-color);
-        }
+.download-btn {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white;
+    text-align: center;
+    padding: 0.6rem 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    margin-top: auto;
+    transition: background-color 0.3s;
+}
 
-        footer {
-            text-align: center;
-            padding: 2rem 0;
-            margin-top: 2rem;
-            color: #666;
-            border-top: 1px solid #eee;
-        }
+.download-btn:hover {
+    background-color: var(--secondary-color);
+}
 
-        @media (max-width: 768px) {
-            .file-list {
-                grid-template-columns: 1fr;
-            }
-            
-            .search-bar input {
-                width: 70%;
-            }
-        }
+footer {
+    text-align: center;
+    padding: 2rem 0;
+    margin-top: 2rem;
+    color: #666;
+    border-top: 1px solid #eee;
+}
 
-        .bottom-button {
-        display: flex;
-        gap: 16px; /* 按钮间距，可调整 */
-        align-items: center;
-        justify-content: center;
+@media (max-width: 768px) {
+    .home-control-list {
+        grid-template-columns: 1fr;
     }
+    
+    .search-bar input {
+        width: 70%;
+    }
+}
+
+.bottom-button {
+display: flex;
+gap: 16px; /* 按钮间距，可调整 */
+align-items: center;
+justify-content: center;
+}

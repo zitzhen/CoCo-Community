@@ -1,0 +1,11 @@
+.card-about{
+    width: 95%;
+    max-width: 1200px;
+    margin: 0 auto;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+    text-align: left;
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-sizing: border-box;
+}

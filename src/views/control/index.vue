@@ -6,20 +6,6 @@
     </div>
     </div>
 
-    <!-- 顶部导航栏 -->
-  <div id="app">
-          <nav class="navbar">
-              <div class="nav-container">
-                  <div class="logo" @click="gohome">ZIT<span>-CoCo-Community</span></div>
-                  <div class="user-info" @click="gome">
-                      <img :src="avatar_ber" alt="用户头像" class="user-avatar">
-                      <div class="user-name">{{ username }}</div>
-                  </div>
-              </div>
-          </nav>
-  <div style="height: 65px;"></div>
-
-
     <!-- 错误提示悬浮窗 -->
     <div v-if="errorVisibleSmall" class="card">
       <div class="icon-container">
@@ -57,13 +43,13 @@
 
     <!-- 文件信息 -->
     <div class="container" v-if="!errorVisible && !loading">
-      <div class="file-detail-container">
+      <div class="control-detail-container">
         <div class="main-content">
-          <div class="file-header">
-            <div class="file-icon"><i class="fas fa-file-code"></i></div>
-            <div class="file-title">
-              <h2 class="file-name">{{ filename }}</h2>
-              <div class="file-meta"><span>大小: {{ fileSize }} KiB</span></div>
+          <div class="control-header">
+            <div class="control-icon"><i class="fas fa-file-code"></i></div>
+            <div class="control-title">
+              <h2 class="control-name">{{ filename }}</h2>
+              <div class="control-meta"><span>大小: {{ fileSize }} KiB</span></div>
             </div>
             <button class="download-btn" @click="handleDownload"><i class="fas fa-download"></i> 下载</button>
             <a :href="sourceUrl">
@@ -72,8 +58,8 @@
           </div>
 
           <div class="section">
-            <h3 class="section-title"><i class="fas fa-info-circle"></i> 文件介绍</h3>
-            <div class="file-description" v-html="introduceHtml"></div>
+            <h3 class="section-title"><i class="fas fa-info-circle"></i> 控件介绍</h3>
+            <div class="control-description" v-html="introduceHtml"></div>
           </div>
 
           <div class="section">
@@ -103,16 +89,11 @@
         </div>
       </div>
     </div>
-
-    <footer>
-      <div class="container"><p>© 2025 小圳社区 - CoCo-Community | 所有文件仅供学习交流使用</p></div>
-    </footer>
-  </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import { marked } from "marked"
 import { useHead } from "@vueuse/head"
 import { checkLoginStatus } from "@/script/login"
@@ -133,6 +114,7 @@ const downloadUrl = ref("")
 const sourceUrl = ref("")
 
 const route = useRoute()
+const router = useRouter()
 
 // -------- 方法 --------
 function offError() {
@@ -152,7 +134,18 @@ async function fetchData() {
     const infoUrl = `/control/${id}/information.json`
     const infoRes = await fetch(infoUrl)
     if (!infoRes.ok) throw new Error(`未找到 information.json：${infoUrl} （HTTP ${infoRes.status}）`)
-    const jsonData = await infoRes.json()
+    const jsontext = await infoRes.text();
+  
+    let jsonData;
+    try{
+      jsonData = JSON.parse(jsontext);
+    }catch(e){
+      console.error("此控件不存在");
+      // 跳转到控件不存在页面
+      router.push('/control/404');
+      return; // 添加 return 语句，防止后续代码执行
+    }
+
 
     // 2) 控件文件（根据最新版本号）
     const latestVersion = jsonData.Current_version
@@ -257,42 +250,5 @@ onMounted(() => {
 @import "@/assets/css/style.css";
 @import "@/assets/css/error.css";
 @import "@/assets/css/Navigation-bar.css";
+@import url(@/assets/css/dark.css);
 </style>
-
-<script>
-import { checkLoginStatus } from '@/script/login';
-
-export default {
-  name: 'user',
-  data() {
-    return {
-      avatar_ber:"/images/user.png",
-      username:"未登录用户",
-    }
-  },
-  methods: {
-    gome() {
-      this.$router.push('/me') // 跳转到我的页面
-    }},
-    gohome(){
-      this.$router.push('/Home')
-    },
-  mounted() {
-    checkLoginStatus().then((logininformation) => {
-    if (!logininformation || !logininformation.authenticated) {
-      this.username = '未登录用户';
-      this.avatar_ber = '/images/user.png';
-      const Login_status = false;
-    } else {
-      this.username = logininformation.user.name || logininformation.user.login;
-      this.avatar_ber = logininformation.user.avatar_url || '/images/user.png';
-      const Login_status = true;
-    }
-  }).catch((err) => {
-    console.error("登录检查失败：", err);
-    this.username = '登录信息检查失败';
-    const Login_status = false;
-  });
-  }
-}
-</script>

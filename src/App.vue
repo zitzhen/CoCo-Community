@@ -1,14 +1,43 @@
 <template>
-  <router-view></router-view>
+  <div class="app-container">
+    <Navigation />
+    <lines />
+    <router-view></router-view>
+    <Footer />
+  </div>
 </template>
 
 <script>
+import Footer from '@/components/footer.vue';
+import Navigation from '@/components/Navigation-bar.vue';
+import lines from '@/components/Navigation-lines.vue';
+import { ref, onMounted } from 'vue'
+
 export default {
-  name: 'App'
+  name: 'App',
+  components: {
+    Footer,
+    Navigation,
+    lines,
+  }
 }
+
+</script>
+<script setup>
+onMounted(async () => {
+  //发送记录请求
+  const domain = window.location.hostname;
+  if (!domain.includes("test") && !domain.includes("127.0.0.1") && !domain.includes("localhost")){
+  const apiUrl = `https://cc.zitzhen.cn/api/log?url=${window.location.href}`;
+  fetch(apiUrl, { method: 'GET' });
+  }
+})
 </script>
 
 <style>
+/*引入深色模式/*/
+@import 'assets/css/dark.css';
+
 /*强制修复h标签样式/*/
 h1 {
   font-size: 2em;

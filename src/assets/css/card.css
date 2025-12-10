@@ -1,4 +1,4 @@
-.file-card {
+.home-control-card {
     background-color: var(--card-color);
     border-radius: 12px;
     padding: 1.2rem 1.5rem;
@@ -10,41 +10,41 @@
     width: 100%;
 }
 
-.file-card:hover {
+.home-control-card:hover {
     transform: translateY(-6px);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
 }
 
-.file-header {
+.home-control-header {
     display: flex;
     align-items: center;
     margin-bottom: 1rem;
 }
 
-.file-icon {
+.home-control-icon {
     font-size: 2.5rem;
     color: var(--primary-color);
     margin-right: 1rem;
 }
 
-.file-meta {
+.home-control-meta {
     display: flex;
     flex-direction: column;
 }
 
-.file-name {
+.home-control-name {
     font-weight: 600;
     font-size: 1.2rem;
     color: var(--text-color);
     margin-bottom: 0.3rem;
 }
 
-.file-author {
+.home-control-author {
     font-size: 0.9rem;
     color: #666;
 }
 
-.file-stats {
+.home-control-stats {
     display: flex;
     justify-content: space-between;
     font-size: 0.85rem;
@@ -52,7 +52,7 @@
     margin: 0.5rem 0 1rem;
 }
 
-.file-stats i {
+.home-control-stats i {
     margin-right: 0.3rem;
     color: var(--primary-color);
 }

@@ -95,3 +95,9 @@ ZIT-CoCo-Community官方链接（推荐）：https://cc.zitzhen.cn/
 ## 安全政策
 ***请勿公开讨论漏洞与BUG信息***
 [安全政策](SECURITY.md)
+
+## 调试
+请参阅我们的文档，本仓库docx文件夹
+一键生成CA证书：
+```bash
+openssl req -x509 -newkey rsa:2048 -keyout coco-community.test-key.pem -out coco-community.test.pem -days 3650 -nodes -subj "/CN=coco-community.test" -addext "subjectAltName=DNS:coco-community.test,DNS:www.coco-community.test,DNS:localhost,IP:127.0.0.1,IP:::1"```

@@ -174,12 +174,6 @@
         </div>
       </div>
     </div>
-
-    <footer>
-      <div>
-        <p>&copy; 2025 ZIT-CoCo-Community | 安全部门</p>
-      </div>
-    </footer>
   </div>
 </template>
 
@@ -333,6 +327,7 @@ export default {
 
 <style>
 @import '@/assets/style/safe/style.css';
+@import url(@/assets/css/dark.css);
 </style>
 
 <script setup>

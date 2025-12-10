@@ -6,8 +6,8 @@
             <div class="subtitle">您的每一份打赏都是ZIT-CoCo-Community前进的动力</div>
         </header>
         
-    <div class="content">
-        <div class="intro">
+    <div class="tipping_content">
+        <div class="tipping_intro">
             <p>如果您喜欢ZIT-CoCo-Community，可以通过下方方式打赏支持</p>
             <p>感谢您的慷慨！</p>
         </div>
@@ -59,7 +59,7 @@
             <div class="hint">打开QQ扫一扫，向我们打赏</div>
         </div>
     </div>
-        <div class="footer">
+        <div class="tipping_footer">
             <p>感谢您的支持与鼓励！</p>
         </div>
     </div>
@@ -67,6 +67,7 @@
 
 <style scoped>
 @import '../../assets/style/tipping/style.css';
+@import url(@/assets/css/dark.css);
 </style>
 
 <script setup>

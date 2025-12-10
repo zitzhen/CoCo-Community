@@ -114,14 +114,9 @@
             </div>
         </div>
     </div>
-
-    <footer>
-        <div class="container">
-            <p>© 2025 ZIT-CoCo-Community</p>
-        </div>
-    </footer>
 </template>
 
 <style scoped>
 @import '@/assets/style/new-control/style.css';
+@import url(@/assets/css/dark.css);
 </style>

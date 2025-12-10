@@ -1,0 +1,87 @@
+@media (prefers-color-scheme: dark) {
+    /* 所有页面适用/*/
+    body{
+        background-color:black;
+        color: white;
+    }
+    /*/首页适用/*/
+    .home-control-card {
+        background-color: #2d2d2d;
+    }
+    .home-control-name{
+        color: white;
+    }
+
+    /*/404页面适用/*/
+    .a_404_error-message{
+        color: white;
+    }
+    .a_404_container{
+        color: white;
+    }
+    .a_404_error-content{
+        background-color: #2d2d2d;
+    }
+
+    /*/关于页面适用/*/
+    .card-about{
+        background-color: #2d2d2d;
+        color: white;
+    }
+
+    /*/1024页面适用/*/
+    .card-1024{
+        background-color: #2d2d2d;
+        color: white;
+    }
+    pre{
+        background-color: black;
+        color: white;
+    }
+    blockquote{
+        color: black;
+    }
+
+    /*/控制详情页面适用/*/
+    .main-content{
+        background-color: #2d2d2d;
+    }
+    .creator-card{
+        background-color: #2d2d2d;
+    }
+    .stats-card{
+        background-color: #2d2d2d;
+    }
+    .control-title{
+        color: white;
+    }
+    .control-description{
+        color: white;
+    }
+
+    /*/安全中心页面适用/*/
+    .card_safe{
+        background-color: #2d2d2d;
+    }
+    .main-content_safe{
+        background-color: #2d2d2d;
+    }
+
+    /*/打赏页面适用/*/
+    .tipping_content{
+        background-color: #2d2d2d;
+        color: white;
+    }
+    .payment-methods{
+        color: #000;
+    }
+    .tipping_intro{
+        color: white;;
+    }
+
+    /*/许可证页面适用/*/
+    .license-card{
+        background-color: #2d2d2d;
+    }
+
+}
