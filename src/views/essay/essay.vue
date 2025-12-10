@@ -64,9 +64,11 @@
             </div>
             <div class="comment-text">{{ comment.content }}</div>
             <div class="comment-actions">
+              <!--
               <button class="like-comment-btn">
                 <i class="fas fa-thumbs-up"></i> {{ comment.likes || 0 }}
               </button>
+              -->
             </div>
           </div>
         </div>
