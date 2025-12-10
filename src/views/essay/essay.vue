@@ -100,54 +100,6 @@ export default {
     };
   },
   methods: {
-    formatDate(dateString) {
-      if (!dateString) return '';
-      const date = new Date(dateString);
-      return date.toLocaleDateString('zh-CN', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-      });
-    },
-    async fetchArticleDetail() {
-      try {
-        // 获取文章列表
-        const response = await axios.get('/essaylist.json');
-        this.essaylist = response.data.list || [];
-        
-        // 从路由参数获取文章ID
-        const articleId = this.$route.params.id;
-        
-        // 根据ID查找对应的文章
-        // 现在使用文章的ID字段进行匹配
-        const article = this.essaylist.find(item => 
-          item.id && item.id.toString() === articleId
-        );
-        
-        if (article) {
-          // 使用marked解析Markdown内容
-          const parsedContent = marked(article.content || "");
-          this.article = {
-            name: article.name,
-            author: article.author,
-            publication_time: article.publication_time,
-            pageviews: article.pageviews || 0,
-            Like: article.Like || 0,
-            collect: article.collect || 0,
-            comments: article.comments || 0,
-            content: parsedContent
-          };
-        } else {
-          console.error(`未找到ID为 ${articleId} 的文章`);
-          // 可以跳转到404页面或显示错误信息
-          this.$router.push('/NotFound');
-        }
-      } catch (error) {
-        console.error("获取文章详情失败：", error);
-      }
-    }
-  },
-  methods: {
     async updateLoginInfo() {
       try {
         const logininformation = await checkLoginStatus();
@@ -214,19 +166,26 @@ export default {
         console.error("获取文章详情失败：", error);
       }
     },
-    async fetch_comment(){
+    async fetchComments(){
       try{
-        const response  = await axios.get('https://cc.zitzhen.cn/api/fetch-comment-essay');
-        if (!response.ok){
-          throw Error 
-        }
-
-        const data = response.json();
+        // 从路由参数获取文章ID
+        const articleId = this.$route.params.id;
         
-        return data;
+        const response = await axios.get(`https://cc.zitzhen.cn/api/fetch-comment-essay?EssayID=${articleId}`);
+        
+        if (response.data && response.data.data) {
+          this.comments = response.data.data.comments;
+          // 更新文章的评论数
+          this.article.comments = response.data.data.count;
+        } else {
+          this.comments = [];
+        }
+        
+        return this.comments;
 
       }catch(error){
-        console.error(error);
+        console.error("获取评论失败：", error);
+        this.comments = [];
         return [];
       }
     },
@@ -241,6 +200,9 @@ export default {
         return;
       }
       
+      // 从路由参数获取文章ID
+      const articleId = this.$route.params.id;
+      
       // 将评论请求至服务器
       try{
         const response = await fetch("https://cc.zitzhen.cn/api/comment-essay",{
@@ -249,19 +211,27 @@ export default {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            essayid: essayid,
-            content: newComment
+            EssayID: parseInt(articleId),
+            content: this.newComment
           })
         })
+        
+        if (response.ok) {
+          // 评论成功后清空输入框并刷新评论列表
+          this.newComment = '';
+          await this.fetchComments();
+        } else {
+          console.error("发送评论失败：" + response.status);
+        }
       }catch(error){
         console.error("发送评论失败："+"\n" + error);
       }
     }
   },
-  mounted() {
+  async mounted() {
     // 获取文章详情
-    this.fetchArticleDetail();
-    this.comments = this.fetch_comment();
+    await this.fetchArticleDetail();
+    await this.fetchComments();
   }
 }
 </script>
