@@ -14,5 +14,5 @@ directory = "./dist"
 host = "coco-community.test"
 port = 8787
 local_protocol = "https"
-local_cert = "/coco-community.test.pem"
-local_key = "/coco-community.test-key.pem"
+local_cert = "./coco-community.test.pem"
+local_key = "./coco-community.test-key.pem"
