@@ -32,3 +32,5 @@ coverage
 
 coco-community-test.pem
 coco-community.test-key.pem
+
+.wrangler
