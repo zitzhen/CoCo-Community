@@ -6,3 +6,13 @@
 binding = "DB"
 database_name = "CoCo-Community"
 database_id = "33a3fb69-4297-4a8d-8766-cd0679cad18e"
+
+[assets]
+directory = "./dist"
+
+[dev]
+host = "coco-community.test"
+port = 8787
+local_protocol = "https"
+local_cert = "/coco-community.test.pem"
+local_key = "/coco-community.test-key.pem"
