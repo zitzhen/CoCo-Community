@@ -159,10 +159,6 @@ export default {
         month: '2-digit',
         day: '2-digit'
       });
-    },
-    goHome(event) {
-      event.preventDefault();
-      this.$router.push('/');
     },    
     commentBodyContent(comment) {
       return comment.body ? marked.parse(comment.body) : '';
