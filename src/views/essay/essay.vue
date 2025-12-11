@@ -235,10 +235,6 @@ export default {
   min-height: 100vh;
 }
 
-.nav-avatar {
-  width: 40px;
-  height: 40px;
-}
 
 .article-detail {
   max-width: 800px;
