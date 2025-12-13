@@ -4,6 +4,7 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
   try {
     const url = new URL(request.url);
     const code = url.searchParams.get("code");
+    const clientType = url.searchParams.get("client") || request.headers.get("X-Client");
 
     if (!code) {
       return new Response(JSON.stringify({ error: "missing_code" }), { status: 400 });
@@ -22,13 +23,12 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
       }),
     });
 
-    const tokenData = await tokenRes.json(); // ✅ 正确解析 JSON
+    const tokenData = await tokenRes.json();
     const accessToken = tokenData.access_token;
 
     if (!accessToken || accessToken.length < 10) {
       return new Response(JSON.stringify({ error: "no_token", detail: JSON.stringify(tokenData) }), { status: 401 });
     }
-
 
     // 请求用户Github信息
     const githubRes = await fetch("https://api.github.com/user", {
@@ -56,14 +56,27 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
       max_exp: Date.now() + 30 * 24 * 60 * 60 * 1000
     };
 
-    // 使用 jose 库创建 JWT
     const secret = new TextEncoder().encode(secretKey);
     const maximum_lifespan_token = await new SignJWT(key_maximum_lifespan)
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()
       .setExpirationTime('30d')
       .sign(secret);
-    
+
+    // ✅ 如果是移动端请求，返回 JSON
+    if (clientType === "mobile") {
+      return new Response(JSON.stringify({
+        access_token: accessToken,
+        jwt: maximum_lifespan_token,
+        username,
+        expires_in: 30 * 24 * 60 * 60, // 秒数
+      }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // ✅ 默认 Web 浏览器逻辑：设置 Cookie + 重定向
     const cookie = [
       `token=${accessToken}`,
       "Path=/",
