@@ -4,7 +4,7 @@
             <div class="login-box">
                 <h2 class="login-title">{{ Welcome_text }}</h2>
                 <a
-                    href="https://github.com/login/oauth/authorize?client_id=Ov23lii4E31EzV9VMW7B&redirect_uri=https://cc.zitzhen.cn/auth/github"
+                    href="https://github.com/login/oauth/authorize?client_id=Ov23lii4E31EzV9VMW7B&redirect_uri=https://cc.zitzhen.cn/auth/github?client=web"
                     class="github-button"
                 >
                     使用 GitHub 登录
