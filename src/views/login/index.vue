@@ -33,7 +33,19 @@ export default{
             Welcome_text:"Hello,欢迎来到CoCo-Community，请使用GitHub登录",
         }
     },
+    async mounted(){
+        checkLoginStatus().then((logininformation) => {
+        if (!logininformation || !logininformation.authenticated) {
+
+        } else {
+        this.$router.push({ path: '/me' });
+        }
+    }).catch((err) => {
+        console.error("登录检查失败：", err);
+        this.username = '登录信息检查失败';
+    });
     }
+}
 </script>
 
 <style>
