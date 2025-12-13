@@ -4,7 +4,7 @@
             <div class="login-box">
                 <h2 class="login-title">{{ Welcome_text }}</h2>
                 <a
-                    href="https://github.com/login/oauth/authorize?client_id=Ov23lii4E31EzV9VMW7B&redirect_uri=https://cc.zitzhen.cn/auth/github"
+                    href="https://github.com/login/oauth/authorize?client_id=Ov23lii4E31EzV9VMW7B&redirect_uri=https://cc.zitzhen.cn/auth/github?client=web"
                     class="github-button"
                 >
                     使用 GitHub 登录
@@ -33,7 +33,19 @@ export default{
             Welcome_text:"Hello,欢迎来到CoCo-Community，请使用GitHub登录",
         }
     },
+    async mounted(){
+        checkLoginStatus().then((logininformation) => {
+        if (!logininformation || !logininformation.authenticated) {
+
+        } else {
+        this.$router.push({ path: '/me' });
+        }
+    }).catch((err) => {
+        console.error("登录检查失败：", err);
+        this.username = '登录信息检查失败';
+    });
     }
+}
 </script>
 
 <style>
