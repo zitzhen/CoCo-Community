@@ -44,7 +44,7 @@
 
       <!-- 登录提示 -->
       <div class="comment-login-prompt" v-else>
-        <p>请 <a @click="goLogin" class="login-link">登录</a> 后发表评论</p>
+        <p>请<router-link to="/login" class="essay-login-bin">登录</router-link>后发表评论</p>
       </div>
 
       <!-- 评论列表 -->
@@ -172,10 +172,6 @@ export default {
       }
     },
     async submitComment() {
-      if (!this.isLoggedIn) {
-        this.goLogin();
-        return;
-      }
       
       if (!this.newComment.trim()) {
         alert('请输入评论内容');
@@ -235,6 +231,9 @@ export default {
   min-height: 100vh;
 }
 
+.essay-login-bin{
+  color: #00fff7;
+}
 
 .article-detail {
   max-width: 800px;
