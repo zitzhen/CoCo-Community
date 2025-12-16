@@ -26,9 +26,6 @@
 
       <!-- 评论输入框 -->
       <div class="comment-input-area" v-if="isLoggedIn">
-        <div class="user-avatar-small">
-          <img :src="avatar" :alt="username" />
-        </div>
         <div class="comment-input-container">
           <textarea 
             v-model="newComment" 
@@ -44,7 +41,7 @@
 
       <!-- 登录提示 -->
       <div class="comment-login-prompt" v-else>
-        <p>请 <a @click="goLogin" class="login-link">登录</a> 后发表评论</p>
+        <p>请<router-link to="/login" class="essay-login-bin">登录</router-link>后发表评论</p>
       </div>
 
       <!-- 评论列表 -->
@@ -80,6 +77,7 @@
 <script>
 import axios from 'axios';
 import { marked } from 'marked';
+import { checkLoginStatus } from '@/script/login';
 
 export default {
   data() {
@@ -96,7 +94,8 @@ export default {
         content: ""
       },
       newComment: "",
-      comments: []
+      comments: [],
+      isLoggedIn: false,
     };
   },
   methods: {
@@ -172,13 +171,16 @@ export default {
       }
     },
     async submitComment() {
-      if (!this.isLoggedIn) {
-        this.goLogin();
-        return;
-      }
       
       if (!this.newComment.trim()) {
         alert('请输入评论内容');
+        return;
+      }
+      
+      // 检查用户是否登录
+      if (!this.isLoggedIn) {
+        alert('请先登录再发表评论');
+        this.$router.push('/login');
         return;
       }
       
@@ -204,6 +206,10 @@ export default {
           await this.fetchComments();
         } else {
           console.error("发送评论失败：" + response.status);
+          if (response.status === 401) {
+            alert('登录状态已过期，请重新登录');
+            this.$router.push('/login');
+          }
         }
       }catch(error){
         console.error("发送评论失败："+"\n" + error);
@@ -211,6 +217,19 @@ export default {
     }
   },
   async mounted() {
+    // 检查用户登录状态
+    try {
+      const logininformation = await checkLoginStatus();
+      if (logininformation && logininformation.authenticated) {
+        this.isLoggedIn = true;
+      } else {
+        this.isLoggedIn = false;
+      }
+    } catch (err) {
+      console.error("登录状态检查失败：", err);
+      this.isLoggedIn = false;
+    }
+    
     // 获取文章详情
     await this.fetchArticleDetail();
     await this.fetchComments();
@@ -235,6 +254,9 @@ export default {
   min-height: 100vh;
 }
 
+.essay-login-bin{
+  color: #00fff7;
+}
 
 .article-detail {
   max-width: 800px;
