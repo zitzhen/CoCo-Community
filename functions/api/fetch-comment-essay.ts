@@ -44,19 +44,19 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     
     // 查询数据库中对应EssayID的所有评论
     const queryResult = await env.DB.prepare(
-      "SELECT id, username, content, time, ip, essayid FROM comments WHERE essayid = ? ORDER BY time DESC"
+      "SELECT id, username, content, time, ip, essayid FROM comment WHERE essayid = ? ORDER BY time DESC"
     ).bind(essayId).all();
     
-    const comments = queryResult.results as Comment[];
+    const comment = queryResult.results as Comment[];
     
     return new Response(
       JSON.stringify({
         status: "success",
-        message: "Comments retrieved successfully",
+        message: "comment retrieved successfully",
         data: {
           essayId: essayId,
-          comments: comments,
-          count: comments.length
+          comment: comment,
+          count: comment.length
         }
       }),
       {

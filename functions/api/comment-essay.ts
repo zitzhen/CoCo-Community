@@ -123,7 +123,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     
     // 将评论数据插入数据库
     await env.DB.prepare(
-      "INSERT INTO comments (username, content, time, ip, essayid) VALUES (?1, ?2, ?3, ?4, ?5)"
+      "INSERT INTO comment (username, content, time, ip, essayid) VALUES (?1, ?2, ?3, ?4, ?5)"
     ).bind(
       username, 
       content.trim(), 
