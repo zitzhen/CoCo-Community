@@ -267,6 +267,14 @@ export default {
   box-shadow: var(--shadow);
   margin-top: 1rem;
   margin-bottom: 2rem;
+  color: var(--text-color);
+}
+
+@media (prefers-color-scheme: dark) {
+  .article-detail {
+    background-color: #2d2d2d;
+    color: #fff;
+  }
 }
 
 .article-header {
@@ -309,6 +317,21 @@ export default {
   line-height: 1.8;
   color: #333;
   font-size: 1.05rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .article-content {
+    color: #e0e0e0;
+  }
+  
+  .article-content h1,
+  .article-content h2,
+  .article-content h3,
+  .article-content h4,
+  .article-content h5,
+  .article-content h6 {
+    color: #fff;
+  }
 }
 
 .article-content h1,
@@ -379,6 +402,14 @@ export default {
   background-color: var(--card-color);
   border-radius: 12px;
   box-shadow: var(--shadow);
+  color: var(--text-color);
+}
+
+@media (prefers-color-scheme: dark) {
+  .comments-section {
+    background-color: #2d2d2d;
+    color: #fff;
+  }
 }
 
 .comments-header {
@@ -432,12 +463,29 @@ export default {
   font-size: 1rem;
   font-family: inherit;
   margin-bottom: 0.5rem;
+  color: #333;
+  background-color: #fff;
+}
+
+@media (prefers-color-scheme: dark) {
+  .comment-input {
+    background-color: #3d3d3d;
+    color: #fff;
+    border-color: #555;
+  }
+  
+  .comment-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.2);
+  }
 }
 
 .comment-input:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.2);
+  background-color: #fff;
+  color: #333;
 }
 
 .comment-actions {
@@ -466,6 +514,13 @@ export default {
   background-color: #f8f9fa;
   border-radius: 8px;
   color: #666;
+}
+
+@media (prefers-color-scheme: dark) {
+  .comment-login-prompt {
+    background-color: #3d3d3d;
+    color: #ccc;
+  }
 }
 
 .login-link {
