@@ -135,7 +135,7 @@ export default {
             pageviews: essay.pageviews || 0,
             Like: essay.Like || 0,
             collect: essay.collect || 0,
-            comments: essay.comments || 0,
+            comments: essay.comments || 0,  // 初始值从JSON获取，但会在fetchComments中被数据库实际值覆盖
             content: parsedContent
           };
         } else {
@@ -187,6 +187,10 @@ export default {
       // 从路由参数获取文章ID
       const essayId = this.$route.params.id;
       
+      // 获取当前用户名
+      const logininformation = await checkLoginStatus();
+      const username = logininformation?.user?.login || '未知用户';
+      
       // 将评论请求至服务器
       try{
         const response = await fetch("https://cc.zitzhen.cn/api/comment-essay",{
@@ -201,18 +205,39 @@ export default {
         })
         
         if (response.ok) {
-          // 评论成功后清空输入框并刷新评论列表
+          const result = await response.json();
+          
+          // 在本地立即添加新评论到列表顶部，改善用户体验
+          const newCommentObj = {
+            id: result.data.id,
+            username: username,
+            content: this.newComment,
+            time: new Date().toISOString(),
+            ip: result.data.ip,
+            essayid: parseInt(essayId)
+          };
+          
+          // 添加到评论列表顶部
+          this.comments = [newCommentObj, ...this.comments];
+          
+          // 更新评论计数
+          this.essay.comments = this.essay.comments ? this.essay.comments + 1 : 1;
+          
+          // 清空输入框
           this.newComment = '';
-          await this.fetchComments();
+          
         } else {
           console.error("发送评论失败：" + response.status);
           if (response.status === 401) {
             alert('登录状态已过期，请重新登录');
             this.$router.push('/login');
+          } else {
+            alert('发表评论失败，请重试');
           }
         }
       }catch(error){
         console.error("发送评论失败："+"\n" + error);
+        alert('网络错误，请稍后重试');
       }
     }
   },
