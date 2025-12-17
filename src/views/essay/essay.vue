@@ -155,17 +155,19 @@ export default {
         const response = await axios.get(`https://cc.zitzhen.cn/api/fetch-comment-essay?EssayID=${essayId}`);
         
         if (response.data && response.data.data) {
-          this.comments = response.data.data.comments;
+          this.comments = response.data.data.comments || [];
           // 更新文章的评论数
-          this.essay.comments = response.data.data.count;
+          this.essay.comments = response.data.data.count || 0;
         } else {
           this.comments = [];
+          console.error('响应数据格式不正确，设置为空数组');
         }
         
         return this.comments;
 
       }catch(error){
         console.error("获取评论失败：", error);
+        console.error("错误详情：", error.response || error.message);
         this.comments = [];
         return [];
       }
