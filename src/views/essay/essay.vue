@@ -1,27 +1,27 @@
 <template>
   <div id="app">
-    <div class="article-detail">
-      <div class="article-header">
-        <h1 class="article-title">{{ article.name }}</h1>
-        <div class="article-meta">
-          <span class="author">作者：{{ article.author }}</span>
-          <span class="date">发布时间：{{ formatDate(article.publication_time) }}</span>
-          <div class="article-stats">
-            <span><i class="fas fa-eye"></i> {{ article.pageviews }} 浏览</span>
-            <span><i class="fas fa-thumbs-up"></i> {{ article.Like }} 点赞</span>
-            <span><i class="fas fa-star"></i> {{ article.collect }} 收藏</span>
-            <span><i class="fas fa-comment"></i> {{ article.comments || 0 }} 评论</span>
+    <div class="essay-detail">
+      <div class="essay-header">
+        <h1 class="essay-title">{{ essay.name }}</h1>
+        <div class="essay-meta">
+          <span class="author">作者：{{ essay.author }}</span>
+          <span class="date">发布时间：{{ formatDate(essay.publication_time) }}</span>
+          <div class="essay-stats">
+            <span><i class="fas fa-eye"></i> {{ essay.pageviews }} 浏览</span>
+            <span><i class="fas fa-thumbs-up"></i> {{ essay.Like }} 点赞</span>
+            <span><i class="fas fa-star"></i> {{ essay.collect }} 收藏</span>
+            <span><i class="fas fa-comment"></i> {{ essay.comments || 0 }} 评论</span>
           </div>
         </div>
       </div>
 
-      <div class="article-content" v-html="article.content"></div>
+      <div class="essay-content" v-html="essay.content"></div>
     </div>
 
     <!-- 评论区 -->
     <div class="comments-section">
       <div class="comments-header">
-        <h3>评论 <span class="comment-count">({{ article.comments || 0 }})</span></h3>
+        <h3>评论 <span class="comment-count">({{ essay.comments || 0 }})</span></h3>
       </div>
 
       <!-- 评论输入框 -->
@@ -83,7 +83,7 @@ export default {
   data() {
     return {
       essaylist: [],
-      article: {
+      essay: {
         name: "",
         author: "",
         publication_time: new Date().toISOString(),
@@ -110,36 +110,36 @@ export default {
         minute: '2-digit'
       });
     },
-    async fetchArticleDetail() {
+    async fetchessayDetail() {
       try {
         // 获取文章列表
         const response = await axios.get('/essaylist.json');
         this.essaylist = response.data.list || [];
         
         // 从路由参数获取文章ID
-        const articleId = this.$route.params.id;
+        const essayId = this.$route.params.id;
         
         // 根据ID查找对应的文章
         // 现在使用文章的ID字段进行匹配
-        const article = this.essaylist.find(item => 
-          item.id && item.id.toString() === articleId
+        const essay = this.essaylist.find(item => 
+          item.id && item.id.toString() === essayId
         );
         
-        if (article) {
+        if (essay) {
           // 使用marked解析Markdown内容
-          const parsedContent = marked(article.content || "");
-          this.article = {
-            name: article.name,
-            author: article.author,
-            publication_time: article.publication_time,
-            pageviews: article.pageviews || 0,
-            Like: article.Like || 0,
-            collect: article.collect || 0,
-            comments: article.comments || 0,
+          const parsedContent = marked(essay.content || "");
+          this.essay = {
+            name: essay.name,
+            author: essay.author,
+            publication_time: essay.publication_time,
+            pageviews: essay.pageviews || 0,
+            Like: essay.Like || 0,
+            collect: essay.collect || 0,
+            comments: essay.comments || 0,
             content: parsedContent
           };
         } else {
-          console.error(`未找到ID为 ${articleId} 的文章`);
+          console.error(`未找到ID为 ${essayId} 的文章`);
           // 可以跳转到404页面或显示错误信息
           this.$router.push('/NotFound');
         }
@@ -150,14 +150,14 @@ export default {
     async fetchComments(){
       try{
         // 从路由参数获取文章ID
-        const articleId = this.$route.params.id;
+        const essayId = this.$route.params.id;
         
-        const response = await axios.get(`https://cc.zitzhen.cn/api/fetch-comment-essay?EssayID=${articleId}`);
+        const response = await axios.get(`https://cc.zitzhen.cn/api/fetch-comment-essay?EssayID=${essayId}`);
         
         if (response.data && response.data.data) {
           this.comments = response.data.data.comments;
           // 更新文章的评论数
-          this.article.comments = response.data.data.count;
+          this.essay.comments = response.data.data.count;
         } else {
           this.comments = [];
         }
@@ -185,7 +185,7 @@ export default {
       }
       
       // 从路由参数获取文章ID
-      const articleId = this.$route.params.id;
+      const essayId = this.$route.params.id;
       
       // 将评论请求至服务器
       try{
@@ -195,7 +195,7 @@ export default {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            EssayID: parseInt(articleId),
+            EssayID: parseInt(essayId),
             content: this.newComment
           })
         })
@@ -231,13 +231,13 @@ export default {
     }
     
     // 获取文章详情
-    await this.fetchArticleDetail();
+    await this.fetchessayDetail();
     await this.fetchComments();
   }
 }
 </script>
 
-<style>
+<style scoped>
 @import url(@/assets/css/dark.css);
 
 :root {
@@ -258,7 +258,7 @@ export default {
   color: #00fff7;
 }
 
-.article-detail {
+.essay-detail {
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
@@ -271,26 +271,26 @@ export default {
 }
 
 @media (prefers-color-scheme: dark) {
-  .article-detail {
+  .essay-detail {
     background-color: #2d2d2d;
     color: #fff;
   }
 }
 
-.article-header {
+.essay-header {
   border-bottom: 1px solid #eee;
   padding-bottom: 1.5rem;
   margin-bottom: 2rem;
 }
 
-.article-title {
+.essay-title {
   font-size: 2rem;
   color: var(--text-color);
   margin: 0 0 1rem 0;
   line-height: 1.3;
 }
 
-.article-meta {
+.essay-meta {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
@@ -298,84 +298,84 @@ export default {
   color: #666;
 }
 
-.article-stats {
+.essay-stats {
   display: flex;
   gap: 1.5rem;
 }
 
-.article-stats span {
+.essay-stats span {
   display: flex;
   align-items: center;
 }
 
-.article-stats i {
+.essay-stats i {
   margin-right: 0.3rem;
   color: var(--primary-color);
 }
 
-.article-content {
+.essay-content {
   line-height: 1.8;
   color: #333;
   font-size: 1.05rem;
 }
 
 @media (prefers-color-scheme: dark) {
-  .article-content {
+  .essay-content {
     color: #e0e0e0;
   }
   
-  .article-content h1,
-  .article-content h2,
-  .article-content h3,
-  .article-content h4,
-  .article-content h5,
-  .article-content h6 {
+  .essay-content h1,
+  .essay-content h2,
+  .essay-content h3,
+  .essay-content h4,
+  .essay-content h5,
+  .essay-content h6 {
     color: #fff;
   }
 }
 
-.article-content h1,
-.article-content h2,
-.article-content h3,
-.article-content h4,
-.article-content h5,
-.article-content h6 {
+.essay-content h1,
+.essay-content h2,
+.essay-content h3,
+.essay-content h4,
+.essay-content h5,
+.essay-content h6 {
   margin-top: 1.5rem;
   margin-bottom: 1rem;
   color: var(--text-color);
 }
 
-.article-content h1 {
+.essay-content h1 {
   font-size: 1.8rem;
 }
 
-.article-content h2 {
+.essay-content h2 {
   font-size: 1.6rem;
 }
 
-.article-content h3 {
+.essay-content h3 {
   font-size: 1.4rem;
 }
 
-.article-content p {
+.essay-content p {
   margin-bottom: 1rem;
 }
 
-.article-content a {
+.essay-content a {
   color: var(--primary-color);
 }
 
-.article-content ul,
-.article-content ol {
+.essay-content ul,
+.essay-content ol {
   margin-left: 1.5rem;
   margin-bottom: 1rem;
 }
 
-.article-content li {
+.essay-content li {
   margin-bottom: 0.5rem;
 }
 
-.article-content img {
+.essay-content img {
   max-width: 100%;
   border-radius: 8px;
   margin: 1rem 0;
