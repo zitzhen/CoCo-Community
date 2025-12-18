@@ -83,7 +83,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       try {
         // 查询用户信息
         const userResult = await env.DB.prepare(
-          "SELECT nickname, avatar_url FROM users WHERE username = ?"
+          "SELECT nickname, avatar_url FROM user WHERE username = ?"
         ).bind(comment.username).first();
         
         if (userResult) {
