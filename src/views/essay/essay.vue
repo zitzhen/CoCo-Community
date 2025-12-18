@@ -78,6 +78,7 @@
 import axios from 'axios';
 import { marked } from 'marked';
 import { checkLoginStatus } from '@/script/login';
+import { onMounted } from 'vue'
 
 export default {
   data() {
@@ -258,6 +259,12 @@ export default {
     await this.fetchComments();
   }
 }
+
+onMounted(async () => {
+  // 发送页面浏览统计请求
+  const apiUrl = `https://cc.zitzhen.cn/api/pageviews_essay?name=${encodeURIComponent(essay.name)}`;
+  fetch(apiUrl, { method: 'GET' });
+});
 </script>
 
 <style scoped>
