@@ -78,6 +78,7 @@
 import axios from 'axios';
 import { marked } from 'marked';
 import { checkLoginStatus } from '@/script/login';
+import { onMounted } from 'vue'
 
 export default {
   data() {
@@ -158,12 +159,16 @@ export default {
           // API 返回的是 comment 数组，而非 comments
           this.comments = response.data.data.comment || [];
           // 输出获取到的头像和昵称
+
+          /*
           this.comments.forEach((comment, index) => {
             console.log(`评论 ${index + 1}:`);
             console.log(`  用户名: ${comment.username}`);
             console.log(`  昵称: ${comment.nickname}`);
             console.log(`  头像: ${comment.avatar}`);
           });
+          /*/
+
           // 更新文章的评论数
           this.essay.comments = response.data.data.count || 0;
         } else {
@@ -219,7 +224,7 @@ export default {
           
           // 重新获取评论列表，以确保新评论包含完整的用户信息
           await this.fetchComments();
-          console.log('重新获取评论列表完成');
+          //console.log('重新获取评论列表完成');
           
           // 清空输入框
           this.newComment = '';
@@ -258,6 +263,12 @@ export default {
     await this.fetchComments();
   }
 }
+
+onMounted(async () => {
+  // 发送页面浏览统计请求
+  const apiUrl = `https://cc.zitzhen.cn/api/pageviews_essay?name=${encodeURIComponent(essay.name)}`;
+  fetch(apiUrl, { method: 'GET' });
+});
 </script>
 
 <style scoped>
