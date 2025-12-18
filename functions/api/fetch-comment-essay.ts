@@ -83,12 +83,12 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       try {
         // 查询用户信息
         const userResult = await env.DB.prepare(
-          "SELECT nickname, avatar_url FROM user WHERE username = ?"
+          "SELECT nickname, avatar FROM user WHERE username = ?"
         ).bind(comment.username).first();
         
         if (userResult) {
           comment.nickname = userResult.nickname || comment.username; // 如果没有昵称，则使用用户名
-          comment.avatar = userResult.avatar_url || '/images/user.png'; // 如果没有头像，则使用默认头像
+          comment.avatar = userResult.avatar || '/images/user.png'; // 如果没有头像，则使用默认头像
         } else {
           // 如果用户不存在，使用默认值
           comment.nickname = comment.username;
