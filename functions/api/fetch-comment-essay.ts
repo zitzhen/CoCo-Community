@@ -8,6 +8,8 @@ export interface Comment {
   time: string;
   ip: string;
   essayid: number;
+  nickname?: string;
+  avatar?: string;
 }
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
@@ -73,7 +75,31 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       "SELECT id, username, content, time, ip, essayid FROM comment WHERE essayid = ? ORDER BY time DESC"
     ).bind(essayId).all();
     
-    const comment = queryResult.results as Comment[];
+    const comments = queryResult.results as Comment[];
+    
+    // 为每条评论获取用户信息（昵称和头像）
+    for (let i = 0; i < comments.length; i++) {
+      const comment = comments[i];
+      try {
+        // 查询用户信息
+        const userResult = await env.DB.prepare(
+          "SELECT nickname, avatar_url FROM users WHERE username = ?"
+        ).bind(comment.username).first();
+        
+        if (userResult) {
+          comment.nickname = userResult.nickname || comment.username; // 如果没有昵称，则使用用户名
+          comment.avatar = userResult.avatar_url || '/images/user.png'; // 如果没有头像，则使用默认头像
+        } else {
+          // 如果用户不存在，使用默认值
+          comment.nickname = comment.username;
+          comment.avatar = '/images/user.png';
+        }
+      } catch (err) {
+        // 如果查询用户信息失败，使用默认值
+        comment.nickname = comment.username;
+        comment.avatar = '/images/user.png';
+      }
+    }
     
     return new Response(
       JSON.stringify({
@@ -81,8 +107,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         message: "comment retrieved successfully",
         data: {
           essayId: essayId,
-          comment: comment,
-          count: comment.length,
+          comment: comments,
+          count: comments.length,
         },
       }),
       {
