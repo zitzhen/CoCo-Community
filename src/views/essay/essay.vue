@@ -159,12 +159,16 @@ export default {
           // API 返回的是 comment 数组，而非 comments
           this.comments = response.data.data.comment || [];
           // 输出获取到的头像和昵称
+
+          /*
           this.comments.forEach((comment, index) => {
             console.log(`评论 ${index + 1}:`);
             console.log(`  用户名: ${comment.username}`);
             console.log(`  昵称: ${comment.nickname}`);
             console.log(`  头像: ${comment.avatar}`);
           });
+          /*/
+
           // 更新文章的评论数
           this.essay.comments = response.data.data.count || 0;
         } else {
@@ -220,7 +224,7 @@ export default {
           
           // 重新获取评论列表，以确保新评论包含完整的用户信息
           await this.fetchComments();
-          console.log('重新获取评论列表完成');
+          //console.log('重新获取评论列表完成');
           
           // 清空输入框
           this.newComment = '';
