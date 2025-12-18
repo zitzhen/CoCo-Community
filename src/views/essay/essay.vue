@@ -52,11 +52,11 @@
           class="comment-item"
         >
           <div class="comment-avatar">
-            <img :src="comment.avatar || '/images/user.png'" :alt="comment.username" />
+            <img :src="comment.avatar || '/images/user.png'" :alt="comment.nickname || comment.username" />
           </div>
           <div class="comment-content">
             <div class="comment-header">
-              <span class="comment-username">{{ comment.username }}</span>
+              <span class="comment-username">{{ comment.nickname || comment.username }}</span>
               <span class="comment-time">{{ formatDate(comment.time) }}</span>
             </div>
             <div class="comment-text">{{ comment.content }}</div>
@@ -157,6 +157,13 @@ export default {
         if (response.data && response.data.data) {
           // API 返回的是 comment 数组，而非 comments
           this.comments = response.data.data.comment || [];
+          // 输出获取到的头像和昵称
+          this.comments.forEach((comment, index) => {
+            console.log(`评论 ${index + 1}:`);
+            console.log(`  用户名: ${comment.username}`);
+            console.log(`  昵称: ${comment.nickname}`);
+            console.log(`  头像: ${comment.avatar}`);
+          });
           // 更新文章的评论数
           this.essay.comments = response.data.data.count || 0;
         } else {
@@ -210,21 +217,9 @@ export default {
         if (response.ok) {
           const result = await response.json();
           
-          // 在本地立即添加新评论到列表顶部，改善用户体验
-          const newCommentObj = {
-            id: result.data.id,
-            username: username,
-            content: this.newComment,
-            time: new Date().toISOString(),
-            ip: result.data.ip,
-            essayid: parseInt(essayId)
-          };
-          
-          // 添加到评论列表顶部
-          this.comments = [newCommentObj, ...this.comments];
-          
-          // 更新评论计数
-          this.essay.comments = this.essay.comments ? this.essay.comments + 1 : 1;
+          // 重新获取评论列表，以确保新评论包含完整的用户信息
+          await this.fetchComments();
+          console.log('重新获取评论列表完成');
           
           // 清空输入框
           this.newComment = '';
