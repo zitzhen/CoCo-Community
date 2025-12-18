@@ -78,7 +78,7 @@
 import axios from 'axios';
 import { marked } from 'marked';
 import { checkLoginStatus } from '@/script/login';
-import { onMounted } from 'vue'
+
 
 export default {
   data() {
@@ -261,14 +261,13 @@ export default {
     // 获取文章详情
     await this.fetchessayDetail();
     await this.fetchComments();
+    
+    // 发送页面浏览统计请求
+    const apiUrl = `https://cc.zitzhen.cn/api/pageviews_essay?name=${encodeURIComponent(this.essay.name)}`;
+    fetch(apiUrl, { method: 'GET' });
   }
 }
 
-onMounted(async () => {
-  // 发送页面浏览统计请求
-  const apiUrl = `https://cc.zitzhen.cn/api/pageviews_essay?name=${encodeURIComponent(essay.name)}`;
-  fetch(apiUrl, { method: 'GET' });
-});
 </script>
 
 <style scoped>

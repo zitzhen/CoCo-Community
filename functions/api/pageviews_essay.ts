@@ -10,22 +10,19 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   }
 
   try {
-    // 查询当前 pageviews 数值
+    // 用原子操作更新 pageviews，避免类型转换和并发问题
+    const updateStmt = env.DB.prepare("UPDATE essay SET pageviews = pageviews + 1 WHERE name = ?");
+    const updateResult = await updateStmt.bind(name).run();
+
+    if (!updateResult.success || updateResult.meta.changes === 0) {
+      return new Response(`Essay '${name}' not found`, { status: 404 });
+    }
+
+    // 获取更新后的值
     const getStmt = env.DB.prepare("SELECT pageviews FROM essay WHERE name = ?");
     const getResult = await getStmt.bind(name).first<{ pageviews: number }>();
 
-    if (!getResult) {
-      return new Response(`Component '${name}' not found`, { status: 404 });
-    }
-
-    const currentpageviews = getResult.pageviews ?? 0;
-    const newpageviews = currentpageviews + 1;
-
-    // 更新 pageviews 字段
-    const updateStmt = env.DB.prepare("UPDATE essay SET pageviews = ? WHERE name = ?");
-    await updateStmt.bind(newpageviews, name).run();
-
-    return new Response(`Updated '${name}' pageviews to ${newpageviews}`, {
+    return new Response(`Updated '${name}' pageviews to ${getResult?.pageviews}`, {
       status: 200,
     });
   } catch (err: any) {
