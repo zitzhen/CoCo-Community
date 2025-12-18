@@ -155,7 +155,8 @@ export default {
         const response = await axios.get(`https://cc.zitzhen.cn/api/fetch-comment-essay?EssayID=${essayId}`);
         
         if (response.data && response.data.data) {
-          this.comments = response.data.data.comments || [];
+          // API 返回的是 comment 数组，而非 comments
+          this.comments = response.data.data.comment || [];
           // 更新文章的评论数
           this.essay.comments = response.data.data.count || 0;
         } else {
