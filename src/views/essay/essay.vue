@@ -129,6 +129,24 @@
       </div>
     </div>
   </div>
+
+ <!--需要登录-->
+ <div class="modal-overlay" :class="{ active: islogintip }" @click="clonelogintip">
+    <div class="modal" @click.stop>
+      <div class="modal-header">
+        <h2 class="modal-title">请登录</h2>
+        <button class="close-btn" @click="clonelogintip">×</button>
+      </div>
+      <div class="modal-body">
+        <p>抱歉，您需要登录才能 点赞/收藏/发表评论</p>
+        <p>点击右上角登录按钮，或点击下方按钮登录</p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-cancel" @click="closeNicknameModal">好的</button>
+        <button class="modal-btn modal-btn-confirm" @click="gologin">去登录</button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -156,7 +174,8 @@ export default {
       authorAvatar: '/images/user.png',
       authorBio: '暂无作者简介',
       isLiked: false,
-      isCollected: false
+      isCollected: false,
+      islogintip: false
     };
   },
   methods: {
@@ -170,6 +189,8 @@ export default {
         hour: '2-digit',
         minute: '2-digit'
       });
+    },gologin(){
+      this.$router.push('/login');
     },
     async fetchessayDetail() {
       try {
@@ -288,8 +309,7 @@ export default {
       
       // 检查用户是否登录
       if (!this.isLoggedIn) {
-        alert('请先登录再发表评论');
-        this.$router.push('/login');
+        this.islogintip = true;
         return;
       }
       
@@ -339,8 +359,7 @@ export default {
     },
     async toggleLike() {
       if (!this.isLoggedIn) {
-        alert('请先登录');
-        this.$router.push('/login');
+        this.islogintip = true;
         return;
       }
       
@@ -358,8 +377,7 @@ export default {
     },
     async toggleCollect() {
       if (!this.isLoggedIn) {
-        alert('请先登录');
-        this.$router.push('/login');
+        this.islogintip = true;
         return;
       }
       
@@ -374,6 +392,12 @@ export default {
       
       // TODO: 实际的API调用应该在这里进行
       // await this.callCollectAPI();
+    },
+    clonelogintip() {
+      this.islogintip = false;
+    },
+    closeNicknameModal() {
+      this.islogintip = false;
     }
   },
   async mounted() {
@@ -407,6 +431,7 @@ export default {
 
 <style scoped>
 @import url('@/assets/style/essay/essay.css');
+@import url('@/assets/css/popup.css');
 @media (prefers-color-scheme: dark) {
   .essay-detail {
         background-color: #2d2d2d;
