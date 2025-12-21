@@ -18,6 +18,18 @@
           </div>
 
           <div class="essay-content" v-html="essay.content"></div>
+          
+          <!-- 文章底部的点赞和收藏按钮 -->
+          <div class="essay-bottom-actions">
+            <button @click="toggleLike" :class="['essay-action-btn', 'like-btn', { 'liked': isLiked }]">
+              <i :class="['fas', isLiked ? 'fa-thumbs-up' : 'fa-thumbs-up']"></i>
+              <span>{{ isLiked ? '已点赞' : '点赞' }} ({{ essay.Like || 0 }})</span>
+            </button>
+            <button @click="toggleCollect" :class="['essay-action-btn', 'collect-btn', { 'collected': isCollected }]">
+              <i :class="['fas', isCollected ? 'fa-star' : 'fa-star']"></i>
+              <span>{{ isCollected ? '已收藏' : '收藏' }} ({{ essay.collect || 0 }})</span>
+            </button>
+          </div>
         </div>
 
         <!-- 评论区 -->
@@ -103,6 +115,16 @@
             <span class="essay-stat-label">收藏数</span>
             <span class="essay-stat-value">{{ essay.collect }} 次</span>
           </div>
+          <div class="essay-actions">
+            <button @click="toggleLike" :class="['essay-action-btn', 'like-btn', { 'liked': isLiked }]">
+              <i :class="['fas', isLiked ? 'fa-thumbs-up' : 'fa-thumbs-up']"></i>
+              <span>{{ isLiked ? '已点赞' : '点赞' }}</span>
+            </button>
+            <button @click="toggleCollect" :class="['essay-action-btn', 'collect-btn', { 'collected': isCollected }]">
+              <i :class="['fas', isCollected ? 'fa-star' : 'fa-star']"></i>
+              <span>{{ isCollected ? '已收藏' : '收藏' }}</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -132,7 +154,9 @@ export default {
       comments: [],
       isLoggedIn: false,
       authorAvatar: '/images/user.png',
-      authorBio: '暂无作者简介'
+      authorBio: '暂无作者简介',
+      isLiked: false,
+      isCollected: false
     };
   },
   methods: {
@@ -312,6 +336,44 @@ export default {
         console.error("发送评论失败："+"\n" + error);
         alert('网络错误，请稍后重试');
       }
+    },
+    async toggleLike() {
+      if (!this.isLoggedIn) {
+        alert('请先登录');
+        this.$router.push('/login');
+        return;
+      }
+      
+      // 临时更新UI状态
+      if (this.isLiked) {
+        this.isLiked = false;
+        this.essay.Like = Math.max(0, (this.essay.Like || 0) - 1);
+      } else {
+        this.isLiked = true;
+        this.essay.Like = (this.essay.Like || 0) + 1;
+      }
+      
+      // TODO: 实际的API调用应该在这里进行
+      // await this.callLikeAPI();
+    },
+    async toggleCollect() {
+      if (!this.isLoggedIn) {
+        alert('请先登录');
+        this.$router.push('/login');
+        return;
+      }
+      
+      // 临时更新UI状态
+      if (this.isCollected) {
+        this.isCollected = false;
+        this.essay.collect = Math.max(0, (this.essay.collect || 0) - 1);
+      } else {
+        this.isCollected = true;
+        this.essay.collect = (this.essay.collect || 0) + 1;
+      }
+      
+      // TODO: 实际的API调用应该在这里进行
+      // await this.callCollectAPI();
     }
   },
   async mounted() {
