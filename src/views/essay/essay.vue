@@ -130,6 +130,23 @@
     </div>
   </div>
 
+<!--维护及其测试-->
+<div class="modal-overlay" :class="{ active :istest}" @click="clonetest">
+    <div class="modal" @click.stop>
+      <div class="modal-header">
+        <h2 class="modal-title">此功能暂不可用</h2>
+        <button class="close-btn" @click="clonetest">×</button>
+      </div>
+      <div class="modal-body">
+        <p>此功能可能正在开发/测试/维护</p>
+        <p>暂不可用，敬请谅解</p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-confirm" @click="clonetest">我知道了</button>
+      </div>
+    </div>
+  </div>
+
  <!--需要登录-->
  <div class="modal-overlay" :class="{ active: islogintip }" @click="clonelogintip">
     <div class="modal" @click.stop>
@@ -175,7 +192,8 @@ export default {
       authorBio: '暂无作者简介',
       isLiked: false,
       isCollected: false,
-      islogintip: false
+      islogintip: false,
+      istest: false
     };
   },
   methods: {
@@ -358,40 +376,15 @@ export default {
       }
     },
     async toggleLike() {
-      if (!this.isLoggedIn) {
-        this.islogintip = true;
-        return;
-      }
-      
-      // 临时更新UI状态
-      if (this.isLiked) {
-        this.isLiked = false;
-        this.essay.Like = Math.max(0, (this.essay.Like || 0) - 1);
-      } else {
-        this.isLiked = true;
-        this.essay.Like = (this.essay.Like || 0) + 1;
-      }
-      
-      // TODO: 实际的API调用应该在这里进行
-      // await this.callLikeAPI();
+      // 显示"此功能暂不可用"弹窗
+      this.istest = true;
     },
     async toggleCollect() {
-      if (!this.isLoggedIn) {
-        this.islogintip = true;
-        return;
-      }
-      
-      // 临时更新UI状态
-      if (this.isCollected) {
-        this.isCollected = false;
-        this.essay.collect = Math.max(0, (this.essay.collect || 0) - 1);
-      } else {
-        this.isCollected = true;
-        this.essay.collect = (this.essay.collect || 0) + 1;
-      }
-      
-      // TODO: 实际的API调用应该在这里进行
-      // await this.callCollectAPI();
+      // 显示"此功能暂不可用"弹窗
+      this.istest = true;
+    },
+    clonetest() {
+      this.istest = false;
     },
     clonelogintip() {
       this.islogintip = false;
