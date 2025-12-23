@@ -1,11 +1,6 @@
 //@ts-nocheck
 import { jwtVerify } from "jose";
 
-// 从环境变量获取JWT公钥
-const secret = new TextEncoder().encode(
-  process.env.COCO_COMMUNITY_JWT_P || ""
-);
-
 interface JwtPayload {
   username: string;
   time: number;
@@ -13,6 +8,11 @@ interface JwtPayload {
 
 export const onRequest: PagesFunction<{ DB: D1Database }> = async (context) => {
   const { request, env } = context;
+  
+  // 从Cloudflare环境变量获取JWT公钥
+  const secret = new TextEncoder().encode(
+    (env.COCO_COMMUNITY_JWT_P as string) || ""
+  );
   const url = new URL(request.url);
 
   const corsHeaders = {
