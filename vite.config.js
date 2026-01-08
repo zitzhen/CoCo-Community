@@ -8,6 +8,7 @@ const useHttps = process.env.NODE_ENV !== 'production'
 export default defineConfig({
   plugins: [
     vue(),
+    tsconfigPaths()
   ],
   resolve: {
     alias: {
