@@ -1,23 +1,17 @@
 {
-  "name": "coco-community",
-  "version": "1.0.0",
-  "description": "ZIT-CoCo-Community - CoCo Editor Community",
-  "main": "index.js",
+  "name": "CoCo-Community",
+  "type": "module",
+  "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "serve": "vite preview"
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@vueuse/head": "^2.0.0",
-    "axios": "^1.11.0",
-    "jose": "^6.1.2",
-    "marked": "^16.3.0",
-    "vue": "^3.5.0",
-    "vue-router": "^4.5.1"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-vue": "^5.0.0",
-    "vite": "^6.0.0"
+    "nuxt": "^4.2.2",
+    "vue": "^3.5.26",
+    "vue-router": "^4.6.4"
   }
 }
