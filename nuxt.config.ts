@@ -1,3 +1,8 @@
+/*/
+* nuxt.config.ts文件
+* nuxt.config.ts文件中，即使是cloudflareEdge环境，fs也不要改为其他方式，因为fs可以正常运行。不会炸。
+
+/*/
 import fs from 'fs'
 import { resolve } from 'path'
 
