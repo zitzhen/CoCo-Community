@@ -25,7 +25,8 @@ export default defineNuxtConfig({
 
   // 路径别名
   alias: {
-    '@': resolve(__dirname, 'app')
+    '@': resolve(__dirname, 'app'),
+    '~src': resolve(__dirname, 'src')
   },
   
   // Nuxt 4 开发服务器配置
