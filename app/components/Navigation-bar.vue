@@ -15,7 +15,7 @@
 </style>
 
 <script>
-import { checkLoginStatus } from '@/script/login';
+import { checkLoginStatus } from '~src/script/login';
 
 export default {
   data() {
