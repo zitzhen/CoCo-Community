@@ -6,11 +6,11 @@
                 <div class="footer-section">
                     <h4 class="footer-section-title">CoCo-Community</h4>
                     <ul class="footer-links">
-                        <li><router-link to="/issues">Issues</router-link></li>
-                        <li><router-link to="/safe">安全</router-link></li>
-                        <li><router-link to="/user">用户数据</router-link></li>
-                        <li><router-link to="/agreement/useragreement">用户协议</router-link></li>
-                        <li><router-link to="/agreement/privacypolicy">隐私政策</router-link></li>
+                        <li><NuxtLink to="/issues">Issues</NuxtLink></li>
+                        <li><NuxtLink to="/safe">安全</NuxtLink></li>
+                        <li><NuxtLink to="/user">用户数据</NuxtLink></li>
+                        <li><NuxtLink to="/agreement/useragreement">用户协议</NuxtLink></li>
+                        <li><NuxtLink to="/agreement/privacypolicy">隐私政策</NuxtLink></li>
                     </ul>
                 </div>
 
@@ -21,21 +21,21 @@
                         <li><a href="https://gitee.com/zitzhen/CoCo-Community">Gitee</a></li>
                         <li><a href="https://gitlab.com/zitzhen/CoCo-Community">GitLab</a></li>
                         <li><a href="https://gitcode.com/zitzhen/CoCo-Community">Gitcode</a></li>
-                        <li><router-link to="/agreement/license">开源协议</router-link></li>
+                        <li><NuxtLink to="/agreement/license">开源协议</NuxtLink></li>
                     </ul>
                 </div>
 
                 <div class="footer-section">
                     <h4 class="footer-section-title">支持我们</h4>
                     <ul class="footer-links">
-                        <li><router-link to="/tipping/">打赏</router-link></li>
+                        <li><NuxtLink to="/tipping/">打赏</NuxtLink></li>
                     </ul>
                 </div>
 
                 <div class="footer-section">
                     <h4 class="footer-section-title">我们的社交频道</h4>
                     <ul class="footer-links">
-                        <li><a herf="https://qm.qq.com/cgi-bin/qm/qr?k=966509561">QQ(966509561)</a></li>
+                        <li><a href="https://qm.qq.com/cgi-bin/qm/qr?k=966509561">QQ(966509561)</a></li>
                         <li><a href="https://discord.gg/ptcgnKJ6xN">Discord</a></li>
                         <li><a href="https://t.me/+XykN0Q77R2dlZTc1">Telegram</a></li>
                     </ul>
