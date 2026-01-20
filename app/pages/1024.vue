@@ -99,13 +99,13 @@
 </template>
 
 <style>
-@import url(@/assets/style/1024/style.css);
-@import url(@/assets/css/1024.css);
-@import url(@/assets/css/dark.css);
+@import url(~/assets/style/1024/style.css);
+@import url(~/assets/css/1024.css);
+@import url(~/assets/css/dark.css);
 </style>
 
-<script>
-
+<script setup>
+// 工具函数
 function isOctober24th() {
     const today = new Date();
     return today.getMonth() === 9 && today.getDate() === 24;
@@ -123,80 +123,74 @@ function getNextOctober24th() {
     return nextOctober24th;
 }
 
-export default {
-  name: '404',
-  data() {
-    return {
-      a1024Banner:false,
-      Next1024:false,
-      days: 0,
-      hours: 0,
-      minutes: 0,
-      seconds: 0,
-      countdownInterval: null
-    }
-  },
-  mounted() {
-  if (isOctober24th()){
-    this.a1024Banner = true;
-    this.Next1024 = false;
-    }else{
-    this.a1024Banner = false;
-    this.Next1024 = true;
-    this.startCountdown();
-    }
-  },
-  methods: {
-    startCountdown() {
-      this.updateCountdown();
-      this.countdownInterval = setInterval(this.updateCountdown, 1000);
-    },
-    updateCountdown() {
-      const now = new Date();
-      
-      // 检查是否已经进入10月24日
-      if (isOctober24th()) {
-        // 如果是10月24日，停止倒计时并显示节日页面
-        this.stopCountdown();
-        this.a1024Banner = true;
-        this.Next1024 = false;
-        return;
-      }
-      
-      const nextOctober24th = getNextOctober24th();
-      const diff = nextOctober24th - now;
-      
-      // 计算天、小时、分钟、秒
-      this.days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      this.hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      this.minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      this.seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    },
-    stopCountdown() {
-      if (this.countdownInterval) {
-        clearInterval(this.countdownInterval);
-        this.countdownInterval = null;
-      }
-    }
-  },
-  beforeDestroy() {
-    if (this.countdownInterval) {
-      clearInterval(this.countdownInterval);
-    }
+// 响应式数据
+const a1024Banner = ref(false);
+const Next1024 = ref(false);
+const days = ref(0);
+const hours = ref(0);
+const minutes = ref(0);
+const seconds = ref(0);
+let countdownInterval = null;
+
+// 倒计时更新函数
+const updateCountdown = () => {
+  const now = new Date();
+  
+  // 检查是否已经进入10月24日
+  if (isOctober24th()) {
+    // 如果是10月24日，停止倒计时并显示节日页面
+    stopCountdown();
+    a1024Banner.value = true;
+    Next1024.value = false;
+    return;
   }
-}
-</script>
+  
+  const nextOctober24th = getNextOctober24th();
+  const diff = nextOctober24th - now;
+  
+  // 计算天、小时、分钟、秒
+  days.value = Math.floor(diff / (1000 * 60 * 60 * 24));
+  hours.value = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  minutes.value = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  seconds.value = Math.floor((diff % (1000 * 60)) / 1000);
+};
 
-<script setup>
-import { useHead } from '@vueuse/head'
+// 启动倒计时
+const startCountdown = () => {
+  updateCountdown();
+  countdownInterval = setInterval(updateCountdown, 1000);
+};
 
-useHead({
+// 停止倒计时
+const stopCountdown = () => {
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+    countdownInterval = null;
+  }
+};
+
+// 生命周期钩子
+onMounted(() => {
+  if (isOctober24th()) {
+    a1024Banner.value = true;
+    Next1024.value = false;
+  } else {
+    a1024Banner.value = false;
+    Next1024.value = true;
+    startCountdown();
+  }
+});
+
+onBeforeUnmount(() => {
+  stopCountdown();
+});
+
+// SEO配置
+useSeoMeta({
   title: '欢庆1024',
-  meta: [
-    {content: `1024是程序员节，让我们一起欢快程序员节。1024 是计算机世界的基石，也是程序员们共同的信仰符号。
+  description: `1024是程序员节，让我们一起欢快程序员节。1024 是计算机世界的基石，也是程序员们共同的信仰符号。
 它连接了数学、科技与人文精神，提醒我们：
 无论技术如何发展，背后的逻辑与热爱从未改变。在这个数字的背后，藏着的是整个互联网时代的灵魂。
-祝所有热爱代码的人，1024 快乐！` }
-  ]
-})
+祝所有热爱代码的人，1024 快乐！`
+});
 </script>
