@@ -154,3 +154,59 @@
 .navbar.scrolled .nav-container {
     height: 60px;
 }
+
+/* 深色模式适配 */
+@media (prefers-color-scheme: dark) {
+    .navbar {
+        background-color: rgba(45, 45, 45, 0.95);
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .logo {
+        color: #cc66ff;
+    }
+    
+    .logo span {
+        color: #66b3ff;
+    }
+    
+    .user-info:hover {
+        background-color: rgba(102, 179, 255, 0.15);
+    }
+    
+    .user-avatar {
+        border-color: #66b3ff;
+    }
+    
+    .user-info:hover .user-avatar {
+        box-shadow: 0 0 10px rgba(102, 179, 255, 0.4);
+    }
+    
+    .user-name {
+        color: #e0e0e0;
+    }
+    
+    /* 滚动状态深色模式 */
+    .navbar.scrolled {
+        background-color: rgba(45, 45, 45, 0.98);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* 登录相关样式深色模式 */
+    .login-box {
+        background-color: #2d2d2d;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .login-title {
+        color: #e0e0e0;
+    }
+    
+    .github-button {
+        background-color: #36393f;
+    }
+    
+    .github-button:hover {
+        background-color: #4a4e55;
+    }
+}
