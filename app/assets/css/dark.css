@@ -68,15 +68,106 @@
     }
 
     /*/打赏页面适用/*/
+    .tipping-page {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    }
+    
+    .hero-section {
+        background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    .container {
+        background: #2d2d2d;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    }
+    
+    .page-header {
+        background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+    }
+    
     .tipping_content{
         background-color: #2d2d2d;
+        color: #e0e0e0;
+    }
+    
+    .tipping_intro{
+        color: #e0e0e0;
+    }
+    
+    .tipping_intro .highlight {
+        color: #90cdf4;
+    }
+    
+    .payment-methods{
+        color: #e0e0e0;
+    }
+    
+    .method {
+        background: #3d3d3d;
+        border-color: #444;
+        color: #e0e0e0;
+    }
+    
+    .method:hover {
+        border-color: #667eea;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+    }
+    
+    .method.active {
+        background: linear-gradient(135deg, #3d3d3d 0%, #4a4a4a 100%);
+        border-color: #667eea;
+    }
+    
+    .method-name {
+        color: #e0e0e0;
+    }
+    
+    .method-desc {
+        color: #b0b0b0;
+    }
+    
+    .method-badge {
+        background: #667eea;
         color: white;
     }
-    .payment-methods{
-        color: #000;
+    
+    .qr-container {
+        background: #3d3d3d;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     }
-    .tipping_intro{
-        color: white;;
+    
+    .qr-header h3 {
+        color: #e0e0e0;
+    }
+    
+    .qr-hint {
+        color: #90cdf4;
+    }
+    
+    .qr-code {
+        background: #3d3d3d;
+        border-color: #444;
+    }
+    
+    .qr-instruction p {
+        color: #b0b0b0;
+    }
+    
+    .qr-instruction p::before {
+        color: #90cdf4;
+    }
+    
+    .tipping_footer {
+        border-top-color: #444;
+    }
+    
+    .tipping_footer p {
+        color: #b0b0b0;
+    }
+    
+    .footer-note {
+        color: #888;
     }
 
     /*/许可证页面适用/*/
