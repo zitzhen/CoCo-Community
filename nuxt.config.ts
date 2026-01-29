@@ -13,6 +13,12 @@ console.log('useHttps:', useHttps)
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
+  // marked配置
+  vite: {
+      ssr: {
+        noExternal: ['marked']
+      }
+    },
 
   // 应用配置
   app: {
