@@ -25,17 +25,14 @@
 </template>
 
 <style scoped>
-@import url(@/assets/style/about/style.css);
-@import url(@/assets/css/dark.css);
+@import url(~/assets/style/about/style.css);
+@import url(~/assets/css/dark.css);
 </style>
 
 <script setup>
-import { useHead } from '@vueuse/head'
-
-useHead({
+// Nuxt 3 使用 useSeoMeta 替代 @vueuse/head
+useSeoMeta({
   title: '关于我们|ZIT-CoCo-Community',
-  meta: [
-    {content: '欢迎来到CoCo-Community，CoCo-Community是附属于ZIT小圳创科工作室的产品。旨在补充第三方社区的不足。' }
-  ]
+  description: '欢迎来到CoCo-Community，CoCo-Community是附属于ZIT小圳创科工作室的产品。旨在补充第三方社区的不足。'
 })
 </script>

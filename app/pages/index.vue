@@ -141,12 +141,12 @@ if (isOctober24th()){
 </script>
 
 <style>
-@import '../../src/assets/style/home/style.css';
-@import '../../src/assets/css/card.css';
-@import '../../src/assets/style/home/Custom_button.css';
-@import '../../src/assets/style/home/Loading.css';
-@import '../../src/assets/style/control/error.css';
-@import '../../src/assets/style/home/pay_button.css';
+@import '@/assets/style/home/style.css';
+@import '@/assets/css/card.css';
+@import '@/assets/style/home/Custom_button.css';
+@import '@/assets/style/home/Loading.css';
+@import '@/assets/style/control/error.css';
+@import '@/assets/style/home/pay_button.css';
 @import '@/assets/css/1024.css';
 @import '@/assets/css/dark.css';
 </style>
