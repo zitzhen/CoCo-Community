@@ -1,5 +1,5 @@
 <template>
-<router-link :to="{ name: 'UserAgreement'}" class="file-link">
+<router-link  class="file-link">
     <span class="file-list">
         <span class="file-card doc">
             <span class="file-content">
@@ -9,7 +9,7 @@
     </span>
 </router-link>
 
-<router-link :to="{ name: 'PrivacyPolicy'}" class="file-link">
+<router-link class="file-link">
      <span class="file-list">
     <span class="file-card doc">
         <span class="file-content">
@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import { useHead } from '@vueuse/head'
+import { useHead } from '@unhead/vue'
 
 useHead({
   title: '协议公示|CoCo-Community|ZIT-CoCo-Community适用协议公示',
@@ -35,4 +35,3 @@ useHead({
 @import '@/assets/style/home/style.css';
 @import url(@/assets/css/dark.css);
 </style>
-
