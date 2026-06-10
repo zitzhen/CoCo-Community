@@ -32,3 +32,13 @@ coverage
 
 coco-community-test.pem
 coco-community.test-key.pem
+
+.output
+.data
+.nuxt
+.nitro
+.cache
+.DS_Store
+.env
+.env.*
+!.env.example
