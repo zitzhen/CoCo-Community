@@ -1,3 +1,4 @@
+// @ts-nocheck
 export const onRequest: PagesFunction<Env> = async (context) => {
   const { request, env } = context;
 

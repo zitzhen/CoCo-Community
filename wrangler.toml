@@ -1,6 +1,7 @@
+compatibility_date = "2026-01-01"
+compatibility_flags = ["nodejs_compat"]
+
 [vars]
-# 设置兼容性日期以支持现代 JavaScript 特性
-# 注意：实际的兼容性日期会在部署时自动设置为最新
 
 [[d1_databases]]
 binding = "DB"

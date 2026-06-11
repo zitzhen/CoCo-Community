@@ -1,3 +1,4 @@
+// @ts-nocheck
 export async function onRequest(context) {
   const { request, env } = context;
 

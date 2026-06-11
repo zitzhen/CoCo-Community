@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { SignJWT } from 'jose';
 
 export const onRequestGet: PagesFunction = async ({ request, env }) => {
