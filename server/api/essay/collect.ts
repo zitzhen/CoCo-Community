@@ -1,3 +1,4 @@
+import { getCloudflareContext } from "~/server/utils/cloudflare"
 //@ts-nocheck
 import { jwtVerify } from "jose";
 
@@ -6,8 +7,8 @@ interface JwtPayload {
   time: number;
 }
 
-export const onRequest: PagesFunction<{ DB: D1Database }> = async (context) => {
-  const { request, env } = context;
+export default defineEventHandler(async (event) => {
+  const { request, env } = getCloudflareContext(event);
   
   // 从Cloudflare环境变量获取JWT公钥
   const secret = new TextEncoder().encode(
@@ -174,4 +175,4 @@ export const onRequest: PagesFunction<{ DB: D1Database }> = async (context) => {
       { status: 500, headers: corsHeaders }
     );
   }
-};
+});

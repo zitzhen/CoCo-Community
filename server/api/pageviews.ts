@@ -1,5 +1,6 @@
-export const onRequest: PagesFunction<Env> = async (context) => {
-  const { request, env } = context;
+import { getCloudflareContext } from "~/server/utils/cloudflare"
+export default defineEventHandler(async (event) => {
+  const { request, env } = getCloudflareContext(event);
 
   const url = new URL(request.url);
   const name = url.searchParams.get("name");
@@ -30,4 +31,4 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   } catch (err: any) {
     return new Response(`Error: ${err.message}`, { status: 500 });
   }
-};
+});

@@ -1,5 +1,6 @@
-export async function onRequest(context) {
-  const { request, env } = context;
+import { getCloudflareContext } from "~/server/utils/cloudflare"
+export default defineEventHandler(async (event) => {
+  const { request, env } = getCloudflareContext(event);
   
   // 确保是GET请求
   if (request.method !== 'GET') {
@@ -37,4 +38,4 @@ export async function onRequest(context) {
       headers: { 'Content-Type': 'application/json' }
     });
   }
-}
+});

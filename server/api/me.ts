@@ -1,7 +1,9 @@
+import { getCloudflareContext } from "~/server/utils/cloudflare"
 // @ts-nocheck
 import { jwtVerify } from 'jose';
 
-export const onRequestGet: PagesFunction = async ({ request, env }) => {
+export default defineEventHandler(async (event) => {
+  const { request, env } = getCloudflareContext(event);
   try {
     // 1. 解析 Cookie
     const cookieHeader = request.headers.get("Cookie") || "";
@@ -156,4 +158,4 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
       headers: { "Content-Type": "application/json" },
     });
   }
-};
+});

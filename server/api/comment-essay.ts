@@ -1,13 +1,13 @@
+import { getCloudflareContext } from "~/server/utils/cloudflare"
 // @ts-nocheck
-import type { Env } from "./types";
 
 export interface GitHubUser {
   login: string;
 }
 
-export const onRequestPost: PagesFunction<Env> = async (context) => {
+export default defineEventHandler(async (event) => {
   try {
-    const { request, env } = context;
+    const { request, env } = getCloudflareContext(event);
     
     // 确保是POST请求
     if (request.method !== "POST") {
@@ -155,4 +155,4 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
-};
+});

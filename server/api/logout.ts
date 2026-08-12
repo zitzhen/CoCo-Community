@@ -1,7 +1,7 @@
-import type { PagesFunction } from '@cloudflare/workers-types';
+import { getCloudflareContext } from "~/server/utils/cloudflare"
 
-export const onRequest: PagesFunction = async (context) => {
-  const request = context.request;
+export default defineEventHandler(async (event) => {
+  const { request } = getCloudflareContext(event);
   const cookieHeader = request.headers.get("cookie") || "";
   const host = request.headers.get("host") || "";
   const hostname = host.split(":")[0];
@@ -33,4 +33,4 @@ export const onRequest: PagesFunction = async (context) => {
     status: 200,
     headers,
   });
-};
+});

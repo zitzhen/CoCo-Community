@@ -1,5 +1,5 @@
+import { getCloudflareContext } from "~/server/utils/cloudflare"
 // @ts-nocheck
-import type { Env } from "./types";
 
 export interface Comment {
   id: number;
@@ -12,9 +12,9 @@ export interface Comment {
   avatar?: string;
 }
 
-export const onRequestGet: PagesFunction<Env> = async (context) => {
+export default defineEventHandler(async (event) => {
   try {
-    const { request, env } = context;
+    const { request, env } = getCloudflareContext(event);
     // CORS: 允许调试域名并处理预检
     const allowedOrigins = new Set([
       "https://www.coco-community.test:5173",
@@ -127,4 +127,4 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       }), "Content-Type": "application/json" } }
     );
   }
-};
+});

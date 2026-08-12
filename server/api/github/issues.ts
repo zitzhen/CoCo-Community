@@ -1,5 +1,7 @@
+import { getCloudflareContext } from "~/server/utils/cloudflare"
 // @ts-nocheck
-export const onRequestGet: PagesFunction = async ({ request }) => {
+export default defineEventHandler(async (event) => {
+  const { request } = getCloudflareContext(event);
   // ✅ 白名单校验：只允许 cc.zitzhen.cn
   const origin = request.headers.get("Origin") || "";
   const referer = request.headers.get("Referer") || "";
@@ -102,4 +104,4 @@ export const onRequestGet: PagesFunction = async ({ request }) => {
       "Access-Control-Allow-Origin": allowedDomain,
     },
   });
-};
+});

@@ -1,5 +1,6 @@
-export async function onRequest(context) {
-  const { request, env } = context;
+import { getCloudflareContext } from "~/server/utils/cloudflare"
+export default defineEventHandler(async (event) => {
+  const { request, env } = getCloudflareContext(event);
 
   // 限制来源
   const origin = request.headers.get('Origin');
@@ -42,4 +43,4 @@ export async function onRequest(context) {
   } catch (err) {
     return new Response(`Error: ${err.message}`, { status: 500 });
   }
-}
+});

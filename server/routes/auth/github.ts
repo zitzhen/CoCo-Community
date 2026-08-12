@@ -1,6 +1,8 @@
+import { getCloudflareContext } from "~/server/utils/cloudflare"
 import { SignJWT } from 'jose';
 
-export const onRequestGet: PagesFunction = async ({ request, env }) => {
+export default defineEventHandler(async (event) => {
+  const { request, env } = getCloudflareContext(event);
   try {
     const url = new URL(request.url);
     const code = url.searchParams.get("code");
@@ -110,4 +112,4 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
       headers: { "Content-Type": "application/json" },
     });
   }
-};
+});
