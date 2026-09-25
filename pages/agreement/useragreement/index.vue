@@ -13,7 +13,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import { marked } from 'marked'
 
 export default {
@@ -36,8 +35,8 @@ export default {
         
         // 直接从本地 public 目录获取
         try {
-          const response = await axios.get('/agreement/useragreement/content.md')
-          this.content = marked.parse(response.data)
+          const markdown = await $fetch('/agreement/useragreement/content.md', { responseType: 'text' })
+          this.content = marked.parse(markdown)
         } catch (localError) {
           console.error('本地内容获取失败:', localError)
           this.content = '<p>内容加载失败，请稍后重试。</p>'

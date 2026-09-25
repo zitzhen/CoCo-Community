@@ -33,8 +33,6 @@
 </template>
 
 <script>
-import axios from 'axios';
-
 export default {
   data() {
     return {
@@ -44,8 +42,8 @@ export default {
   methods: {
     async fetchuserlist() {
       try {
-        const response = await axios.get('/userlist.json');
-        this.userlist = (response.data.list || []).map(user => ({
+        const response = await $fetch('/userlist.json');
+        this.userlist = (response.list || []).map(user => ({
           ...user,
           nickname: user.nickname || user.username,
           avatar: user.avatar || `https://avatars.githubusercontent.com/u/${user.github_id || '149680880'}?v=4`,

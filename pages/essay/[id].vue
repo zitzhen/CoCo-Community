@@ -167,7 +167,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import { marked } from 'marked';
 import { checkLoginStatus } from '@/script/login';
 
@@ -213,8 +212,8 @@ export default {
     async fetchessayDetail() {
       try {
         // 获取文章列表
-        const response = await axios.get('/essaylist.json');
-        this.essaylist = response.data.list || [];
+        const response = await $fetch('/essaylist.json');
+        this.essaylist = response.list || [];
         
         // 从路由参数获取文章ID
         const essayId = this.$route.params.id;
@@ -252,12 +251,12 @@ export default {
         // 从路由参数获取文章ID
         const essayId = this.$route.params.id;
         
-        const response = await axios.get(`/api/fetch-comment-essay?EssayID=${essayId}`);
-        
-        if (response.data && response.data.data) {
+        const response = await $fetch(`/api/fetch-comment-essay?EssayID=${essayId}`);
+
+        if (response && response.data) {
           // API 返回的是 comment 数组，而非 comments
-          this.comments = response.data.data.comment || [];
-          // 输出获取到的头像和昵称
+          this.comments = response.data.comment || [];
+          // 输出获取到的昵称和头像
 
           /*
           this.comments.forEach((comment, index) => {
@@ -269,7 +268,7 @@ export default {
           /*/
 
           // 更新文章的评论数
-          this.essay.comments = response.data.data.count || 0;
+          this.essay.comments = response.data.count || 0;
         } else {
           this.comments = [];
           console.error('响应数据格式不正确，设置为空数组');

@@ -151,8 +151,6 @@
 </template>
 
 <script>
-import axios from 'axios';
-
 export default {
   name: 'Search',
   data() {
@@ -211,7 +209,7 @@ export default {
     },
     async searchControls(term) {
       try {
-        const { data } = await axios.get('/control/list.json');
+        const data = await $fetch('/control/list.json');
         const allControls = data.list || [];
         
         const filteredControls = allControls.filter(control => 
@@ -236,8 +234,8 @@ export default {
     async searchArticles(term) {
       // 搜索文章
       try {
-        const response = await axios.get('/essaylist.json');
-        const allArticles = Array.isArray(response.data) ? response.data : [];
+        const response = await $fetch('/essaylist.json');
+        const allArticles = response.list || [];
         
         const filteredArticles = allArticles.filter(article => 
           article.title && article.title.toLowerCase().includes(term.toLowerCase()) ||
@@ -261,8 +259,8 @@ export default {
     async searchUsers(term) {
       // 搜索用户
       try {
-        const response = await axios.get('/userlist.json');
-        const allUsers = Array.isArray(response.data) ? response.data : [];
+        const response = await $fetch('/userlist.json');
+        const allUsers = response.list || [];
         
         const filteredUsers = allUsers.filter(user => 
           (user.name && user.name.toLowerCase().includes(term.toLowerCase())) ||

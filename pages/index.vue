@@ -68,8 +68,6 @@
 </template>
 
 <script>
-import axios from 'axios';
-
 function isOctober24th() {
     const today = new Date();
     return today.getMonth() === 9 && today.getDate() === 24;
@@ -103,7 +101,7 @@ export default {
     async getSubDirs() {
       try {
         // 使用本地 list.json 文件获取控件列表
-        const { data } = await axios.get('/control/list.json');
+        const data = await $fetch('/control/list.json');
         const dirs = data.list || [];
         //console.log("控件:", dirs);
         

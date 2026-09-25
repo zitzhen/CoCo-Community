@@ -34,8 +34,6 @@
 </template>
 
 <script>
-import axios from 'axios';
-
 export default {
   data() {
     return {
@@ -45,8 +43,8 @@ export default {
   methods: {
     async fetchEssaylist() {
       try {
-        const response = await axios.get('/essaylist.json');
-        this.essaylist = (response.data.list || []).map(article => ({
+        const response = await $fetch('/essaylist.json');
+        this.essaylist = (response.list || []).map(article => ({
           ...article,
           name: article.name,
           author: article.author,
