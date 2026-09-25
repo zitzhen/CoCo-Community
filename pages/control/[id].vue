@@ -92,9 +92,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue"
+import { ref, onMounted, onBeforeUnmount } from "vue"
 import { marked } from "marked"
 import { checkLoginStatus } from "@/script/login"
+
+// 控件资源已迁移至 Cloudflare R2
+const RESOURCE_BASE = "https://cc-resource.zitzhen.cn"
 
 // -------- 响应式数据 --------
 const loading = ref(true)
@@ -108,7 +111,7 @@ const introduceHtml = ref("<p>正在处理</p>")
 const avatar = ref("")
 const authorName = ref("正在加载")
 const authorBio = ref("正在加载")
-const downloadUrl = ref("")
+const downloadObjectUrl = ref("")
 const sourceUrl = ref("")
 
 const route = useRoute()
@@ -128,8 +131,8 @@ async function fetchData() {
     }
     filename.value = id
 
-    // 1) 获取信息文件
-    const infoUrl = `/control/${id}/information.json`
+    // 1) 获取信息文件（R2）
+    const infoUrl = `${RESOURCE_BASE}/${id}/information.json`
     const infoRes = await fetch(infoUrl)
     if (!infoRes.ok) throw new Error(`未找到 information.json：${infoUrl} （HTTP ${infoRes.status}）`)
     const jsontext = await infoRes.text();
@@ -145,16 +148,18 @@ async function fetchData() {
     }
 
 
-    // 2) 控件文件（根据最新版本号）
+    // 2) 控件文件（根据最新版本号，R2）
     const latestVersion = jsonData.Current_version
-    const controlUrl = `/control/${id}/${latestVersion}/control.jsx`
+    const controlUrl = `${RESOURCE_BASE}/${id}/${latestVersion}/control.jsx`
     const controlRes = await fetch(controlUrl)
     if (!controlRes.ok) throw new Error(`未找到控件文件：${controlUrl} （HTTP ${controlRes.status}）`)
     const controlBlob = await controlRes.blob()
     fileSize.value = (controlBlob.size / 1024).toFixed(2)
+    // 同源 blob URL 用于可靠触发浏览器下载（跨域 download 属性会被忽略）
+    downloadObjectUrl.value = URL.createObjectURL(controlBlob)
 
-    // 3) README
-    const readmeUrl = `/control/${id}/README.md`
+    // 3) README（R2）
+    const readmeUrl = `${RESOURCE_BASE}/${id}/README.md`
     const readmeRes = await fetch(readmeUrl)
     if (readmeRes.ok) {
       const text = await readmeRes.text()
@@ -191,7 +196,6 @@ async function fetchData() {
       }
     }
 
-    downloadUrl.value = controlUrl
     sourceUrl.value = controlUrl
     versions.value = Array.isArray(jsonData.Version_number_list) ? jsonData.Version_number_list : []
 
@@ -220,19 +224,18 @@ function throwError(msg) {
 }
 
 async function handleDownload() {
+  // 统计下载次数（失败不应阻断实际下载）
+  fetch(`/api/download?name=${encodeURIComponent(filename.value)}`).catch(() => {})
+
   try {
-    // 首先发送额外的GET请求到API
-    const apiUrl = `/api/download?name=${encodeURIComponent(filename.value)}`;
-    await fetch(apiUrl, { method: 'GET' });
-    
-    // 然后触发文件下载
+    if (!downloadObjectUrl.value) throw new Error("文件尚未加载完成")
     const link = document.createElement('a');
-    link.href = downloadUrl.value;
-    link.download = filename.value;
+    link.href = downloadObjectUrl.value;
+    link.download = `${filename.value}.jsx`;
     link.click();
   } catch (error) {
     console.error('下载过程中出错:', error);
-    throwError('下载失败: ' + (error.message || '未知错误'));
+    throwError('下载失败: ' + (error.message || "未知错误"));
   }
 }
 
@@ -240,7 +243,11 @@ onMounted(() => {
   fetchData()
   // 发送页面浏览统计请求
   const apiUrl = `/api/pageviews?name=${encodeURIComponent(filename.value)}`;
-  fetch(apiUrl, { method: 'GET' });
+  fetch(apiUrl, { method: 'GET' }).catch(() => {});
+})
+
+onBeforeUnmount(() => {
+  if (downloadObjectUrl.value) URL.revokeObjectURL(downloadObjectUrl.value)
 })
 </script>
 

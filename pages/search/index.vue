@@ -209,7 +209,7 @@ export default {
     },
     async searchControls(term) {
       try {
-        const data = await $fetch('/control/list.json');
+        const data = await $fetch('/api/control-list');
         const allControls = data.list || [];
         
         const filteredControls = allControls.filter(control => 
