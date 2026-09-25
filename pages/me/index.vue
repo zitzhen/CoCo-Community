@@ -463,12 +463,11 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { checkLoginStatus } from '@/script/login';
 
-useHead({
-  title: () => `账户设置|ZIT-CoCo-Community`,
-})
-
 export default {
   setup() {
+    useHead({
+      title: () => `账户设置|ZIT-CoCo-Community`,
+    })
     const router = useRouter();
     
     // 用户信息

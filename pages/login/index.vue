@@ -18,12 +18,14 @@
     </div>
 </template>
 
-<script>
-import { checkLoginStatus } from '@/script/login'
-
+<script setup>
 useHead({
   title: () => `登录|ZIT-CoCo-Community`,
 })
+</script>
+
+<script>
+import { checkLoginStatus } from '@/script/login'
 
 export default{
     name:'login',
