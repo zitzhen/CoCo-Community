@@ -96,8 +96,10 @@ import { ref, onMounted, onBeforeUnmount } from "vue"
 import { marked } from "marked"
 import { checkLoginStatus } from "@/script/login"
 
-// 控件资源已迁移至 Cloudflare R2
-const RESOURCE_BASE = "https://cc-resource.zitzhen.cn"
+// 控件资源存储在 Cloudflare R2，页面通过同源 /resource/ 路由由服务端读取
+function resourceUrl(key) {
+  return `/resource/${key.split("/").map(encodeURIComponent).join("/")}`
+}
 
 // -------- 响应式数据 --------
 const loading = ref(true)
@@ -131,26 +133,19 @@ async function fetchData() {
     }
     filename.value = id
 
-    // 1) 获取信息文件（R2）
-    const infoUrl = `${RESOURCE_BASE}/${id}/information.json`
-    const infoRes = await fetch(infoUrl)
-    if (!infoRes.ok) throw new Error(`未找到 information.json：${infoUrl} （HTTP ${infoRes.status}）`)
-    const jsontext = await infoRes.text();
-  
-    let jsonData;
-    try{
-      jsonData = JSON.parse(jsontext);
-    }catch(e){
-      console.error("此控件不存在");
-      // 跳转到控件不存在页面
-      router.push('/control/404');
-      return; // 添加 return 语句，防止后续代码执行
+    // 1) 获取控件元信息（服务端读 R2：information.json + 解析实际控件文件）
+    const metaRes = await fetch(`/api/control-meta?name=${encodeURIComponent(id)}`)
+    if (metaRes.status === 404) {
+      console.error("此控件不存在")
+      router.push('/control/404')
+      return
     }
+    if (!metaRes.ok) throw new Error(`获取控件信息失败（HTTP ${metaRes.status}）`)
+    const meta = await metaRes.json()
+    if (!meta.controlKey) throw new Error("未能找到该控件的控件文件")
 
-
-    // 2) 控件文件（根据最新版本号，R2）
-    const latestVersion = jsonData.Current_version
-    const controlUrl = `${RESOURCE_BASE}/${id}/${latestVersion}/control.jsx`
+    // 2) 控件文件（服务端已解析出真实 key，同源资源路由）
+    const controlUrl = resourceUrl(meta.controlKey)
     const controlRes = await fetch(controlUrl)
     if (!controlRes.ok) throw new Error(`未找到控件文件：${controlUrl} （HTTP ${controlRes.status}）`)
     const controlBlob = await controlRes.blob()
@@ -158,18 +153,20 @@ async function fetchData() {
     // 同源 blob URL 用于可靠触发浏览器下载（跨域 download 属性会被忽略）
     downloadObjectUrl.value = URL.createObjectURL(controlBlob)
 
-    // 3) README（R2）
-    const readmeUrl = `${RESOURCE_BASE}/${id}/README.md`
+    // 3) README（同源资源路由）
+    const readmeUrl = resourceUrl(`${id}/README.md`)
     const readmeRes = await fetch(readmeUrl)
     if (readmeRes.ok) {
-      const text = await readmeRes.text()
-      introduceHtml.value = marked.parse(text || "")
+      const readmeText = await readmeRes.text()
+      // README 内旧图片地址 https://cc.zitzhen.cn/control/... 改走同源资源路由
+      const rewritten = readmeText.replaceAll("https://cc.zitzhen.cn/control/", "/resource/")
+      introduceHtml.value = marked.parse(rewritten || "")
     } else {
       introduceHtml.value = `<p style="color:#b33">未能找到 README.md（HTTP ${readmeRes.status}）</p>`
     }
 
     // 4) Github 作者信息
-    if (jsonData.author) {
+    if (meta.author) {
       try {
         // 检查登录状态
         const loginStatus = await checkLoginStatus();
@@ -177,27 +174,27 @@ async function fetchData() {
         
         if (loginStatus && loginStatus.authenticated) {
           // 已登录，使用内部API
-          creatorRes = await fetch(`/api/github/user/?username=${jsonData.author}`);
+          creatorRes = await fetch(`/api/github/user/?username=${meta.author}`);
         } else {
           // 未登录，使用GitHub API
-          creatorRes = await fetch(`https://api.github.com/users/${jsonData.author}`);
+          creatorRes = await fetch(`https://api.github.com/users/${meta.author}`);
         }
         
         if (creatorRes.ok) {
           const creator = await creatorRes.json()
           avatar.value = creator.avatar_url
-          authorName.value = creator.name || jsonData.author
+          authorName.value = creator.name || meta.author
           authorBio.value = creator.bio
         } else {
-          authorName.value = jsonData.author
+          authorName.value = meta.author
         }
       } catch {
-        authorName.value = jsonData.author
+        authorName.value = meta.author
       }
     }
 
     sourceUrl.value = controlUrl
-    versions.value = Array.isArray(jsonData.Version_number_list) ? jsonData.Version_number_list : []
+    versions.value = Array.isArray(meta.versions) ? meta.versions : []
 
     // ✅ 动态更新 SEO 信息
     useHead({
