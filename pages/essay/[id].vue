@@ -169,6 +169,8 @@
 <script>
 import { marked } from 'marked';
 import { checkLoginStatus } from '@/script/login';
+// SSR：静态 JSON 在构建期打包进 bundle（服务端内部 fetch 静态文件会落到渲染层返回 HTML）
+import essaylistJson from '../../public/essaylist.json';
 
 export default {
   data() {
@@ -194,6 +196,46 @@ export default {
       islogintip: false,
       istest: false
     };
+  },
+  async setup() {
+    const route = useRoute();
+    const essayId = route.params.id;
+
+    // SSR：服务端获取文章详情与评论，首屏 HTML 直接渲染
+    const { data: ssrData } = await useAsyncData(`essay-detail-${essayId}`, async () => {
+      const list = essaylistJson.list || [];
+      const found = list.find(item => item.id && item.id.toString() === essayId);
+      if (!found) return { essay: null, comments: [] };
+
+      const commentRes = await $fetch(`/api/fetch-comment-essay?EssayID=${essayId}`).catch(() => null);
+      return {
+        essay: {
+          name: found.name,
+          author: found.author,
+          publication_time: found.publication_time,
+          pageviews: found.pageviews || 0,
+          Like: found.Like || 0,
+          collect: found.collect || 0,
+          comments: commentRes?.data?.count || found.comments || 0,
+          content: marked(found.content || "")
+        },
+        comments: commentRes?.data?.comment || []
+      };
+    });
+
+    const essay = ref(ssrData.value?.essay ?? {
+      name: "",
+      author: "",
+      publication_time: new Date().toISOString(),
+      pageviews: 0,
+      Like: 0,
+      collect: 0,
+      comments: 0,
+      content: ""
+    });
+    const comments = ref(ssrData.value?.comments || []);
+    const essaylist = ref([]);
+    return { essay, comments, essaylist };
   },
   methods: {
     formatDate(dateString) {
@@ -406,9 +448,11 @@ export default {
       this.isLoggedIn = false;
     }
     
-    // 获取文章详情
-    await this.fetchessayDetail();
-    await this.fetchComments();
+    // 获取文章详情（SSR 已在 setup 中取到则跳过，避免客户端重复请求）
+    if (!this.essay.name) {
+      await this.fetchessayDetail();
+      await this.fetchComments();
+    }
     
     // 获取作者信息
     await this.fetchAuthorInfo();

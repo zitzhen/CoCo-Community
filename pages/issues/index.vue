@@ -189,7 +189,17 @@ export default {
       loginstatus: false
     };
   },
-  
+  async setup() {
+    // SSR：服务端通过 GitHub 公共 API 获取议题，首屏 HTML 直接渲染
+    const { data: ssrIssues } = await useAsyncData('github-issues', () => fetch_github_issues(false));
+    const issues = ref(ssrIssues.value || []);
+    const filteredIssues = ref([...issues.value]);
+    const uniqueLabels = ref([]);
+    const allLabels = issues.value.flatMap(issue => issue.labels || []);
+    uniqueLabels.value = [...new Set(allLabels.map(label => label.name))];
+    return { issues, filteredIssues, uniqueLabels };
+  },
+
   methods: {
     formatDate(dateString) {
       if (!dateString) return '';
@@ -271,9 +281,12 @@ export default {
     },
   },
   async mounted() {
-    this.issues = await fetch_github_issues(this.loginstatus);
+    // SSR 已取到议题则跳过，避免客户端重复请求
+    if (this.issues.length === 0) {
+      this.issues = await fetch_github_issues(this.loginstatus);
+      this.extractUniqueLabels();
+    }
     this.filteredIssues = [...this.issues];
-    this.extractUniqueLabels();
     // 确保在页面加载时不会显示新建议题弹窗
     this.isnewissues = false;
   }

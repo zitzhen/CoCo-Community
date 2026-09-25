@@ -24,11 +24,18 @@ export default defineEventHandler(async (event) => {
 
   const controlKey = await resolveControlKey(env.RESOURCES, name, info)
 
+  let size
+  if (controlKey) {
+    const meta = await env.RESOURCES.get(controlKey, { onlyMetadata: true })
+    if (meta) size = meta.size
+  }
+
   return {
     name,
     author: info.author,
     currentVersion: info.currentVersion,
     versions: info.versions,
     controlKey,
+    size,
   }
 })

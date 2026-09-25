@@ -67,75 +67,62 @@
   </div>
 </template>
 
-<script>
+<script setup>
 function isOctober24th() {
     const today = new Date();
     return today.getMonth() === 9 && today.getDate() === 24;
 }
 
-export default {
-  name: 'Home',
-  data() {
-    return {
-      a1024Banner: false,
-      loading: true,
-      searchTerm: '',
-      files: [],
-      filteredFiles: [],
-      // 文件类型对应的图标
-      fileIcons: {
-        code: "fa-file-code"
-      }
-    }
-  },
-  methods: {
-    getFileIconClass(fileType) {
-      return this.fileIcons[fileType] || this.fileIcons.default;
-    },
-    goToGlobalSearch() {
-      if (this.searchTerm.trim()) {
-        // 跳转到全局搜索页面并传递搜索词
-        this.$router.push(`/search?q=${encodeURIComponent(this.searchTerm.trim())}`);
-      }
-    },
-    async getSubDirs() {
-      try {
-        // 使用本地 list.json 文件获取控件列表
-        const data = await $fetch('/api/control-list');
-        const dirs = data.list || [];
-        //console.log("控件:", dirs);
-        
-        const fileObjs = dirs.map(information => ({
-          name: information.name,
-          Author: information.author || "未知",
-          type: "code",
-          size: information.size || "未知",
-          date: "未知",
-          downloads: information.downloads || 0,
-          Pageviews: information.Pageviews || 0,
-          url: `${window.location.origin}/control/${information.name}`
-        }));
-        
-        this.files = fileObjs;
-        this.filteredFiles = fileObjs;
-        this.loading = false;
-      } catch (error) {
-        console.error("Error fetching directories:", error.response?.status || error.message);
-        document.getElementById("no_fetch").style.display = 'block';
-        this.loading = false;
-      }
-    },
-    },
-  mounted() {
-    this.getSubDirs();
-if (isOctober24th()){
-  this.a1024Banner = true;
-}else{
-  this.a1024Banner = false;
+const searchTerm = ref('')
+const a1024Banner = ref(false)
+const loading = ref(true)
+const files = ref([])
+const filteredFiles = computed(() => files.value)
+// 文件类型对应的图标
+const fileIcons = { code: "fa-file-code" }
+
+function getFileIconClass(fileType) {
+  return fileIcons[fileType] || fileIcons.default;
 }
 
+function goToGlobalSearch() {
+  if (searchTerm.value.trim()) {
+    // 跳转到全局搜索页面并传递搜索词
+    navigateTo(`/search?q=${encodeURIComponent(searchTerm.value.trim())}`);
   }
 }
+
+// SSR：服务端取数，首屏 HTML 直接包含控件列表
+const { data: controlData, error: controlError } = await useFetch('/api/control-list', { key: 'control-list' })
+
+if (controlError.value) {
+  console.error("Error fetching directories:", controlError.value);
+  loading.value = false;
+} else {
+  files.value = (controlData.value?.list || []).map(information => ({
+    name: information.name,
+    Author: information.author || "未知",
+    type: "code",
+    size: information.size || "未知",
+    date: "未知",
+    downloads: information.downloads || 0,
+    Pageviews: information.Pageviews || 0,
+    url: `/control/${information.name}`
+  }));
+  loading.value = false;
+}
+
+// 1024 横幅依赖客户端本地日期，放 onMounted 避免时区导致的水合不一致
+onMounted(() => {
+  a1024Banner.value = isOctober24th();
+})
+
+useHead({
+  title: 'ZIT-CoCo-Community|CoCo编辑器的小圳社区|自定义控件下载中心',
+  meta: [
+    {content: 'CoCo-Community，全称为ZIT-CoCo-Community。这是由于ZIT小圳创科工作室的创造的编程猫CoCo编辑器社区，目前提供自定义控件下载服务，后续会支持论坛的交流。' }
+  ]
+})
 </script>
 
 <style>
@@ -148,17 +135,6 @@ if (isOctober24th()){
 @import '@/assets/css/1024.css';
 @import '@/assets/css/dark.css';
 </style>
-
-<script setup>
-
-useHead({
-  title: 'ZIT-CoCo-Community|CoCo编辑器的小圳社区|自定义控件下载中心',
-  meta: [
-    {content: 'CoCo-Community，全称为ZIT-CoCo-Community。这是由于ZIT小圳创科工作室的创造的编程猫CoCo编辑器社区，目前提供自定义控件下载服务，后续会支持论坛的交流。' }
-  ]
-})
-</script>
-
 
 <style>
 /*协议/**/ 

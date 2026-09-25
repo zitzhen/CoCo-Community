@@ -211,6 +211,9 @@ footer {
 <script setup>
 import { ref, onMounted } from 'vue'
 import { checkLoginStatus } from '@/script/login'
+// SSR：静态 JSON 在构建期打包进 bundle（服务端内部 fetch 静态文件会落到渲染层返回 HTML）
+import userlistJson from '../../public/userlist.json'
+const userDetailModules = import.meta.glob('../../public/information/user/*.json', { eager: true, import: 'default' })
 
 const Nickname = ref('')
 const bio = ref('加载中...')
@@ -232,46 +235,8 @@ useHead({
   ]
 })
 
-function getCurrentUrlLastSegment() {
-  const currentUrl = window.location.href
-  const cleanedUrl = currentUrl.endsWith('/') ? currentUrl.slice(0, -1) : currentUrl
-  const url = new URL(cleanedUrl)
-  const pathSegments = url.pathname.split('/').filter(segment => segment !== '')
-  return pathSegments.length > 0 ? pathSegments[pathSegments.length - 1] : ''
-}
-
-async function fetch_user_basic_information(username) {
-  // 从 public/userlist.json 获取用户基本数据
-  const url = '/userlist.json'
-  try {
-    const res = await fetch(url)
-    if (!res.ok) {
-      console.error(`获取用户列表失败: ${res.status} ${res.statusText}, URL: ${url}`);
-      return null;
-    }
-    const userListData = await res.json();
-    // 在用户列表中查找匹配的用户
-    const user = userListData.list.find(user => user.username === username);
-    return user || null;
-  } catch (error) {
-    console.error('获取用户列表时发生错误:', error);
-    console.error('错误堆栈:', error.stack);
-    return null;
-  }
-}
-
-async function fetch_user_detailed_information(username) {
-  // 从 public/information/user/${username}.json 获取详细信息（如控件列表）
-  const url = `/information/user/${username}.json`
-  try {
-    const res = await fetch(url)
-    return res.ok ? res.json() : null
-  } catch (error) {
-    console.error('获取用户详细信息时发生错误:', error);
-    console.error('错误堆栈:', error.stack);
-    return null;
-  }
-}
+const route = useRoute()
+const username = route.params.id
 
 function render_information(basicInformation, detailedInformation) {
   Nickname.value = basicInformation?.nickname || basicInformation?.name || basicInformation?.username || '未知用户'
@@ -281,26 +246,28 @@ function render_information(basicInformation, detailedInformation) {
   if (detailedInformation?.list_of_controls) controlList.value = detailedInformation.list_of_controls
 }
 
-onMounted(async () => {
-  const username = getCurrentUrlLastSegment()
-  const user_basic_information = await fetch_user_basic_information(username)
-  const user_detailed_information = await fetch_user_detailed_information(username)
+// SSR：服务端获取用户基本与详细信息，首屏 HTML 直接渲染
+const { data: userData } = await useAsyncData(`user-page-${username}`, () => {
+  const basic = (userlistJson.list || []).find(u => u.username === username) || null
+  const detailed = userDetailModules[`../../public/information/user/${username}.json`] || null
+  return { basic, detailed }
+})
 
-  if (user_basic_information) {
-    render_information(user_basic_information, user_detailed_information)
-  } else {
-    // 用户不存在于 userlist.json 中
-    Nickname.value = username
-    bio.value = '用户未找到'
-    avatar.value = ''
-    Control_number.value = '0'
-  }
+if (userData.value?.basic) {
+  render_information(userData.value.basic, userData.value.detailed)
+} else {
+  // 用户不存在于 userlist.json 中
+  Nickname.value = username
+  bio.value = '用户未找到'
+  avatar.value = ''
+  Control_number.value = '0'
+}
+loading.value = false
 
-  loading.value = false
-
+onMounted(() => {
   // 发送页面浏览统计请求
   const apiUrl = `/api/pageviews_user?username=${encodeURIComponent(username)}`;
-  fetch(apiUrl, { method: 'GET' });
+  fetch(apiUrl, { method: 'GET' }).catch(() => {});
 })
 </script>
 

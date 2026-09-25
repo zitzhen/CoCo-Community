@@ -33,42 +33,34 @@
     </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      essaylist: []
-    };
-  },
-  methods: {
-    async fetchEssaylist() {
-      try {
-        const response = await $fetch('/essaylist.json');
-        this.essaylist = (response.list || []).map(article => ({
-          ...article,
-          name: article.name,
-          author: article.author,
-          pageviews: article.pageviews || 0,
-          Like: article.Like || 0,
-          collect: article.collect || 0,
-          comments: article.comments || 0,
-          content: article.content || ''
-        }));
-      } catch (error) {
-        console.error("获取文章列表失败：", error);
-      }
-    },
-    getSummary(content) {
-      // 提取内容的前100个字符作为摘要，并去掉markdown标题符号
-      if (!content) return '';
-      let cleanContent = content.replace(/#{1,6}\s/g, '').trim(); // 去掉markdown标题符号
-      return cleanContent.length > 100 ? cleanContent.substring(0, 100) + '...' : cleanContent;
-    }
-  },
-  mounted() {
-    this.fetchEssaylist();
-  }
-};
+<script setup>
+// SSR：静态 JSON 在构建期打包进 bundle（服务端内部 fetch 静态文件会落到渲染层返回 HTML）
+import essaylistJson from '../../public/essaylist.json'
+
+const essaylist = computed(() =>
+  (essaylistJson.list || []).map(article => ({
+    ...article,
+    pageviews: article.pageviews || 0,
+    Like: article.Like || 0,
+    collect: article.collect || 0,
+    comments: article.comments || 0,
+    content: article.content || ''
+  }))
+);
+
+function getSummary(content) {
+  // 提取内容的前100个字符作为摘要，并去掉markdown标题符号
+  if (!content) return '';
+  let cleanContent = content.replace(/#{1,6}\s/g, '').trim(); // 去掉markdown标题符号
+  return cleanContent.length > 100 ? cleanContent.substring(0, 100) + '...' : cleanContent;
+}
+
+useHead({
+  title: '文章列表|CoCo-Community',
+  meta: [
+    { name: 'description', content: "CoCo-Community的文章列表，包含各种技术与创意相关的文章。" }
+  ]
+})
 </script>
 
 <style>
@@ -218,13 +210,3 @@ export default {
     font-size: 1rem;
 }
 </style>
-
-<script setup>
-
-useHead({
-  title: '文章列表|CoCo-Community',
-  meta: [
-    { name: 'description', content: "CoCo-Community的文章列表，包含各种技术与创意相关的文章。" }
-  ]
-})
-</script>

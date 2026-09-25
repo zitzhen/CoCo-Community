@@ -145,6 +145,22 @@ export default {
       loginstatus: false
     };
   },
+  async setup() {
+    const route = useRoute();
+    const issueNumber = route.params.number;
+
+    // SSR：服务端通过 GitHub 公共 API 获取议题详情与评论
+    const { data: ssrData } = await useAsyncData(`github-issue-${issueNumber}`, async () => {
+      if (!issueNumber) return null;
+      const issue = await fetchIssueDetails(issueNumber, false);
+      const comments = issue && issue.comments > 0 ? await fetchIssueComments(issueNumber, false) : [];
+      return { issue, comments };
+    });
+
+    const issue = ref(ssrData.value?.issue ?? null);
+    const comments = ref(ssrData.value?.comments ?? []);
+    return { issue, comments };
+  },
   computed: {
     issueBodyContent() {
       return this.issue?.body ? marked.parse(this.issue.body) : '';
@@ -164,7 +180,10 @@ export default {
       return comment.body ? marked.parse(comment.body) : '';
     }
   },
-  async mounted() {    
+  async mounted() {
+    // SSR 已取到则跳过，避免客户端重复请求
+    if (this.issue) return;
+
     const issueNumber = this.$route.params.number;
     if (issueNumber) {
       this.issue = await fetchIssueDetails(issueNumber, this.loginstatus);

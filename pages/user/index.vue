@@ -32,36 +32,28 @@
     </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      userlist: []
-    };
-  },
-  methods: {
-    async fetchuserlist() {
-      try {
-        const response = await $fetch('/userlist.json');
-        this.userlist = (response.list || []).map(user => ({
-          ...user,
-          nickname: user.nickname || user.username,
-          avatar: user.avatar || `https://avatars.githubusercontent.com/u/${user.github_id || '149680880'}?v=4`,
-          bio: user.bio || '此人很懒，什么都没有',
-          likes: user.likes || '未统计',
-          github: user.github || `https://github.com/${user.username}`,
-          home: user.home || `/user/${user.username}`
-        }));
-        //console.log("用户列表:", this.userlist);
-      } catch (error) {
-        console.error("获取用户列表失败：", error);
-      }
-    }
-  },
-  mounted() {
-    this.fetchuserlist();
-  }
-};
+<script setup>
+// SSR：静态 JSON 在构建期打包进 bundle（服务端内部 fetch 静态文件会落到渲染层返回 HTML）
+import userlistJson from '../../public/userlist.json'
+
+const userlist = computed(() =>
+  (userlistJson.list || []).map(user => ({
+    ...user,
+    nickname: user.nickname || user.username,
+    avatar: user.avatar || `https://avatars.githubusercontent.com/u/${user.github_id || '149680880'}?v=4`,
+    bio: user.bio || '此人很懒，什么都没有',
+    likes: user.likes || '未统计',
+    github: user.github || `https://github.com/${user.username}`,
+    home: user.home || `/user/${user.username}`
+  }))
+);
+
+useHead({
+  title: '用户列表|CoCo-Community',
+  meta: [
+    {content: "这是注册了CoCo-Community的全部用户均在此处。" }
+  ]
+})
 </script>
 
 <style>
@@ -206,13 +198,3 @@ export default {
     font-size: 1rem;
 }
 </style>
-
-<script setup>
-
-useHead({
-  title: '用户列表|CoCo-Community',
-  meta: [
-    {content: "这是注册了CoCo-Community的全部用户均在此处。" }
-  ]
-})
-</script>

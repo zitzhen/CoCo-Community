@@ -119,59 +119,102 @@ const sourceUrl = ref("")
 const route = useRoute()
 const router = useRouter()
 
+// -------- SSR：服务端获取控件元信息与 README，首屏 HTML 直接渲染 --------
+const { data: ssrControl } = await useAsyncData(`control-${route.params.id}`, async () => {
+  const id = route.params.id
+  let meta
+  try {
+    meta = await $fetch('/api/control-meta', { query: { name: id } })
+  } catch (err) {
+    if (err?.statusCode === 404 || err?.status === 404) return { notFound: true }
+    throw err
+  }
+  let readmeText = null
+  try {
+    readmeText = await $fetch(resourceUrl(`${id}/README.md`), { responseType: 'text' })
+  } catch {}
+  return { meta, readmeText }
+})
+
+if (ssrControl.value?.notFound) {
+  await navigateTo('/control/404', { replace: true })
+} else if (ssrControl.value?.meta) {
+  const meta = ssrControl.value.meta
+  filename.value = route.params.id
+  fileSize.value = meta.size ? (meta.size / 1024).toFixed(2) : "未知"
+  versions.value = Array.isArray(meta.versions) ? meta.versions : []
+  sourceUrl.value = meta.controlKey ? resourceUrl(meta.controlKey) : ""
+  if (meta.author) authorName.value = meta.author
+  if (ssrControl.value.readmeText) {
+    // README 内旧图片地址 https://cc.zitzhen.cn/control/... 改走同源资源路由
+    introduceHtml.value = marked.parse(String(ssrControl.value.readmeText).replaceAll("https://cc.zitzhen.cn/control/", "/resource/"))
+  } else {
+    introduceHtml.value = "<p>未能找到 README.md</p>"
+  }
+  loading.value = false
+}
+
 // -------- 方法 --------
 function offError() {
   errorVisibleSmall.value = false
 }
 
-async function fetchData() {
+async function loadClientData() {
   try {
-    const { id } = route.params
+    const id = route.params.id
     if (!id) {
       throwError("未检测到参数")
       return
     }
-    filename.value = id
+    if (!filename.value) filename.value = id
 
-    // 1) 获取控件元信息（服务端读 R2：information.json + 解析实际控件文件）
-    const metaRes = await fetch(`/api/control-meta?name=${encodeURIComponent(id)}`)
-    if (metaRes.status === 404) {
-      console.error("此控件不存在")
-      router.push('/control/404')
-      return
+    // 1) 元信息：SSR 已取到则复用，否则兜底请求
+    let meta = ssrControl.value?.meta
+    if (!meta) {
+      const metaRes = await fetch(`/api/control-meta?name=${encodeURIComponent(id)}`)
+      if (metaRes.status === 404) {
+        console.error("此控件不存在")
+        router.push('/control/404')
+        return
+      }
+      if (!metaRes.ok) throw new Error(`获取控件信息失败（HTTP ${metaRes.status}）`)
+      meta = await metaRes.json()
+      fileSize.value = meta.size ? (meta.size / 1024).toFixed(2) : "未知"
+      versions.value = Array.isArray(meta.versions) ? meta.versions : []
     }
-    if (!metaRes.ok) throw new Error(`获取控件信息失败（HTTP ${metaRes.status}）`)
-    const meta = await metaRes.json()
     if (!meta.controlKey) throw new Error("未能找到该控件的控件文件")
-
-    // 2) 控件文件（服务端已解析出真实 key，同源资源路由）
     const controlUrl = resourceUrl(meta.controlKey)
-    const controlRes = await fetch(controlUrl)
-    if (!controlRes.ok) throw new Error(`未找到控件文件：${controlUrl} （HTTP ${controlRes.status}）`)
-    const controlBlob = await controlRes.blob()
-    fileSize.value = (controlBlob.size / 1024).toFixed(2)
-    // 同源 blob URL 用于可靠触发浏览器下载（跨域 download 属性会被忽略）
-    downloadObjectUrl.value = URL.createObjectURL(controlBlob)
+    sourceUrl.value = controlUrl
 
-    // 3) README（同源资源路由）
-    const readmeUrl = resourceUrl(`${id}/README.md`)
-    const readmeRes = await fetch(readmeUrl)
-    if (readmeRes.ok) {
-      const readmeText = await readmeRes.text()
-      // README 内旧图片地址 https://cc.zitzhen.cn/control/... 改走同源资源路由
-      const rewritten = readmeText.replaceAll("https://cc.zitzhen.cn/control/", "/resource/")
-      introduceHtml.value = marked.parse(rewritten || "")
-    } else {
-      introduceHtml.value = `<p style="color:#b33">未能找到 README.md（HTTP ${readmeRes.status}）</p>`
+    // 2) 下载用 blob（仅客户端；失败不阻断页面展示）
+    if (!downloadObjectUrl.value) {
+      try {
+        const controlRes = await fetch(controlUrl)
+        if (controlRes.ok) {
+          const controlBlob = await controlRes.blob()
+          downloadObjectUrl.value = URL.createObjectURL(controlBlob)
+          if (!meta.size) fileSize.value = (controlBlob.size / 1024).toFixed(2)
+        }
+      } catch {}
     }
 
-    // 4) Github 作者信息
+    // 3) README 兜底（SSR 未取到时）
+    if (!ssrControl.value?.readmeText) {
+      try {
+        const readmeText = await $fetch(resourceUrl(`${id}/README.md`), { responseType: 'text' })
+        introduceHtml.value = marked.parse(String(readmeText).replaceAll("https://cc.zitzhen.cn/control/", "/resource/"))
+      } catch {
+        introduceHtml.value = "<p>未能找到 README.md</p>"
+      }
+    }
+
+    // 4) Github 作者信息（依赖登录态，客户端执行）
     if (meta.author) {
       try {
         // 检查登录状态
         const loginStatus = await checkLoginStatus();
         let creatorRes;
-        
+
         if (loginStatus && loginStatus.authenticated) {
           // 已登录，使用内部API
           creatorRes = await fetch(`/api/github/user/?username=${meta.author}`);
@@ -179,7 +222,7 @@ async function fetchData() {
           // 未登录，使用GitHub API
           creatorRes = await fetch(`https://api.github.com/users/${meta.author}`);
         }
-        
+
         if (creatorRes.ok) {
           const creator = await creatorRes.json()
           avatar.value = creator.avatar_url
@@ -192,9 +235,6 @@ async function fetchData() {
         authorName.value = meta.author
       }
     }
-
-    sourceUrl.value = controlUrl
-    versions.value = Array.isArray(meta.versions) ? meta.versions : []
 
     // ✅ 动态更新 SEO 信息
     useHead({
@@ -237,7 +277,7 @@ async function handleDownload() {
 }
 
 onMounted(() => {
-  fetchData()
+  loadClientData()
   // 发送页面浏览统计请求
   const apiUrl = `/api/pageviews?name=${encodeURIComponent(filename.value)}`;
   fetch(apiUrl, { method: 'GET' }).catch(() => {});

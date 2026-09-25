@@ -1,61 +1,25 @@
 <template>
   <div>
     <div class="card-agreement" id="content">
-      <div class="progress-container" v-if="loading">
-        <div class="progress-bar"></div>
-      </div>
-      <h2 v-if="loading" id="Loading_tip">请稍后，我们正在处理</h2>
-      <div v-else>
-        <div v-html="content" class="content"></div>
-      </div>
+      <div v-html="content" class="content"></div>
     </div>
   </div>
 </template>
 
-<script>
+<script setup>
 import { marked } from 'marked'
 
-export default {
-  name: 'UserAgreement',
-  data() {
-    return {
-      loading: true,
-      content: ''
-    }
-  },
-  methods: {
-    async loadContent() {
-      try {
-        // 确保marked已经正确加载
-        if (typeof marked === 'undefined') {
-          console.error('Marked library not loaded')
-          this.loading = false
-          return
-        }
-        
-        // 直接从本地 public 目录获取
-        try {
-          const markdown = await $fetch('/agreement/useragreement/content.md', { responseType: 'text' })
-          this.content = marked.parse(markdown)
-        } catch (localError) {
-          console.error('本地内容获取失败:', localError)
-          this.content = '<p>内容加载失败，请稍后重试。</p>'
-        }
-      } catch (error) {
-        console.error('内容加载出错:', error)
-        this.content = '<p>内容加载失败，请稍后重试。</p>'
-      } finally {
-        this.loading = false
-      }
-    }
-  },
-  async mounted() {
-    // 确保在mounted之后再加载内容
-    this.$nextTick(() => {
-      this.loadContent()
-    })
-  }
-}
+// SSR：协议内容在构建期打包进 bundle（服务端内部 fetch 静态文件会落到渲染层返回 HTML）
+import markdownRaw from '../../../public/agreement/useragreement/content.md?raw'
+
+const content = marked.parse(markdownRaw)
+
+useHead({
+  title: '用户协议|CoCo-Community|适用于CoCo-Community的用户协议条款',
+  meta: [
+    {content: '这是适用于ZIT-CoCo-Community的用户协议及条款。' }
+  ]
+})
 </script>
 
 <style scoped>
@@ -69,12 +33,3 @@ export default {
 }
 </style>
 
-<script setup>
-
-useHead({
-  title: '用户协议|CoCo-Community|适用于CoCo-Community的用户协议条款',
-  meta: [
-    {content: '这是适用于ZIT-CoCo-Community的用户协议及条款。' }
-  ]
-})
-</script>

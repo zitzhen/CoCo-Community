@@ -150,164 +150,127 @@
     </div>
 </template>
 
-<script>
-export default {
-  name: 'Search',
-  data() {
-    return {
-      searchTerm: '',
-      searchResults: {
-        controls: [],
-        articles: [],
-        users: []
-      },
-      loading: false,
-      activeTab: 'all',
-      searchTime: 0,
-      popularSearches: []
-    };
-  },
-  computed: {
-    hasResults() {
-      return this.searchResults.controls.length > 0 || 
-             this.searchResults.articles.length > 0 || 
-             this.searchResults.users.length > 0;
-    },
-    totalResults() {
-      return this.searchResults.controls.length + 
-             this.searchResults.articles.length + 
-             this.searchResults.users.length;
-    }
-  },
-  methods: {
-    async performSearch() {
-      if (!this.searchTerm.trim()) return;
-      
-      this.loading = true;
-      const startTime = Date.now();
-      
-      try {
-        // 搜索控件
-        const controls = await this.searchControls(this.searchTerm);
-        // 搜索文章（模拟，因为项目中没有文章搜索API）
-        const articles = await this.searchArticles(this.searchTerm);
-        // 搜索用户（模拟，因为项目中没有用户搜索API）
-        const users = await this.searchUsers(this.searchTerm);
-        
-        this.searchResults = {
-          controls,
-          articles,
-          users
-        };
-        
-        this.searchTime = Date.now() - startTime;
-      } catch (error) {
-        console.error('搜索出错:', error);
-      } finally {
-        this.loading = false;
-      }
-    },
-    async searchControls(term) {
-      try {
-        const data = await $fetch('/api/control-list');
-        const allControls = data.list || [];
-        
-        const filteredControls = allControls.filter(control => 
-          control.name.toLowerCase().includes(term.toLowerCase()) ||
-          control.author.toLowerCase().includes(term.toLowerCase())
-        ).map(control => ({
-          id: control.id,
-          name: control.name,
-          author: control.author,
-          size: control.size,
-          downloads: control.downloads,
-          Pageviews: control.Pageviews,
-          url: `${window.location.origin}/control/${control.name}`
-        }));
-        
-        return filteredControls;
-      } catch (error) {
-        console.error('搜索控件出错:', error);
-        return [];
-      }
-    },
-    async searchArticles(term) {
-      // 搜索文章
-      try {
-        const response = await $fetch('/essaylist.json');
-        const allArticles = response.list || [];
-        
-        const filteredArticles = allArticles.filter(article => 
-          article.title && article.title.toLowerCase().includes(term.toLowerCase()) ||
-          (article.author && article.author.toLowerCase().includes(term.toLowerCase())) ||
-          (article.content && article.content.toLowerCase().includes(term.toLowerCase()))
-        ).map(article => ({
-          id: article.id || article.title?.toLowerCase().replace(/\s+/g, '-'),
-          title: article.title || '无标题',
-          author: article.author || '未知作者',
-          date: article.date || '',
-          excerpt: article.content ? (article.content.length > 100 ? article.content.substring(0, 100) + '...' : article.content) : '无内容预览',
-          url: `${window.location.origin}/essay/${article.id || article.title?.toLowerCase().replace(/\s+/g, '-')}`
-        }));
-        
-        return filteredArticles;
-      } catch (error) {
-        console.error('搜索文章出错:', error);
-        return [];
-      }
-    },
-    async searchUsers(term) {
-      // 搜索用户
-      try {
-        const response = await $fetch('/userlist.json');
-        const allUsers = response.list || [];
-        
-        const filteredUsers = allUsers.filter(user => 
-          (user.name && user.name.toLowerCase().includes(term.toLowerCase())) ||
-          (user.login && user.login.toLowerCase().includes(term.toLowerCase()))
-        ).map(user => ({
-          id: user.id || user.login,
-          name: user.name || user.login || '未知用户',
-          login: user.login || 'unknown',
-          avatar: user.avatar || '/images/user.png',
-          url: `${window.location.origin}/user/${user.login || user.id}`
-        }));
-        
-        return filteredUsers;
-      } catch (error) {
-        console.error('搜索用户出错:', error);
-        return [];
-      }
-    },
-    switchTab(tabName) {
-      this.activeTab = tabName;
-    },
-    goHome(event) {
-      event.preventDefault();
-      this.$router.push('/');
-    },
-    formatDate(dateString) {
-      if (!dateString) return '';
-      const date = new Date(dateString);
-      return date.toLocaleDateString('zh-CN', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-      });
-    },
-    searchWithTerm(term) {
-      this.searchTerm = term;
-      this.performSearch();
-    }
-  },
-  mounted() {  
-    // 如果URL中有搜索参数，执行搜索
-    const query = this.$route.query.q;
-    if (query) {
-      this.searchTerm = query;
-      this.performSearch();
-    }
-  }
+<script setup>
+const route = useRoute()
+const searchTerm = ref('')
+const searchResults = ref({
+  controls: [],
+  articles: [],
+  users: []
+})
+const loading = ref(false)
+const activeTab = ref('all')
+const searchTime = ref(0)
+const popularSearches = ref([])
+
+const hasResults = computed(() =>
+  searchResults.value.controls.length > 0 ||
+  searchResults.value.articles.length > 0 ||
+  searchResults.value.users.length > 0
+)
+const totalResults = computed(() =>
+  searchResults.value.controls.length +
+  searchResults.value.articles.length +
+  searchResults.value.users.length
+)
+
+// SSR：一次性取全量数据源（useFetch 结果会在服务端与客户端间共享），搜索时本地过滤
+// 静态 JSON 在构建期打包进 bundle（服务端内部 fetch 静态文件会落到渲染层返回 HTML）
+import essaylistJson from '../../public/essaylist.json'
+import userlistJson from '../../public/userlist.json'
+
+const { data: controlData } = await useFetch('/api/control-list', { key: 'control-list' })
+
+function performSearch() {
+  const term = searchTerm.value.trim();
+  if (!term) return;
+
+  loading.value = true;
+  const startTime = Date.now();
+  const lower = term.toLowerCase();
+
+  // 搜索控件
+  const controls = (controlData.value?.list || [])
+    .filter(control =>
+      control.name?.toLowerCase().includes(lower) ||
+      control.author?.toLowerCase().includes(lower)
+    )
+    .map(control => ({
+      id: control.id,
+      name: control.name,
+      author: control.author,
+      size: control.size,
+      downloads: control.downloads,
+      Pageviews: control.Pageviews,
+      url: `/control/${control.name}`
+    }));
+
+  // 搜索文章
+  const articles = (essaylistJson.list || [])
+    .filter(article =>
+      (article.title && article.title.toLowerCase().includes(lower)) ||
+      (article.author && article.author.toLowerCase().includes(lower)) ||
+      (article.content && article.content.toLowerCase().includes(lower))
+    )
+    .map(article => {
+      const id = article.id || article.title?.toLowerCase().replace(/\s+/g, '-');
+      return {
+        id,
+        title: article.title || '无标题',
+        author: article.author || '未知作者',
+        date: article.date || '',
+        excerpt: article.content ? (article.content.length > 100 ? article.content.substring(0, 100) + '...' : article.content) : '无内容预览',
+        url: `/essay/${id}`
+      };
+    });
+
+  // 搜索用户（userlist.json 的字段是 username/nickname）
+  const users = (userlistJson.list || [])
+    .filter(user =>
+      (user.username && user.username.toLowerCase().includes(lower)) ||
+      (user.nickname && user.nickname.toLowerCase().includes(lower))
+    )
+    .map(user => ({
+      id: user.username || user.nickname,
+      name: user.nickname || user.username || '未知用户',
+      login: user.username || 'unknown',
+      avatar: user.avatar || '/images/user.png',
+      url: `/user/${user.username}`
+    }));
+
+  searchResults.value = { controls, articles, users };
+  searchTime.value = Date.now() - startTime;
+  loading.value = false;
+}
+
+function searchWithTerm(term) {
+  searchTerm.value = term;
+  performSearch();
+}
+
+function switchTab(tabName) {
+  activeTab.value = tabName;
+}
+
+function goHome(event) {
+  event.preventDefault();
+  navigateTo('/');
+}
+
+function formatDate(dateString) {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+}
+
+// SSR：URL 带搜索参数时服务端直接渲染结果
+if (route.query.q) {
+  searchTerm.value = String(route.query.q);
+  performSearch();
 }
 </script>
 
