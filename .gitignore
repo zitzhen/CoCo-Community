@@ -34,3 +34,7 @@ coverage
 
 coco-community-test.pem
 coco-community.test-key.pem
+
+# 本地开发密钥（Cloudflare）
+.dev.vars
+.wrangler
