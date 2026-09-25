@@ -4,6 +4,7 @@ pages_build_output_dir = ".output/public"
 
 [vars]
 # 非机密环境变量可放这里；机密（密钥类）请使用 .dev.vars（本地）或 Cloudflare 后台（生产）
+NODE_VERSION = "24"
 
 [[d1_databases]]
 binding = "DB"
