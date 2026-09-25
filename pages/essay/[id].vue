@@ -252,7 +252,7 @@ export default {
         // 从路由参数获取文章ID
         const essayId = this.$route.params.id;
         
-        const response = await axios.get(`https://cc.zitzhen.cn/api/fetch-comment-essay?EssayID=${essayId}`);
+        const response = await axios.get(`/api/fetch-comment-essay?EssayID=${essayId}`);
         
         if (response.data && response.data.data) {
           // API 返回的是 comment 数组，而非 comments
@@ -340,7 +340,7 @@ export default {
       
       // 将评论请求至服务器
       try{
-        const response = await fetch("https://cc.zitzhen.cn/api/comment-essay",{
+        const response = await fetch("/api/comment-essay",{
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -415,7 +415,7 @@ export default {
     await this.fetchAuthorInfo();
     
     // 发送页面浏览统计请求
-    const apiUrl = `https://cc.zitzhen.cn/api/pageviews_essay?name=${encodeURIComponent(this.essay.name)}`;
+    const apiUrl = `/api/pageviews_essay?name=${encodeURIComponent(this.essay.name)}`;
     fetch(apiUrl, { method: 'GET' });
   }
 }

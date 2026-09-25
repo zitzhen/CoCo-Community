@@ -34,20 +34,13 @@ export default {
           return
         }
         
-        // 首先尝试从远程获取
+        // 直接从本地 public 目录获取
         try {
-          const response = await axios.get('https://cc.zitzhen.cn/agreement/useragreement/content.md')
+          const response = await axios.get('/agreement/useragreement/content.md')
           this.content = marked.parse(response.data)
-        } catch (remoteError) {
-          console.warn('远程内容获取失败，尝试使用本地内容:', remoteError)
-          // 如果远程获取失败，尝试从本地获取
-          try {
-            const localResponse = await axios.get('/agreement/useragreement/content.md')
-            this.content = marked.parse(localResponse.data)
-          } catch (localError) {
-            console.error('本地内容获取也失败:', localError)
-            this.content = '<p>内容加载失败，请稍后重试。</p>'
-          }
+        } catch (localError) {
+          console.error('本地内容获取失败:', localError)
+          this.content = '<p>内容加载失败，请稍后重试。</p>'
         }
       } catch (error) {
         console.error('内容加载出错:', error)

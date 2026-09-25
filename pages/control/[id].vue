@@ -222,7 +222,7 @@ function throwError(msg) {
 async function handleDownload() {
   try {
     // 首先发送额外的GET请求到API
-    const apiUrl = `https://cc.zitzhen.cn/api/download?name=${encodeURIComponent(filename.value)}`;
+    const apiUrl = `/api/download?name=${encodeURIComponent(filename.value)}`;
     await fetch(apiUrl, { method: 'GET' });
     
     // 然后触发文件下载
@@ -239,7 +239,7 @@ async function handleDownload() {
 onMounted(() => {
   fetchData()
   // 发送页面浏览统计请求
-  const apiUrl = `https://cc.zitzhen.cn/api/pageviews?name=${encodeURIComponent(filename.value)}`;
+  const apiUrl = `/api/pageviews?name=${encodeURIComponent(filename.value)}`;
   fetch(apiUrl, { method: 'GET' });
 })
 </script>

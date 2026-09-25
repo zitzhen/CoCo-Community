@@ -40,7 +40,7 @@
             <div class="file-name-me">{{ control }}</div>
           </div>
           <div class="file-actions-me">
-            <a :href="`https://cc.zitzhen.cn/control/${control}`">
+            <a :href="`/control/${control}`">
               <button class="download-btn-me">去详情</button>
             </a>
           </div>

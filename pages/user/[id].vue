@@ -37,7 +37,7 @@
                     <div class="file-name-user">{{ control }}</div>
                 </div>
                 <div class="file-actions-user">
-                    <a :href="`https://cc.zitzhen.cn/control/${control}`">
+                    <a :href="`/control/${control}`">
                         <button class="download-btn-user">去详情</button>
                     </a>
                 </div>
@@ -299,7 +299,7 @@ onMounted(async () => {
   loading.value = false
 
   // 发送页面浏览统计请求
-  const apiUrl = `https://cc.zitzhen.cn/api/pageviews_user?username=${encodeURIComponent(username)}`;
+  const apiUrl = `/api/pageviews_user?username=${encodeURIComponent(username)}`;
   fetch(apiUrl, { method: 'GET' });
 })
 </script>
