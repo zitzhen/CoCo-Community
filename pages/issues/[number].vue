@@ -199,12 +199,12 @@ export default {
 @import url(@/assets/css/dark.css);
 
 :root {
-  --primary-color: #2ecc71;
-  --secondary-color: #27ae60;
-  --background-color: #f0f4f8;
+  --primary-color: #3498db;
+  --secondary-color: #2980b9;
+  --background-color: #f5f7fa;
   --card-color: #ffffff;
-  --text-color: #2c3e50;
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --text-color: #333333;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   --border-color: #e1e4e8;
   --open-color: #28a745;
   --closed-color: #cb2431;
