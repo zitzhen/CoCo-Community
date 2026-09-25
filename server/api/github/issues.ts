@@ -1,40 +1,11 @@
 import { getCloudflareContext } from "~/server/utils/cloudflare"
+import { assertAllowedOrigin } from "~/server/utils/github"
 // @ts-nocheck
 export default defineEventHandler(async (event) => {
   const { request } = getCloudflareContext(event);
-  // ✅ 白名单校验：只允许 cc.zitzhen.cn
-  const origin = request.headers.get("Origin") || "";
-  const referer = request.headers.get("Referer") || "";
-  const allowedDomain = "https://cc.zitzhen.cn";
-  // Only allow if either Origin or Referer strictly equals the allowed domain as origin
-  const isValidOrigin = (() => {
-    try {
-      if (origin) {
-        const originUrl = new URL(origin);
-        if (originUrl.origin === allowedDomain) return true;
-      }
-    } catch (e) {
-      // Ignore parsing errors; treat as invalid
-    }
-    return false;
-  })();
-  const isValidReferer = (() => {
-    try {
-      if (referer) {
-        const refererUrl = new URL(referer);
-        if (refererUrl.origin === allowedDomain) return true;
-      }
-    } catch (e) {
-      // Ignore parsing errors; treat as invalid
-    }
-    return false;
-  })();
-  if (!isValidOrigin && !isValidReferer) {
-    return new Response(JSON.stringify({ error: "Forbidden: Invalid origin" }), {
-      status: 403,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
+  // ✅ 白名单校验：生产域名 + 开发环境
+  const forbidden = assertAllowedOrigin(request);
+  if (forbidden) return forbidden;
 
   // ✅ 解析 Cookie 中的 GitHub token
   const cookieHeader = request.headers.get("Cookie") || "";
@@ -101,7 +72,7 @@ export default defineEventHandler(async (event) => {
     status: 200,
     headers: {
       "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": allowedDomain,
+      "Access-Control-Allow-Origin": "https://cc.zitzhen.cn",
     },
   });
 });

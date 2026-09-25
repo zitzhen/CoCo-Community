@@ -1,12 +1,11 @@
 import { getCloudflareContext } from "~/server/utils/cloudflare"
+import { assertAllowedOrigin } from "~/server/utils/github"
 export default defineEventHandler(async (event) => {
   const { request, env } = getCloudflareContext(event);
 
-  // 限制来源
-  const origin = request.headers.get('Origin');
-  if (origin !== 'https://cc.zitzhen.cn') {
-    return new Response('Forbidden: Invalid origin', { status: 403 });
-  }
+  // 限制来源（生产域名 + 开发环境）
+  const forbidden = assertAllowedOrigin(request);
+  if (forbidden) return forbidden;
 
   if (request.method !== 'POST') {
     return new Response('Method Not Allowed', { status: 405 });
