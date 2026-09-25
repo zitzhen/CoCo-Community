@@ -48,10 +48,16 @@ export type CloudflareEnv = {
 }
 
 export function getCloudflareContext(event: H3Event) {
-  const cloudflare = event.context.cloudflare as { env?: CloudflareEnv } | undefined
+  // 入站请求经 nitro onRequest 钩子挂载 context.cloudflare；
+  // SSR 内部 $fetch 的事件不经过该挂载，回退到插件暂存的全局 env
+  const ctx = (event.context.cloudflare
+    || (event.context as { _platform?: { cloudflare?: { env?: CloudflareEnv } } })._platform?.cloudflare) as
+    | { env?: CloudflareEnv }
+    | undefined
+  const env = ctx?.env || (globalThis as { __cocoCFEnv__?: CloudflareEnv }).__cocoCFEnv__
 
   return {
     request: toWebRequest(event),
-    env: cloudflare?.env || ({} as CloudflareEnv),
+    env: env || ({} as CloudflareEnv),
   }
 }
