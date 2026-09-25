@@ -12,8 +12,35 @@ export interface D1Database {
   prepare(query: string): D1PreparedStatement
 }
 
+// 最小化的 R2 类型声明（未安装 @cloudflare/workers-types）
+export interface R2Object {
+  key: string
+  size: number
+  httpMetadata?: { contentType?: string }
+  body?: ReadableStream
+  text?(): Promise<string>
+}
+
+export interface R2Objects {
+  objects: R2Object[]
+  delimitedPrefixes: string[]
+  truncated: boolean
+  cursor?: string
+}
+
+export interface R2Bucket {
+  get(key: string, options?: { onlyMetadata?: boolean }): Promise<R2Object | null>
+  list(options?: {
+    prefix?: string
+    delimiter?: string
+    cursor?: string
+    limit?: number
+  }): Promise<R2Objects>
+}
+
 export type CloudflareEnv = {
   DB: D1Database
+  RESOURCES: R2Bucket
   GITHUB_CLIENT_ID?: string
   GITHUB_CLIENT_SECRET?: string
   COCO_COMMUNITY_JWT?: string

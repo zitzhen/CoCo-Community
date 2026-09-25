@@ -10,3 +10,9 @@ NODE_VERSION = "24"
 binding = "DB"
 database_name = "CoCo-Community"
 database_id = "33a3fb69-4297-4a8d-8766-cd0679cad18e"
+
+# 控件资源桶。remote = true：本地 dev 直接连接真实 R2（而非本地空模拟）
+[[r2_buckets]]
+binding = "RESOURCES"
+bucket_name = "coco-community"
+remote = true
