@@ -29,7 +29,15 @@ export default defineEventHandler(async (event) => {
     const accessToken = tokenData.access_token;
 
     if (!accessToken || accessToken.length < 10) {
-      return new Response(JSON.stringify({ error: "no_token", detail: JSON.stringify(tokenData) }), { status: 401 });
+      return new Response(JSON.stringify({
+        error: "no_token",
+        detail: JSON.stringify(tokenData),
+        // 仅报告缺失与否，不暴露任何值；Not Found 通常意味着 GITHUB_CLIENT_ID 未配置
+        missing_env: {
+          GITHUB_CLIENT_ID: !env.GITHUB_CLIENT_ID,
+          GITHUB_CLIENT_SECRET: !env.GITHUB_CLIENT_SECRET,
+        },
+      }), { status: 401 });
     }
 
     // 请求用户Github信息
