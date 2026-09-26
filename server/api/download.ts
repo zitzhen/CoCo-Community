@@ -15,7 +15,28 @@ export default defineEventHandler(async (event) => {
     const getResult = await getStmt.bind(name).first<{ downloads: number }>();
 
     if (!getResult) {
-      return new Response(`Component '${name}' not found`, { status: 404 });
+      // 计数行缺失自愈：历史上提交接口的 D1 登记失败过，可能存在 R2 有控件、
+      // D1 无计数行的不一致数据。R2 是控件的真实来源——控件确实存在则补建行
+      // （初始 downloads 直接计 1，即本次下载），R2 不存在才判定 404。
+      const infoObj = await env.RESOURCES.get(`${name}/information.json`);
+      if (!infoObj) {
+        return new Response(`Component '${name}' not found`, { status: 404 });
+      }
+      // size 列在远程表是 NOT NULL，用空串占位（列表页 size 实时读 R2，不依赖此列）；
+      // author 从刚拿到的 information.json 里解析
+      let author = "";
+      try {
+        author = JSON.parse(await infoObj.text())?.author || "";
+      } catch { /* 信息文件损坏时留空 */ }
+      try {
+        await env.DB.prepare(
+          "INSERT INTO components (name, size, downloads, likes, collections, Pageviews, author) VALUES (?, '', 1, 0, 0, 0, ?)"
+        ).bind(name, author).run();
+      } catch (insertErr: any) {
+        // 并发下重复插入可忽略（如已建 name 唯一索引）
+        console.warn("[download] counter row create skipped:", insertErr?.message);
+      }
+      return new Response(`Updated '${name}' downloads to 1`, { status: 200 });
     }
 
     const currentDownloads = getResult.downloads ?? 0;
