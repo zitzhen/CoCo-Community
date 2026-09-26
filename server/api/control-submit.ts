@@ -166,25 +166,12 @@ export default defineEventHandler(async (event) => {
       };
     }
 
-    // ---------- 4. 写入 R2 ----------
-    await env.RESOURCES.put(`${name}/${version}/control.jsx`, filePart.data, {
-      httpMetadata: { contentType: "text/javascript; charset=utf-8" },
-    });
-
-    await env.RESOURCES.put(infoKey, JSON.stringify(info, null, 2) + "\n", {
-      httpMetadata: { contentType: "application/json; charset=utf-8" },
-    });
-
-    if (readmeText.trim()) {
-      await env.RESOURCES.put(`${name}/README.md`, readmeText, {
-        httpMetadata: { contentType: "text/markdown; charset=utf-8" },
-      });
-    }
-
-    // ---------- 5. D1 登记计数行（附属操作，失败不阻断 R2 提交，但必须记录） ----------
-    // 不能用 ON CONFLICT(name) DO NOTHING——该表 name 列历史上没有 UNIQUE 约束，
-    // 那样写会在旧表结构上必然报错（ON CONFLICT clause does not match ...）。
-    let d1Registered = true;
+    // ---------- 4. 先写 D1 计数行，再写 R2 ----------
+    // R2 与 D1 无跨系统事务，做不到真回滚（且已有控件的 information.json/README
+    // 是覆盖写，删文件式"回滚"会毁掉旧数据）。因此把易失败的 D1 登记放在前面：
+    // D1 失败直接 500，此时 R2 尚未被触碰，整体等于未提交；重试幂等
+    // （R2 同名覆盖写、D1 已存在则跳过）。注意不能用 ON CONFLICT(name)，
+    // 该表 name 列历史上没有 UNIQUE 约束，旧表结构上必然报错。
     try {
       const existingRow = await env.DB.prepare(
         "SELECT 1 FROM components WHERE name = ?1"
@@ -199,13 +186,30 @@ export default defineEventHandler(async (event) => {
           .run();
       }
     } catch (dbErr: any) {
-      // 预期降级：本地 D1 未建表等；但生产环境出现说明有真实故障，需留日志可排查
       console.error("[control-submit] D1 register failed:", dbErr?.message);
-      d1Registered = false;
+      return new Response(
+        JSON.stringify({ error: "counter_register_failed", detail: "计数登记失败，控件未提交，请重试" }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    // ---------- 5. 写入 R2 ----------
+    await env.RESOURCES.put(`${name}/${version}/control.jsx`, filePart.data, {
+      httpMetadata: { contentType: "text/javascript; charset=utf-8" },
+    });
+
+    await env.RESOURCES.put(infoKey, JSON.stringify(info, null, 2) + "\n", {
+      httpMetadata: { contentType: "application/json; charset=utf-8" },
+    });
+
+    if (readmeText.trim()) {
+      await env.RESOURCES.put(`${name}/README.md`, readmeText, {
+        httpMetadata: { contentType: "text/markdown; charset=utf-8" },
+      });
     }
 
     return new Response(
-      JSON.stringify({ ok: true, name, version, existing: Boolean(existingObj), d1_registered: d1Registered }),
+      JSON.stringify({ ok: true, name, version, existing: Boolean(existingObj) }),
       {
         status: 200,
         headers: { "Content-Type": "application/json" },
