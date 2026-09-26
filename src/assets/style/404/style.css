@@ -1,10 +1,10 @@
 :root {
-    --primary-color: #3498db;
-    --secondary-color: #2980b9;
-    --background-color: #f5f7fa;
-    --card-color: #ffffff;
-    --text-color: #333333;
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --primary-color: var(--primary);
+    --secondary-color: var(--primary-hover);
+    --background-color: var(--background);
+    --card-color: var(--card);
+    --text-color: var(--foreground);
+    --shadow: var(--shadow-sm);
 }
 
 body {
@@ -52,14 +52,14 @@ h1 {
 
 .error-icon {
     font-size: 5rem;
-    color: #e74c3c;
+    color: #ef4444;
     margin-bottom: 1.5rem;
 }
 
 .error-title {
     font-size: 2rem;
     margin-bottom: 1rem;
-    color: #e74c3c;
+    color: #ef4444;
 }
 
 .a_404_error-message {
@@ -76,7 +76,7 @@ h1 {
     border-radius: 4px;
     text-decoration: none;
     font-size: 1rem;
-    transition: background-color 0.3s;
+    transition: background-color 0.25s;
     margin: 0 0.5rem;
 }
 
@@ -93,7 +93,7 @@ h1 {
 .search-bar input {
     padding: 0.8rem 1rem;
     flex: 1;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
     border-radius: 4px 0 0 4px;
     font-size: 1rem;
     outline: none;
@@ -107,7 +107,7 @@ h1 {
     border-radius: 0 4px 4px 0;
     cursor: pointer;
     font-size: 1rem;
-    transition: background-color 0.3s;
+    transition: background-color 0.25s;
 }
 
 .search-bar button:hover {
@@ -117,8 +117,8 @@ h1 {
 footer {
     text-align: center;
     padding: 1.5rem 0;
-    color: #666;
-    border-top: 1px solid #eee;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
     font-size: 0.9rem;
 }
 
@@ -161,17 +161,17 @@ footer {
 .error-alert {
     border-radius: 0.375rem;
     padding: 1rem;
-    background-color: rgb(254 242 242);
+    background-color: color-mix(in srgb, #ef4444 8%, var(--card));
 }
 
 .error-svg {
-    color: #F87171;
+    color: #ef4444;
     width: 1.25rem;
     height: 1.25rem;
 }
 
 .error-prompt-heading {
-    color: #991B1B;
+    color: #ef4444;
     font-size: 0.875rem;
     line-height: 1.25rem;
     font-weight: bold;
@@ -185,7 +185,7 @@ footer {
 
 .error-prompt-wrap {
     margin-top: 0.5rem;
-    color: #B91C1C;
+    color: #ef4444;
     font-size: 0.875rem;
     line-height: 1.25rem;
 }

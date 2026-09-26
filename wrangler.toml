@@ -1,8 +1,18 @@
+name = "coco-community"
+compatibility_date = "2026-08-12"
+pages_build_output_dir = "dist"
+
 [vars]
-# 设置兼容性日期以支持现代 JavaScript 特性
-# 注意：实际的兼容性日期会在部署时自动设置为最新
+# 非机密环境变量可放这里；机密（密钥类）请使用 .dev.vars（本地）或 Cloudflare 后台（生产）
+NODE_VERSION = "24"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "CoCo-Community"
 database_id = "33a3fb69-4297-4a8d-8766-cd0679cad18e"
+
+# 控件资源桶。remote = true：本地 dev 直接连接真实 R2（而非本地空模拟）
+[[r2_buckets]]
+binding = "RESOURCES"
+bucket_name = "coco-community"
+remote = true

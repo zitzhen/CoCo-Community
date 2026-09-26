@@ -8,6 +8,8 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+.nuxt
+.output
 .DS_Store
 dist
 dist-ssr
@@ -32,3 +34,7 @@ coverage
 
 coco-community-test.pem
 coco-community.test-key.pem
+
+# 本地开发密钥（Cloudflare）
+.dev.vars
+.wrangler

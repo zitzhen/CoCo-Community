@@ -7,7 +7,7 @@
     display: flex;
     align-items: center;
     padding: 32px 0 24px 0;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border);
 }
 .avatar-me {
     width: 96px;
@@ -15,7 +15,7 @@
     border-radius: 50%;
     margin-right: 32px;
     object-fit: cover;
-    border: 2px solid #3498db;
+    border: 2px solid var(--primary);
 }
 .user-info-me {
     flex: 1;
@@ -31,30 +31,30 @@
 .stat-number-me {
     font-size: 1.5rem;
     font-weight: bold;
-    color: #3498db;
+    color: var(--primary);
 }
 .stat-label-me {
     font-size: 0.95rem;
-    color: #666;
+    color: var(--muted);
 }
 .tabs-me {
     display: flex;
     gap: 16px;
     margin: 32px 0 0 0;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border);
 }
 .tab-me {
     padding: 12px 32px;
     cursor: pointer;
     font-size: 1.1rem;
-    color: #666;
+    color: var(--muted);
     border-radius: 8px 8px 0 0;
-    background: #f7f7f7;
+    background: var(--muted-background);
     transition: background 0.2s, color 0.2s;
 }
 .tab-me.active-me {
-    background: #3498db;
-    color: #fff;
+    background: var(--primary);
+    color: var(--primary-foreground);
     font-weight: bold;
 }
 .tab-content-me {
@@ -67,7 +67,7 @@
 .section-title-me {
     font-size: 1.3rem;
     margin-bottom: 16px;
-    color: #3498db;
+    color: var(--primary);
 }
 .file-list-me {
     display: flex;
@@ -75,7 +75,7 @@
     gap: 24px;
 }
 .file-card-me {
-    background: #fff;
+    background: var(--card);
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(52, 152, 219, 0.08);
     padding: 16px;
@@ -86,7 +86,7 @@
 }
 .file-icon-me {
     font-size: 2rem;
-    color: #3498db;
+    color: var(--primary);
     margin-bottom: 8px;
 }
 .file-info-me {
@@ -96,14 +96,14 @@
 .file-name-me {
     font-size: 1.1rem;
     font-weight: bold;
-    color: #333;
+    color: var(--foreground);
 }
 .file-actions-me {
     margin-top: auto;
 }
 .download-btn-me {
-    background: #3498db;
-    color: #fff;
+    background: var(--primary);
+    color: var(--primary-foreground);
     border: none;
     border-radius: 4px;
     padding: 6px 16px;
@@ -112,7 +112,7 @@
     transition: background 0.2s;
 }
 .download-btn-me:hover {
-    background: #217dbb;
+    background: var(--primary-hover);
 }
 .article-list-me {
     min-height: 80px;
@@ -120,10 +120,10 @@
 }
 footer {
     margin-top: 48px;
-    background: #f7f7f7;
+    background: var(--muted-background);
     padding: 24px 0;
     text-align: center;
-    color: #888;
+    color: var(--muted);
 }
 @media (max-width: 600px) {
     .profile-header-me {

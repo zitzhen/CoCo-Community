@@ -1,13 +1,13 @@
 :root {
-    --primary-color: #3498db;
-    --secondary-color: #2980b9;
-    --background-color: #f5f7fa;
-    --card-color: #ffffff;
-    --text-color: #333333;
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --border-color: #e1e4e8;
-    --success-color: #2ecc71;
-    --error-color: #e74c3c;
+    --primary-color: var(--primary);
+    --secondary-color: var(--primary-hover);
+    --background-color: var(--background);
+    --card-color: var(--card);
+    --text-color: var(--foreground);
+    --shadow: var(--shadow-sm);
+    --border-color: var(--border);
+    --success-color: #22c55e;
+    --error-color: #ef4444;
 }
 
 body {
@@ -57,7 +57,7 @@ h1 {
 }
 
 .upload-description {
-    color: #666;
+    color: var(--muted);
     margin-bottom: 2rem;
     text-align: center;
 }
@@ -78,7 +78,7 @@ h1 {
     border: 1px solid var(--border-color);
     border-radius: 4px;
     font-size: 1rem;
-    transition: border-color 0.3s;
+    transition: border-color 0.25s;
 }
 
 .form-control:focus {
@@ -94,7 +94,7 @@ h1 {
 
 .md-header {
     display: flex;
-    background-color: #f6f8fa;
+    background-color: var(--muted-background);
     border-bottom: 1px solid var(--border-color);
     border-radius: 4px 4px 0 0;
 }
@@ -103,14 +103,14 @@ h1 {
     padding: 0.8rem 1.2rem;
     cursor: pointer;
     font-weight: 500;
-    color: #586069;
+    color: var(--muted);
     border-bottom: 2px solid transparent;
 }
 
 .md-tab.active {
     color: var(--primary-color);
-    border-bottom-color: #f9826c;
-    background-color: white;
+    border-bottom-color: var(--primary);
+    background-color: var(--card);
     font-weight: 600;
 }
 
@@ -152,7 +152,7 @@ h1 {
     flex-wrap: wrap;
     gap: 0.3rem;
     padding: 0.5rem;
-    background-color: #f6f8fa;
+    background-color: var(--muted-background);
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -162,11 +162,11 @@ h1 {
     padding: 0.4rem 0.6rem;
     cursor: pointer;
     border-radius: 3px;
-    color: #24292e;
+    color: var(--foreground);
 }
 
 .md-btn:hover {
-    background-color: rgba(27, 31, 35, 0.1);
+    background-color: color-mix(in srgb, var(--foreground) 10%, transparent);
 }
 
 /* GitHub风格的Markdown预览 */
@@ -185,13 +185,13 @@ h1 {
 .md-preview h1 {
     padding-bottom: 0.3em;
     font-size: 2em;
-    border-bottom: 1px solid #eaecef;
+    border-bottom: 1px solid var(--border);
 }
 
 .md-preview h2 {
     padding-bottom: 0.3em;
     font-size: 1.5em;
-    border-bottom: 1px solid #eaecef;
+    border-bottom: 1px solid var(--border);
 }
 
 .md-preview p {
@@ -208,15 +208,15 @@ h1 {
 
 .md-preview blockquote {
     padding: 0 1em;
-    color: #6a737d;
-    border-left: 0.25em solid #dfe2e5;
+    color: var(--muted);
+    border-left: 0.25em solid var(--border);
     margin: 0 0 16px 0;
 }
 
 .md-preview pre {
     padding: 16px;
     overflow: auto;
-    background-color: #f6f8fa;
+    background-color: var(--muted-background);
     border-radius: 3px;
     line-height: 1.45;
 }
@@ -224,7 +224,7 @@ h1 {
 .md-preview code {
     font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
     font-size: 85%;
-    background-color: rgba(27, 31, 35, 0.05);
+    background-color: color-mix(in srgb, var(--foreground) 5%, transparent);
     border-radius: 3px;
     padding: 0.2em 0.4em;
 }
@@ -249,16 +249,16 @@ h1 {
 .md-preview table th,
 .md-preview table td {
     padding: 6px 13px;
-    border: 1px solid #dfe2e5;
+    border: 1px solid var(--border);
 }
 
 .md-preview table tr {
-    background-color: #fff;
-    border-top: 1px solid #c6cbd1;
+    background-color: var(--card);
+    border-top: 1px solid var(--border);
 }
 
 .md-preview table tr:nth-child(2n) {
-    background-color: #f6f8fa;
+    background-color: var(--muted-background);
 }
 
 /* 文件上传区域 */
@@ -268,18 +268,18 @@ h1 {
     padding: 2rem;
     text-align: center;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.25s;
     margin-bottom: 1.5rem;
 }
 
 .file-upload-area:hover {
     border-color: var(--primary-color);
-    background-color: rgba(52, 152, 219, 0.05);
+    background-color: color-mix(in srgb, var(--primary) 5%, transparent);
 }
 
 .file-upload-area.active {
     border-color: var(--success-color);
-    background-color: rgba(46, 204, 113, 0.05);
+    background-color: color-mix(in srgb, #22c55e 5%, transparent);
 }
 
 .file-upload-icon {
@@ -293,7 +293,7 @@ h1 {
 }
 
 .file-upload-hint {
-    color: #666;
+    color: var(--muted);
     font-size: 0.9rem;
 }
 
@@ -303,7 +303,7 @@ h1 {
     padding: 1rem;
     border: 1px solid var(--border-color);
     border-radius: 4px;
-    background-color: #f9f9f9;
+    background-color: var(--muted-background);
 }
 
 .file-info {
@@ -327,7 +327,7 @@ h1 {
 }
 
 .file-size {
-    color: #666;
+    color: var(--muted);
     font-size: 0.9rem;
 }
 
@@ -344,7 +344,7 @@ h1 {
 
 .progress-bar {
     height: 10px;
-    background-color: #eee;
+    background-color: var(--muted-background);
     border-radius: 5px;
     overflow: hidden;
     margin-bottom: 0.5rem;
@@ -354,13 +354,13 @@ h1 {
     height: 100%;
     background-color: var(--success-color);
     width: 0%;
-    transition: width 0.3s;
+    transition: width 0.25s;
 }
 
 .progress-text {
     text-align: center;
     font-size: 0.9rem;
-    color: #666;
+    color: var(--muted);
 }
 
 .btn {
@@ -372,7 +372,7 @@ h1 {
     border-radius: 4px;
     font-size: 1rem;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.25s;
     text-decoration: none;
 }
 
@@ -386,14 +386,14 @@ h1 {
 }
 
 .btn-disabled {
-    background-color: #ccc;
+    background-color: var(--input);
     cursor: not-allowed;
 }
 
 .upload-requirements {
     margin-top: 2rem;
     padding: 1rem;
-    background-color: #f8f9fa;
+    background-color: var(--muted-background);
     border-radius: 4px;
     border-left: 4px solid var(--primary-color);
 }
@@ -411,7 +411,7 @@ footer {
     text-align: center;
     padding: 2rem 0;
     margin-top: 2rem;
-    color: #666;
+    color: var(--muted);
     border-top: 1px solid var(--border-color);
 }
 

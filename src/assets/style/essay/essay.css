@@ -1,12 +1,16 @@
 @import url(@/assets/css/dark.css);
 
 :root {
-  --primary-color: #2ecc71;
-  --secondary-color: #27ae60;
-  --background-color: #f0f4f8;
-  --card-color: #ffffff;
-  --text-color: #2c3e50;
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --primary-color: var(--primary);
+  --secondary-color: var(--primary-hover);
+  --background-color: var(--background);
+  --card-color: var(--card);
+  --text-color: var(--foreground);
+  --border-color: var(--border);
+  --success-color: #22c55e;
+  --error-color: #ef4444;
+  --warning-color: #f59e0b;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 #app {
@@ -15,7 +19,7 @@
 }
 
 .essay-login-bin{
-  color: #00fff7;
+  color: var(--accent-cyan);
 }
 
 .essay-detail {
@@ -32,7 +36,7 @@
 
 
 .essay-header {
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border);
   padding-bottom: 1.5rem;
   margin-bottom: 2rem;
 }
@@ -49,7 +53,7 @@
   flex-wrap: wrap;
   gap: 1rem;
   font-size: 0.9rem;
-  color: #666;
+  color: var(--muted);
 }
 
 .essay-stats {
@@ -73,7 +77,7 @@
   gap: 0.75rem;
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--border);
 }
 
 .essay-action-btn {
@@ -82,10 +86,10 @@
   justify-content: center;
   gap: 0.3rem;
   padding: 0.75rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 6px;
-  background-color: white;
-  color: #666;
+  background-color: var(--card);
+  color: var(--muted);
   cursor: pointer;
   font-size: 0.9rem;
   transition: all 0.2s ease;
@@ -93,28 +97,28 @@
 }
 
 .essay-action-btn:hover {
-  background-color: #f0f0f0;
+  background-color: var(--muted-background);
   border-color: var(--primary-color);
 }
 
 .essay-action-btn.liked {
-  background-color: #e8f5e9;
-  border-color: #4caf50;
-  color: #4caf50;
+  background-color: color-mix(in srgb,#22c55e,12%,var(--card));
+  border-color: #22c55e;
+  color: #22c55e;
 }
 
 .essay-action-btn.liked i {
-  color: #4caf50;
+  color: #22c55e;
 }
 
 .essay-action-btn.collected {
-  background-color: #fff3e0;
-  border-color: #ff9800;
-  color: #ff9800;
+  background-color: color-mix(in srgb,#f59e0b,12%,var(--card));
+  border-color: #f59e0b;
+  color: #f59e0b;
 }
 
 .essay-action-btn.collected i {
-  color: #ff9800;
+  color: #f59e0b;
 }
 
 .essay-bottom-actions {
@@ -122,8 +126,8 @@
   gap: 1rem;
   margin: 2rem 0;
   padding: 1.5rem 0;
-  border-top: 1px solid #eee;
-  border-bottom: 1px solid #eee;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 
 @media (max-width: 768px) {
@@ -138,7 +142,7 @@
 
 .essay-content {
   line-height: 1.8;
-  color: #333;
+  color: var(--foreground);
   font-size: 1.05rem;
 }
 
@@ -191,14 +195,14 @@
 
 .essay-empty-tip {
   text-align: center;
-  color: #999;
+  color: var(--muted);
   font-size: 1rem;
   margin-top: 2rem;
 }
 
 .essay-user-name-Nav {
   font-weight: 500;
-  color: #2c3e50;
+  color: var(--foreground);
   font-size: 1rem;
 }
 
@@ -214,7 +218,7 @@
 }
 
 .essay-comments-header {
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border);
   padding-bottom: 1rem;
   margin-bottom: 1.5rem;
 }
@@ -236,7 +240,7 @@
   gap: 1rem;
   margin-bottom: 2rem;
   padding-bottom: 1.5rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border);
 }
 
 .essay-user-avatar-small {
@@ -258,22 +262,22 @@
 .essay-comment-input {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 8px;
   resize: vertical;
   font-size: 1rem;
   font-family: inherit;
   margin-bottom: 0.5rem;
-  color: #333;
-  background-color: #fff;
+  color: var(--foreground);
+  background-color: var(--card);
 }
 
 .essay-comment-input:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.2);
-  background-color: #fff;
-  color: #333;
+  background-color: var(--card);
+  color: var(--foreground);
 }
 
 .essay-comment-actions {
@@ -299,9 +303,9 @@
   text-align: center;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
-  background-color: #f8f9fa;
+  background-color: var(--muted-background);
   border-radius: 8px;
-  color: #666;
+  color: var(--muted);
 }
 
 
@@ -319,7 +323,7 @@
   display: flex;
   gap: 1rem;
   padding: 1rem 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--border);
 }
 
 .essay-comment-item:last-child {
@@ -354,14 +358,14 @@
 }
 
 .essay-comment-time {
-  color: #999;
+  color: var(--muted);
   font-size: 0.85rem;
 }
 
 .essay-comment-text {
   margin-bottom: 0.75rem;
   line-height: 1.6;
-  color: #444;
+  color: var(--foreground);
 }
 
 .essay-comment-actions {
@@ -373,7 +377,7 @@
 .essay-reply-comment-btn {
   background: none;
   border: none;
-  color: #666;
+  color: var(--muted);
   cursor: pointer;
   font-size: 0.9rem;
   display: flex;
@@ -418,10 +422,10 @@
 }
 
 .essay-creator-card {
-  border: 1px solid #eee;
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 1.5rem;
-  background-color: #f8f9fa;
+  background-color: var(--muted-background);
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   margin-bottom: 1.5rem;
 }
@@ -448,7 +452,7 @@
 
 .essay-creator-bio {
   margin: 0;
-  color: #666;
+  color: var(--muted);
   font-size: 0.9rem;
   line-height: 1.5;
 }
@@ -468,10 +472,10 @@
 }
 
 .essay-stats-card {
-  border: 1px solid #eee;
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 1.5rem;
-  background-color: #f8f9fa;
+  background-color: var(--muted-background);
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
@@ -488,7 +492,7 @@
   display: flex;
   justify-content: space-between;
   padding: 0.5rem 0;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border);
 }
 
 
@@ -497,7 +501,7 @@
 }
 
 .essay-stat-label {
-  color: #666;
+  color: var(--muted);
 }
 
 .essay-stat-value {
@@ -507,7 +511,7 @@
 
 /* 为文章详情设置最大宽度，防止与侧边栏重叠 */
 .essay-creator-card {
-  border: 1px solid #eee;
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 1.5rem;
   background-color: var(--card-color);
@@ -537,7 +541,7 @@
 
 .essay-creator-bio {
   margin: 0;
-  color: #666;
+  color: var(--muted);
   font-size: 0.9rem;
   line-height: 1.5;
 }
@@ -557,7 +561,7 @@
 
 .essay-stats-card {
   margin-top: 1.5rem;
-  border: 1px solid #eee;
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 1.5rem;
   background-color: var(--card-color);
@@ -568,7 +572,7 @@
   display: flex;
   justify-content: space-between;
   padding: 0.5rem 0;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border);
 }
 
 
@@ -577,7 +581,7 @@
 }
 
 .essay-stat-label {
-  color: #666;
+  color: var(--muted);
 }
 
 .essay-stat-value {

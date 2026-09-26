@@ -1,0 +1,95 @@
+/* ============================================================
+   Site Footer
+   ============================================================ */
+
+.site-footer {
+  margin-top: var(--space-8);
+  border-top: 1px solid var(--border);
+  background-color: var(--card);
+}
+
+.site-footer-inner {
+  padding-top: var(--space-7);
+  padding-bottom: var(--space-5);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.6fr repeat(3, 1fr);
+  gap: var(--space-6);
+}
+
+/* ---------- 品牌 ---------- */
+.footer-brand-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.footer-brand-zit {
+  background: linear-gradient(90deg, var(--primary), var(--accent-purple));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.footer-brand-desc {
+  margin-top: var(--space-3);
+  max-width: 280px;
+  color: var(--muted);
+  font-size: var(--font-small);
+  line-height: 1.7;
+}
+
+/* ---------- 链接列 ---------- */
+.footer-col-title {
+  margin-bottom: var(--space-4);
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.footer-col li + li {
+  margin-top: var(--space-3);
+}
+
+.footer-col a {
+  color: var(--muted);
+  font-size: var(--font-small);
+  transition: color var(--duration-fast) var(--ease);
+}
+
+.footer-col a:hover {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+/* ---------- 底部 ---------- */
+.footer-bottom {
+  margin-top: var(--space-7);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: var(--font-caption);
+}
+
+/* ============================================================
+   响应式
+   ============================================================ */
+@media (max-width: 960px) {
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-5) var(--space-6);
+  }
+
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+}

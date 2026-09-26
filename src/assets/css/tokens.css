@@ -1,0 +1,163 @@
+/* ============================================================
+   ZIT-CoCo-Community Design Tokens
+   浅色为默认（:root）；深色跟随系统；预留 [data-theme] 覆盖
+   ============================================================ */
+
+:root {
+  color-scheme: light;
+
+  /* ---------- 颜色：表面与文字 ---------- */
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --muted: #64748b;
+  --muted-foreground: #64748b;
+  --muted-background: #f1f5f9;
+  --border: #e2e8f0;
+  --input: #cbd5e1;
+  --overlay: rgba(15, 23, 42, 0.45);
+
+  /* ---------- 颜色：品牌 ---------- */
+  --primary: #1976d2;
+  --primary-hover: #1565c0;
+  --primary-active: #0d47a1;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-hover: #e2e8f0;
+  --secondary-foreground: #0f172a;
+  --accent-cyan: #06b6d4;
+  --accent-purple: #8b5cf6;
+  --ring: rgba(25, 118, 210, 0.35);
+
+  /* ---------- 代码（代码块两套主题均为深色） ---------- */
+  --code-background: #0f1115;
+  --code-foreground: #e6edf3;
+  --code-header: #181b21;
+  --code-border: #2a2f38;
+  --code-muted: #8b949e;
+  --inline-code-background: rgba(25, 118, 210, 0.1);
+  --inline-code-foreground: #1d4ed8;
+
+  /* ---------- 间距阶梯 ---------- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* ---------- 圆角 ---------- */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* ---------- 阴影（克制使用） ---------- */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 28px rgba(15, 23, 42, 0.12);
+
+  /* ---------- 字体尺寸阶梯 ---------- */
+  --font-display: 2.5rem; /* 40 */
+  --font-h1: 1.875rem; /* 30 */
+  --font-h2: 1.5rem; /* 24 */
+  --font-h3: 1.1875rem; /* 19 */
+  --font-body: 0.9375rem; /* 15 */
+  --font-small: 0.875rem; /* 14 */
+  --font-caption: 0.75rem; /* 12 */
+
+  /* ---------- 字体族 ---------- */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+    sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+
+  /* ---------- 布局 ---------- */
+  --container-width: 1200px;
+  --header-height: 60px;
+
+  /* ---------- 动效 ---------- */
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 250ms;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================================
+   深色：跟随系统（未显式 data-theme="light" 时）
+   ============================================================ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --background: #0f1115;
+    --foreground: #e6eaf2;
+    --card: #181b21;
+    --card-foreground: #e6eaf2;
+    --muted: #939ba9;
+    --muted-foreground: #939ba9;
+    --muted-background: #1f242d;
+    --border: #262b33;
+    --input: #333945;
+    --overlay: rgba(2, 4, 9, 0.6);
+
+    --primary: #42a5f5;
+    --primary-hover: #64b5f6;
+    --primary-active: #90caf9;
+    --primary-foreground: #0b1220;
+    --secondary: #1f242d;
+    --secondary-hover: #2a303b;
+    --secondary-foreground: #e6eaf2;
+    --ring: rgba(66, 165, 245, 0.35);
+
+    --inline-code-background: rgba(66, 165, 245, 0.16);
+    --inline-code-foreground: #90caf9;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.45);
+    --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* ============================================================
+   预留：显式主题覆盖（未来 Header 切换器使用）
+   ============================================================ */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --background: #0f1115;
+  --foreground: #e6eaf2;
+  --card: #181b21;
+  --card-foreground: #e6eaf2;
+  --muted: #939ba9;
+  --muted-foreground: #939ba9;
+  --muted-background: #1f242d;
+  --border: #262b33;
+  --input: #333945;
+  --overlay: rgba(2, 4, 9, 0.6);
+
+  --primary: #42a5f5;
+  --primary-hover: #64b5f6;
+  --primary-active: #90caf9;
+  --primary-foreground: #0b1220;
+  --secondary: #1f242d;
+  --secondary-hover: #2a303b;
+  --secondary-foreground: #e6eaf2;
+  --ring: rgba(66, 165, 245, 0.35);
+
+  --inline-code-background: rgba(66, 165, 245, 0.16);
+  --inline-code-foreground: #90caf9;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.5);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}

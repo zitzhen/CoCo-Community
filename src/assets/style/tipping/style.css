@@ -6,8 +6,8 @@
 }
 
 body {
-	background-color: #f5f5f5;
-	color: #333;
+	background-color: var(--background);
+	color: var(--foreground);
 	line-height: 1.6;
 	padding: 20px;
 }
@@ -15,7 +15,7 @@ body {
 .container {
 	max-width: 600px;
 	margin: 0 auto;
-	background: white;
+	background: var(--card);
 	border-radius: 12px;
 	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 	overflow: hidden;
@@ -23,7 +23,7 @@ body {
 }
 
 header {
-	background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+	background: linear-gradient(135deg, var(--accent-purple) 0%, var(--primary) 100%);
 	color: white;
 	padding: 30px 20px;
 	text-align: center;
@@ -46,7 +46,7 @@ h1 {
 .tipping_intro {
 	text-align: center;
 	margin-bottom: 30px;
-	color: #666;
+	color: var(--muted);
 }
 
 .payment-methods {
@@ -58,24 +58,18 @@ h1 {
 }
 
 .method {
-	background: white;
+	background: var(--card);
 	border-radius: 10px;
 	padding: 15px;
 	width: 160px;
 	text-align: center;
 	cursor: pointer;
-	transition: all 0.3s ease;
-	border: 1px solid #eee;
-}
-
-.method:hover {
-	transform: translateY(-5px);
-	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+	border: 1px solid var(--border);
 }
 
 .method.active {
-	border-color: #2575fc;
-	background-color: #f0f7ff;
+	border-color: var(--primary);
+	background-color: color-mix(in srgb, var(--primary) 10%, var(--card));
 }
 
 .method-icon {
@@ -86,7 +80,7 @@ h1 {
 	align-items: center;
 	justify-content: center;
 	border-radius: 12px;
-	background: #f8f8f8;
+	background: var(--muted-background);
 }
 
 .method-icon img {
@@ -118,7 +112,7 @@ h1 {
 
 .qr-container.active {
 	display: block;
-	animation: fadeIn 0.5s ease;
+	animation: fadeIn 0.25s ease;
 }
 
 .qr-code {
@@ -126,8 +120,8 @@ h1 {
 	height: 200px;
 	margin: 0 auto 15px;
 	padding: 10px;
-	background: white;
-	border: 1px solid #eee;
+	background: var(--card);
+	border: 1px solid var(--border);
 	border-radius: 8px;
 }
 
@@ -138,7 +132,7 @@ h1 {
 }
 
 .hint {
-	color: #888;
+	color: var(--muted);
 	font-size: 14px;
 	margin-top: 10px;
 }
@@ -146,7 +140,7 @@ h1 {
 .tipping_footer {
 	text-align: center;
 	margin-top: 30px;
-	color: #999;
+	color: var(--muted);
 	font-size: 14px;
 }
 

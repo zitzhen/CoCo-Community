@@ -1,0 +1,7 @@
+# 本地开发环境变量模板。复制为 .dev.vars 并填入真实值（.dev.vars 已 gitignore，勿提交）
+# GitHub OAuth App
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+# JWT 签名密钥（HS256）
+COCO_COMMUNITY_JWT=
+COCO_COMMUNITY_JWT_P=

@@ -1,6 +1,6 @@
 :root{
-    --primary-color: #3498db;
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --primary-color: var(--primary);
+    --shadow: var(--shadow-sm);
 }
 
 * {
@@ -11,8 +11,8 @@
 }
 
 body {
-    background-color: #f5f5f5;
-    color: #333;
+    background-color: var(--background);
+    color: var(--foreground);
     line-height: 1.6;
 }
 
@@ -25,7 +25,7 @@ body {
 .profile-header {
     display: flex;
     align-items: center;
-    background-color: #fff;
+    background-color: var(--card);
     padding: 30px;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -38,17 +38,17 @@ body {
     border-radius: 50%;
     object-fit: cover;
     margin-right: 30px;
-    border: 3px solid #f0f0f0;
+    border: 3px solid var(--border);
 }
 
 .user-info h1 {
     font-size: 28px;
     margin-bottom: 10px;
-    color: #333;
+    color: var(--foreground);
 }
 
 .user-info p {
-    color: #666;
+    color: var(--muted);
     margin-bottom: 15px;
 }
 
@@ -64,17 +64,17 @@ body {
 .stat-number {
     font-size: 20px;
     font-weight: bold;
-    color: #2c3e50;
+    color: var(--foreground);
 }
 
 .stat-label {
     font-size: 14px;
-    color: #7f8c8d;
+    color: var(--muted);
 }
 
 .tabs {
     display: flex;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--border);
     margin-bottom: 20px;
 }
 
@@ -82,24 +82,24 @@ body {
     padding: 12px 25px;
     cursor: pointer;
     font-weight: 600;
-    color: #7f8c8d;
-    transition: all 0.3s ease;
+    color: var(--muted);
+    transition: all 0.25s ease;
     border-bottom: 3px solid transparent;
 }
 
 .tab.active {
-    color: #3498db;
-    border-bottom: 3px solid #3498db;
+    color: var(--primary);
+    border-bottom: 3px solid var(--primary);
 }
 
 .tab:hover:not(.active) {
-    color: #555;
-    background-color: #f9f9f9;
+    color: var(--muted);
+    background-color: var(--muted-background);
 }
 
 .tab-content {
     display: none;
-    background-color: #fff;
+    background-color: var(--card);
     padding: 25px;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -113,8 +113,8 @@ body {
     font-size: 22px;
     margin-bottom: 20px;
     padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
-    color: #2c3e50;
+    border-bottom: 1px solid var(--border);
+    color: var(--foreground);
 }
 
 /* 文章列表样式 */
@@ -125,15 +125,9 @@ body {
 }
 
 .article-card {
-    border: 1px solid #eee;
+    border: 1px solid var(--border);
     border-radius: 6px;
     overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.article-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .article-image {
@@ -149,11 +143,11 @@ body {
 .article-title {
     font-size: 18px;
     margin-bottom: 10px;
-    color: #2c3e50;
+    color: var(--foreground);
 }
 
 .article-excerpt {
-    color: #666;
+    color: var(--muted);
     font-size: 14px;
     margin-bottom: 15px;
     display: -webkit-box;
@@ -166,7 +160,7 @@ body {
     display: flex;
     justify-content: space-between;
     font-size: 12px;
-    color: #95a5a6;
+    color: var(--muted);
 }
 
 /* 文件列表样式 */
@@ -180,13 +174,13 @@ body {
     display: flex;
     align-items: center;
     padding: 15px;
-    background-color: #f9f9f9;
+    background-color: var(--muted-background);
     border-radius: 6px;
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
 }
 
 .file-card:hover {
-    background-color: #f0f0f0;
+    background-color: var(--muted-background);
 }
 
 .file-icon {
@@ -196,9 +190,9 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #e1f0fa;
+    background-color: color-mix(in srgb, var(--primary) 10%, var(--card));
     border-radius: 4px;
-    color: #3498db;
+    color: var(--primary);
     font-size: 20px;
 }
 
@@ -209,12 +203,12 @@ body {
 .file-name {
     font-weight: 600;
     margin-bottom: 5px;
-    color: #2c3e50;
+    color: var(--foreground);
 }
 
 .file-meta {
     font-size: 12px;
-    color: #95a5a6;
+    color: var(--muted);
 }
 
 .file-actions {
@@ -222,31 +216,31 @@ body {
 }
 
 .download-btn {
-    background-color: #3498db;
-    color: white;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
     border: none;
     padding: 5px 10px;
     border-radius: 4px;
     cursor: pointer;
     font-size: 12px;
-    transition: background-color 0.3s;
+    transition: background-color 0.25s;
 }
 
 .download-btn:hover {
-    background-color: #2980b9;
+    background-color: var(--primary-hover);
 }
 
 /* 空状态提示 */
 .empty-state {
     text-align: center;
     padding: 50px 20px;
-    color: #95a5a6;
+    color: var(--muted);
 }
 
 .empty-state i {
     font-size: 50px;
     margin-bottom: 20px;
-    color: #bdc3c7;
+    color: var(--muted);
 }
 
 .empty-state p {
@@ -280,7 +274,7 @@ body {
 
 header {
     background-color: var(--primary-color);
-    color: white;
+    color: var(--primary-foreground);
     padding: 1.5rem 0;
     text-align: center;
     box-shadow: var(--shadow);
@@ -296,6 +290,6 @@ footer {
     text-align: center;
     padding: 2rem 0;
     margin-top: 2rem;
-    color: #666;
-    border-top: 1px solid #eee;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
 }
