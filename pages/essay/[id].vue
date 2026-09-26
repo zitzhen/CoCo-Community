@@ -9,10 +9,10 @@
               <span class="author">作者：{{ essay.author }}</span>
               <span class="date">发布时间：{{ formatDate(essay.publication_time) }}</span>
               <div class="essay-stats">
-                <span><i class="fas fa-eye"></i> {{ essay.pageviews }} 浏览</span>
-                <span><i class="fas fa-thumbs-up"></i> {{ essay.Like }} 点赞</span>
-                <span><i class="fas fa-star"></i> {{ essay.collect }} 收藏</span>
-                <span><i class="fas fa-comment"></i> {{ essay.comments || 0 }} 评论</span>
+                <span><i aria-hidden="true" class="fas fa-eye"></i> {{ essay.pageviews }} 浏览</span>
+                <span><i aria-hidden="true" class="fas fa-thumbs-up"></i> {{ essay.Like }} 点赞</span>
+                <span><i aria-hidden="true" class="fas fa-star"></i> {{ essay.collect }} 收藏</span>
+                <span><i aria-hidden="true" class="fas fa-comment"></i> {{ essay.comments || 0 }} 评论</span>
               </div>
             </div>
           </div>
@@ -22,11 +22,11 @@
           <!-- 文章底部的点赞和收藏按钮 -->
           <div class="essay-bottom-actions">
             <button @click="toggleLike" :class="['essay-action-btn', 'like-btn', { 'liked': isLiked }]">
-              <i :class="['fas', isLiked ? 'fa-thumbs-up' : 'fa-thumbs-up']"></i>
+              <i aria-hidden="true" :class="['fas', isLiked ? 'fa-thumbs-up' : 'fa-thumbs-up']"></i>
               <span>{{ isLiked ? '已点赞' : '点赞' }} ({{ essay.Like || 0 }})</span>
             </button>
             <button @click="toggleCollect" :class="['essay-action-btn', 'collect-btn', { 'collected': isCollected }]">
-              <i :class="['fas', isCollected ? 'fa-star' : 'fa-star']"></i>
+              <i aria-hidden="true" :class="['fas', isCollected ? 'fa-star' : 'fa-star']"></i>
               <span>{{ isCollected ? '已收藏' : '收藏' }} ({{ essay.collect || 0 }})</span>
             </button>
           </div>
@@ -41,8 +41,10 @@
           <!-- 评论输入框 -->
           <div class="essay-comment-input-area" v-if="isLoggedIn">
             <div class="essay-comment-input-container">
-              <textarea 
-                v-model="newComment" 
+              <label class="sr-only" for="essay-comment-input">评论内容</label>
+              <textarea
+                id="essay-comment-input"
+                v-model="newComment"
                 placeholder="写下你的评论..."
                 class="essay-comment-input"
                 rows="3"
@@ -77,7 +79,7 @@
                 <div class="essay-comment-actions">
                   <!--
                   <button class="essay-like-comment-btn">
-                    <i class="fas fa-thumbs-up"></i> {{ comment.likes || 0 }}
+                    <i aria-hidden="true" class="fas fa-thumbs-up"></i> {{ comment.likes || 0 }}
                   </button>
                   -->
                 </div>
@@ -90,7 +92,7 @@
       <div class="essay-sidebar">
         <!-- 作者信息卡片 -->
         <div class="essay-creator-card">
-          <h3 class="essay-section-title"><i class="fas fa-user"></i> 作者信息</h3>
+          <h3 class="essay-section-title"><i aria-hidden="true" class="fas fa-user"></i> 作者信息</h3>
           <div class="essay-creator-info">
             <img :src="authorAvatar" :alt="essay.author" class="essay-creator-avatar" />
             <div><h4 class="essay-creator-name">{{ essay.author }}</h4></div>
@@ -98,7 +100,7 @@
           <div class="essay-creator-bio"><p>{{ authorBio }}</p></div>
         </div>
         <div class="essay-stats-card">
-          <h3 class="essay-section-title"><i class="fas fa-chart-bar"></i> 文章统计</h3>
+          <h3 class="essay-section-title"><i aria-hidden="true" class="fas fa-chart-bar"></i> 文章统计</h3>
           <div class="essay-stat-item">
             <span class="essay-stat-label">发布时间</span>
             <span class="essay-stat-value">{{ formatDate(essay.publication_time) }}</span>
@@ -117,11 +119,11 @@
           </div>
           <div class="essay-actions">
             <button @click="toggleLike" :class="['essay-action-btn', 'like-btn', { 'liked': isLiked }]">
-              <i :class="['fas', isLiked ? 'fa-thumbs-up' : 'fa-thumbs-up']"></i>
+              <i aria-hidden="true" :class="['fas', isLiked ? 'fa-thumbs-up' : 'fa-thumbs-up']"></i>
               <span>{{ isLiked ? '已点赞' : '点赞' }}</span>
             </button>
             <button @click="toggleCollect" :class="['essay-action-btn', 'collect-btn', { 'collected': isCollected }]">
-              <i :class="['fas', isCollected ? 'fa-star' : 'fa-star']"></i>
+              <i aria-hidden="true" :class="['fas', isCollected ? 'fa-star' : 'fa-star']"></i>
               <span>{{ isCollected ? '已收藏' : '收藏' }}</span>
             </button>
           </div>
@@ -135,7 +137,7 @@
     <div class="modal" @click.stop>
       <div class="modal-header">
         <h2 class="modal-title">此功能暂不可用</h2>
-        <button class="close-btn" @click="clonetest">×</button>
+        <button class="close-btn" aria-label="关闭" @click="clonetest">×</button>
       </div>
       <div class="modal-body">
         <p>此功能可能正在开发/测试/维护</p>
@@ -152,7 +154,7 @@
     <div class="modal" @click.stop>
       <div class="modal-header">
         <h2 class="modal-title">请登录</h2>
-        <button class="close-btn" @click="clonelogintip">×</button>
+        <button class="close-btn" aria-label="关闭" @click="clonelogintip">×</button>
       </div>
       <div class="modal-body">
         <p>抱歉，您需要登录才能 点赞/收藏/发表评论</p>
@@ -470,48 +472,48 @@ export default {
 @import url('@/assets/css/popup.css');
 @media (prefers-color-scheme: dark) {
   .essay-detail {
-        background-color: #2d2d2d;
-        color: #fff;
+        background-color: var(--code-header);
+        color: var(--primary-foreground);
     }
     .essay-stat-label {
-        color: #aaa;
+        color: var(--code-foreground);
     }
     .essay-stat-item {
-        border-color: #555;
+        border-color: var(--code-border);
     }
     .essay-stats-card {
-        background-color: #2d2d2d;
-        border-color: #555;
+        background-color: var(--code-header);
+        border-color: var(--code-border);
     }
     .essay-creator-bio {
-        color: #ccc;
+        color: var(--code-foreground);
     }
     .essay-creator-card {
-        background-color: #2d2d2d;
-        border-color: #555;
+        background-color: var(--code-header);
+        border-color: var(--code-border);
     }
     .essay-author-info-section {
-        color: #fff;
+        color: var(--primary-foreground);
     }
     .essay-comment-login-prompt {
-        background-color: #3d3d3d;
-        color: #ccc;
+        background-color: var(--code-header);
+        color: var(--code-foreground);
     }
     .essay-comment-input {
-        background-color: #3d3d3d;
-        color: #fff;
-        border-color: #555;
+        background-color: var(--code-header);
+        color: var(--primary-foreground);
+        border-color: var(--code-border);
     }
     .essay-comment-input:focus {
         border-color: var(--primary-color);
         box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.2);
     }
     .essay-comments-section {
-        background-color: #2d2d2d;
-        color: #fff;
+        background-color: var(--code-header);
+        color: var(--primary-foreground);
     }
     .essay-content {
-        color: #e0e0e0;
+        color: var(--code-foreground);
     }
     .essay-content h1,
     .essay-content h2,
@@ -519,7 +521,7 @@ export default {
     .essay-content h4,
     .essay-content h5,
     .essay-content h6 {
-        color: #fff;
+        color: var(--primary-foreground);
     }
 }
 </style>

@@ -1,654 +1,273 @@
 <template>
-    <!-- 搜索页面主体 -->
-    <div class="search-page-container">
-      <div class="search-container">
-        <div class="search-bar">
-          <input 
-            type="text" 
-            id="globalSearchInput" 
-            placeholder="搜索控件、文章、用户..." 
-            v-model="searchTerm" 
-            @keyup.enter="performSearch"
-          >
-          <button id="globalSearchBtn" @click="performSearch">
-            <i class="fas fa-search"></i> 搜索
-          </button>
-        </div>
-        
-        <!-- 搜索结果分类 -->
-        <div class="search-filters" v-if="hasResults">
-          <div 
-            class="filter-item" 
-            :class="{ active: activeTab === 'all' }"
-            @click="switchTab('all')"
-          >
-            全部 ({{ totalResults }})
-          </div>
-          <div 
-            class="filter-item" 
-            :class="{ active: activeTab === 'controls' }"
-            @click="switchTab('controls')"
-          >
-            控件 ({{ searchResults.controls.length }})
-          </div>
-          <div 
-            class="filter-item" 
-            :class="{ active: activeTab === 'articles' }"
-            @click="switchTab('articles')"
-          >
-            文章 ({{ searchResults.articles.length }})
-          </div>
-          <div 
-            class="filter-item" 
-            :class="{ active: activeTab === 'users' }"
-            @click="switchTab('users')"
-          >
-            用户 ({{ searchResults.users.length }})
-          </div>
-        </div>
-        
-        <!-- 加载状态 -->
-        <div class="loading" v-if="loading">
-          <p>搜索中，请稍候...</p>
-        </div>
-        
-        <!-- 搜索结果 -->
-        <div class="search-results" v-if="hasResults && !loading">
-          <div class="results-header">
-            <h2>搜索结果</h2>
-            <p>找到 {{ totalResults }} 个结果 (用时 {{ searchTime }} ms)</p>
-          </div>
-          
-          <!-- 控件结果 -->
-          <div class="result-section" v-if="activeTab === 'all' || activeTab === 'controls'">
-            <h3 v-if="searchResults.controls.length > 0">控件</h3>
-            <div class="search-control-list" id="search-controlList">
-              <div class="search-control-card" v-for="control in searchResults.controls" :key="control.name">
-                <div class="search-control-header">
-                  <div class="search-control-icon">
-                    <i class="fas fa-search-control-code"></i>
-                  </div>
-                  <div class="search-control-meta">
-                    <div class="search-control-name">{{ control.name }}</div>
-                    <div class="search-control-author">作者：{{ control.author }}</div>
-                  </div>
-                </div>
+  <div class="search-page page-container">
+    <header class="search-page-header">
+      <h1 class="search-page-title">搜索</h1>
+      <p class="search-page-sub">在控件、文章与开发者中查找你需要的资源</p>
 
-                <div class="search-control-stats">
-                  <div><i class="fas fa-search-control"></i> {{ control.size }}</div>
-                  <div><i class="fas fa-download"></i> {{ control.downloads }}</div>
-                  <div><i class="fas fa-eye"></i> {{ control.Pageviews }}</div>
-                </div>
+      <form class="search-page-bar" role="search" @submit.prevent="performSearch">
+        <label for="globalSearchInput" class="sr-only">搜索控件、文章、用户</label>
+        <i class="fas fa-search" aria-hidden="true"></i>
+        <input
+          id="globalSearchInput"
+          v-model="searchTerm"
+          type="search"
+          placeholder="搜索控件、文章、用户…"
+          autocomplete="off"
+          @keyup.enter="performSearch"
+        />
+        <button type="submit" class="btn btn-primary" aria-label="搜索">
+          <i class="fas fa-search" aria-hidden="true"></i>
+          <span>搜索</span>
+        </button>
+      </form>
+    </header>
 
-                <div class="button-group">
-                  <a :href="control.url" class="icon-btn" title="下载">
-                    <i class="fas fa-download"></i>
-                  </a>
-                  <a :href="control.url" class="text-btn">
-                    <i class="fas fa-eye"></i> 去详情页面
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- 文章结果 -->
-          <div class="result-section" v-if="activeTab === 'all' || activeTab === 'articles' && searchResults.articles.length > 0">
-            <h3>文章</h3>
-            <div class="article-list">
-              <div class="article-item" v-for="article in searchResults.articles" :key="article.id">
-                <div class="article-header">
-                  <h3 class="article-title">{{ article.title }}</h3>
-                  <div class="article-meta">
-                    <span class="article-author">作者：{{ article.author }}</span>
-                    <span class="article-date">{{ formatDate(article.date) }}</span>
-                  </div>
-                </div>
-                <p class="article-excerpt">{{ article.excerpt }}</p>
-                <a :href="article.url" class="read-more">阅读更多</a>
-              </div>
-            </div>
-          </div>
-          
-          <!-- 用户结果 -->
-          <div class="result-section" v-if="activeTab === 'all' || activeTab === 'users' && searchResults.users.length > 0">
-            <h3>用户</h3>
-            <div class="user-list">
-              <div class="user-item" v-for="user in searchResults.users" :key="user.id">
-                <img :src="user.avatar" :alt="user.name" class="user-avatar-small">
-                <div class="search-user-info">
-                  <div class="search-user-name">{{ user.name }}</div>
-                  <div class="user-login">@{{ user.login }}</div>
-                </div>
-                <a :href="user.url" class="view-prosearch-control">查看资料</a>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- 无结果提示 -->
-        <div class="no-results" v-if="!loading && !hasResults">
-          <h2>未找到相关结果</h2>
-          <p>尝试使用其他关键词搜索</p>
-        </div>
-        
-        <!-- 搜索历史 -->
-        <div class="search-suggestions" v-if="!searchTerm && !loading">
-          <h3>热门搜索</h3>
-          <div class="suggestions-list">
-            <span 
-              class="suggestion-item" 
-              v-for="suggestion in popularSearches" 
-              :key="suggestion"
-              @click="searchWithTerm(suggestion)"
-            >
-              {{ suggestion }}
-            </span>
-          </div>
-        </div>
+    <!-- 热门搜索 -->
+    <section v-if="!hasSearched && popularSearches.length" class="search-popular">
+      <h2 class="search-popular-title">热门搜索</h2>
+      <div class="search-popular-list">
+        <button
+          v-for="suggestion in popularSearches"
+          :key="suggestion"
+          type="button"
+          class="pill search-popular-item"
+          @click="searchWithTerm(suggestion)"
+        >
+          {{ suggestion }}
+        </button>
       </div>
+    </section>
+
+    <!-- 结果分类 tabs -->
+    <div v-if="hasResults" class="search-tabs" role="tablist" aria-label="搜索结果分类">
+      <button
+        v-for="tab in tabs"
+        :key="tab.key"
+        type="button"
+        role="tab"
+        class="search-tab"
+        :class="{ active: activeTab === tab.key }"
+        :aria-selected="activeTab === tab.key"
+        @click="activeTab = tab.key"
+      >
+        {{ tab.label }}
+        <span class="search-tab-count">{{ tab.count }}</span>
+      </button>
     </div>
+
+    <!-- 搜索中 -->
+    <div v-if="loading" class="search-loading" role="status">
+      <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
+      搜索中，请稍候…
+    </div>
+
+    <template v-if="hasSearched && !loading">
+      <div class="search-meta">
+        找到 {{ totalResults }} 个结果（用时 {{ searchTime }} ms）
+      </div>
+
+      <!-- 控件 -->
+      <section
+        v-if="(activeTab === 'all' || activeTab === 'controls') && searchResults.controls.length"
+        class="search-result-section"
+      >
+        <h2 class="search-result-title">控件</h2>
+        <div class="resource-grid">
+          <ResourceCard
+            v-for="control in searchResults.controls"
+            :key="control.name"
+            v-bind="control"
+          />
+        </div>
+      </section>
+
+      <!-- 文章 -->
+      <section
+        v-if="(activeTab === 'all' || activeTab === 'articles') && searchResults.articles.length"
+        class="search-result-section"
+      >
+        <h2 class="search-result-title">文章</h2>
+        <ul class="search-article-list">
+          <li v-for="article in searchResults.articles" :key="article.id">
+            <NuxtLink :to="article.url" class="search-article-item">
+              <span class="search-article-name">{{ article.title }}</span>
+              <span class="search-article-info">
+                {{ article.author }} · {{ formatDate(article.date) }}
+              </span>
+              <span class="search-article-excerpt">{{ article.excerpt }}</span>
+            </NuxtLink>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 用户 -->
+      <section
+        v-if="(activeTab === 'all' || activeTab === 'users') && searchResults.users.length"
+        class="search-result-section"
+      >
+        <h2 class="search-result-title">用户</h2>
+        <ul class="search-user-list">
+          <li v-for="user in searchResults.users" :key="user.id">
+            <NuxtLink :to="user.url" class="search-user-item">
+              <img :src="user.avatar" :alt="`${user.name} 的头像`" class="search-user-avatar" loading="lazy" />
+              <span class="search-user-meta">
+                <span class="search-user-name">{{ user.name }}</span>
+                <span class="search-user-login">@{{ user.login }}</span>
+              </span>
+              <span class="search-user-go">
+                查看资料 <i class="fas fa-chevron-right" aria-hidden="true"></i>
+              </span>
+            </NuxtLink>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 无结果 -->
+      <div v-if="!hasResults" class="search-empty">
+        <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+        <h2>未找到相关结果</h2>
+        <p>尝试使用其他关键词，或检查拼写</p>
+      </div>
+    </template>
+  </div>
 </template>
 
 <script setup>
+import ResourceCard from '@/components/ResourceCard.vue'
+import essaylistJson from '../../public/essaylist.json'
+import userlistJson from '../../public/userlist.json'
+
 const route = useRoute()
 const searchTerm = ref('')
-const searchResults = ref({
-  controls: [],
-  articles: [],
-  users: []
-})
+const hasSearched = ref(false)
+const searchResults = ref({ controls: [], articles: [], users: [] })
 const loading = ref(false)
 const activeTab = ref('all')
 const searchTime = ref(0)
 const popularSearches = ref([])
 
-const hasResults = computed(() =>
-  searchResults.value.controls.length > 0 ||
-  searchResults.value.articles.length > 0 ||
-  searchResults.value.users.length > 0
-)
-const totalResults = computed(() =>
-  searchResults.value.controls.length +
-  searchResults.value.articles.length +
-  searchResults.value.users.length
+const hasResults = computed(
+  () =>
+    searchResults.value.controls.length > 0 ||
+    searchResults.value.articles.length > 0 ||
+    searchResults.value.users.length > 0
 )
 
-// SSR：一次性取全量数据源（useFetch 结果会在服务端与客户端间共享），搜索时本地过滤
-// 静态 JSON 在构建期打包进 bundle（服务端内部 fetch 静态文件会落到渲染层返回 HTML）
-import essaylistJson from '../../public/essaylist.json'
-import userlistJson from '../../public/userlist.json'
+const totalResults = computed(
+  () =>
+    searchResults.value.controls.length +
+    searchResults.value.articles.length +
+    searchResults.value.users.length
+)
 
-const { data: controlData } = await useFetch('/api/control-list', { key: 'control-list' })
+const tabs = computed(() => [
+  { key: 'all', label: '全部', count: totalResults.value },
+  { key: 'controls', label: '控件', count: searchResults.value.controls.length },
+  { key: 'articles', label: '文章', count: searchResults.value.articles.length },
+  { key: 'users', label: '用户', count: searchResults.value.users.length },
+])
+
+// 全量控件数据（与首页共享缓存）
+const { data: controlData } = await useFetch('/api/control-list', {
+  key: 'control-list',
+})
 
 function performSearch() {
-  const term = searchTerm.value.trim();
-  if (!term) return;
+  const term = searchTerm.value.trim()
+  if (!term) return
 
-  loading.value = true;
-  const startTime = Date.now();
-  const lower = term.toLowerCase();
+  loading.value = true
+  const startTime = Date.now()
+  const lower = term.toLowerCase()
 
-  // 搜索控件
+  // 搜索控件（名称/作者）
   const controls = (controlData.value?.list || [])
-    .filter(control =>
-      control.name?.toLowerCase().includes(lower) ||
-      control.author?.toLowerCase().includes(lower)
+    .filter(
+      (control) =>
+        control.name?.toLowerCase().includes(lower) ||
+        control.author?.toLowerCase().includes(lower)
     )
-    .map(control => ({
-      id: control.id,
+    .map((control) => ({
       name: control.name,
       author: control.author,
       size: control.size,
       downloads: control.downloads,
+      likes: control.likes,
       Pageviews: control.Pageviews,
-      url: `/control/${control.name}`
-    }));
+    }))
 
-  // 搜索文章
+  // 搜索文章（essaylist.json 字段：name/author/publication_time/content）
   const articles = (essaylistJson.list || [])
-    .filter(article =>
-      (article.title && article.title.toLowerCase().includes(lower)) ||
-      (article.author && article.author.toLowerCase().includes(lower)) ||
-      (article.content && article.content.toLowerCase().includes(lower))
+    .filter(
+      (article) =>
+        (article.name && article.name.toLowerCase().includes(lower)) ||
+        (article.author && article.author.toLowerCase().includes(lower)) ||
+        (article.content && article.content.toLowerCase().includes(lower))
     )
-    .map(article => {
-      const id = article.id || article.title?.toLowerCase().replace(/\s+/g, '-');
+    .map((article) => {
+      const id = article.id || article.name?.toLowerCase().replace(/\s+/g, '-')
+      const excerpt = article.content
+        ? article.content.length > 100
+          ? article.content.substring(0, 100) + '…'
+          : article.content
+        : '无内容预览'
       return {
         id,
-        title: article.title || '无标题',
+        title: article.name || '无标题',
         author: article.author || '未知作者',
-        date: article.date || '',
-        excerpt: article.content ? (article.content.length > 100 ? article.content.substring(0, 100) + '...' : article.content) : '无内容预览',
-        url: `/essay/${id}`
-      };
-    });
+        date: article.publication_time || '',
+        excerpt,
+        url: `/essay/${id}`,
+      }
+    })
 
-  // 搜索用户（userlist.json 的字段是 username/nickname）
+  // 搜索用户（userlist.json 字段：username/nickname/avatar）
   const users = (userlistJson.list || [])
-    .filter(user =>
-      (user.username && user.username.toLowerCase().includes(lower)) ||
-      (user.nickname && user.nickname.toLowerCase().includes(lower))
+    .filter(
+      (user) =>
+        (user.username && user.username.toLowerCase().includes(lower)) ||
+        (user.nickname && user.nickname.toLowerCase().includes(lower))
     )
-    .map(user => ({
+    .map((user) => ({
       id: user.username || user.nickname,
       name: user.nickname || user.username || '未知用户',
       login: user.username || 'unknown',
       avatar: user.avatar || '/images/user.png',
-      url: `/user/${user.username}`
-    }));
+      url: `/user/${encodeURIComponent(user.username || '')}`,
+    }))
 
-  searchResults.value = { controls, articles, users };
-  searchTime.value = Date.now() - startTime;
-  loading.value = false;
+  searchResults.value = { controls, articles, users }
+  searchTime.value = Date.now() - startTime
+  activeTab.value = 'all'
+  hasSearched.value = true
+  loading.value = false
 }
 
 function searchWithTerm(term) {
-  searchTerm.value = term;
-  performSearch();
-}
-
-function switchTab(tabName) {
-  activeTab.value = tabName;
-}
-
-function goHome(event) {
-  event.preventDefault();
-  navigateTo('/');
+  searchTerm.value = term
+  performSearch()
 }
 
 function formatDate(dateString) {
-  if (!dateString) return '';
-  const date = new Date(dateString);
+  if (!dateString) return '日期未知'
+  const date = new Date(dateString)
+  if (Number.isNaN(date.getTime())) return '日期未知'
   return date.toLocaleDateString('zh-CN', {
     year: 'numeric',
     month: '2-digit',
-    day: '2-digit'
-  });
+    day: '2-digit',
+  })
 }
 
-// SSR：URL 带搜索参数时服务端直接渲染结果
+// SSR：URL 带 q 参数时服务端直接渲染结果
 if (route.query.q) {
-  searchTerm.value = String(route.query.q);
-  performSearch();
+  searchTerm.value = String(route.query.q)
+  performSearch()
 }
+
+useHead({ title: '搜索|ZIT-CoCo-Community' })
 </script>
 
-<style scoped>
-@import url(@/assets/css/dark.css);
-
-.search-page-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem;
-}
-
-.search-container {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.search-bar {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 2rem;
-}
-
-.search-bar input {
-  flex: 1;
-  padding: 12px 16px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 16px;
-  transition: border-color 0.3s ease;
-}
-
-.search-bar input:focus {
-  outline: none;
-  border-color: #3498db;
-  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-}
-
-.search-bar button {
-  padding: 12px 20px;
-  background-color: #3498db;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s ease;
-}
-
-.search-bar button:hover {
-  background-color: #2980b9;
-}
-
-.search-filters {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.filter-item {
-  padding: 8px 16px;
-  background-color: #f0f4f8;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 14px;
-}
-
-.filter-item:hover {
-  background-color: #e1e8ed;
-}
-
-.filter-item.active {
-  background-color: #3498db;
-  color: white;
-}
-
-.results-header {
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #e1e4e8;
-}
-
-.results-header h2 {
-  margin: 0 0 0.5rem 0;
-  color: #2c3e50;
-}
-
-.results-header p {
-  margin: 0;
-  color: #7f8c8d;
-  font-size: 0.9rem;
-}
-
-.result-section {
-  margin-bottom: 2rem;
-}
-
-.result-section h3 {
-  margin-bottom: 1rem;
-  color: #2c3e50;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #e1e4e8;
-}
-
-.search-control-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.search-control-card {
-  background: white;
-  border-radius: 8px;
-  padding: 1rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.search-control-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-}
-
-.search-control-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex: 1;
-}
-
-.search-control-icon {
-  width: 40px;
-  height: 40px;
-  background-color: #f0f4f8;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #3498db;
-}
-
-.search-control-meta .search-control-name {
-  font-weight: 600;
-  color: #2c3e50;
-  margin-bottom: 0.2rem;
-}
-
-.search-control-meta .search-control-author {
-  color: #7f8c8d;
-  font-size: 0.9rem;
-}
-
-.search-control-stats {
-  display: flex;
-  gap: 1.5rem;
-  margin-right: 1rem;
-  color: #7f8c8d;
-  font-size: 0.9rem;
-}
-
-.button-group {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.icon-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background-color: #f0f4f8;
-  color: #3498db;
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
-
-.icon-btn:hover {
-  background-color: #3498db;
-  color: white;
-}
-
-.text-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background-color: #3498db;
-  color: white;
-  text-decoration: none;
-  border-radius: 6px;
-  transition: background-color 0.3s ease;
-}
-
-.text-btn:hover {
-  background-color: #2980b9;
-}
-
-.article-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.article-item {
-  background: white;
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.article-header {
-  margin-bottom: 1rem;
-}
-
-.article-title {
-  margin: 0 0 0.5rem 0;
-  color: #2c3e50;
-  font-size: 1.2rem;
-}
-
-.article-meta {
-  display: flex;
-  gap: 1rem;
-  color: #7f8c8d;
-  font-size: 0.9rem;
-}
-
-.article-excerpt {
-  color: #586069;
-  line-height: 1.6;
-  margin-bottom: 1rem;
-}
-
-.read-more {
-  color: #3498db;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.read-more:hover {
-  text-decoration: underline;
-}
-
-.user-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.user-item {
-  display: flex;
-  align-items: center;
-  padding: 1rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.user-avatar-small {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  margin-right: 1rem;
-  object-fit: cover;
-}
-
-.search-user-info {
-  flex: 1;
-}
-
-.search-user-name {
-  font-weight: 600;
-  color: #2c3e50;
-  margin-bottom: 0.2rem;
-}
-
-.user-login {
-  color: #7f8c8d;
-  font-size: 0.9rem;
-}
-
-.view-prosearch-control {
-  padding: 0.5rem 1rem;
-  background-color: #f0f4f8;
-  color: #3498db;
-  text-decoration: none;
-  border-radius: 6px;
-  transition: background-color 0.3s ease;
-}
-
-.view-prosearch-control:hover {
-  background-color: #e1e8ed;
-}
-
-.loading {
-  text-align: center;
-  padding: 2rem;
-  color: #7f8c8d;
-}
-
-.no-results {
-  text-align: center;
-  padding: 3rem 1rem;
-  color: #7f8c8d;
-}
-
-.no-results h2 {
-  margin-bottom: 1rem;
-  color: #2c3e50;
-}
-
-.search-suggestions {
-  margin-top: 2rem;
-}
-
-.search-suggestions h3 {
-  margin-bottom: 1rem;
-  color: #2c3e50;
-}
-
-.suggestions-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.suggestion-item {
-  padding: 0.5rem 1rem;
-  background-color: #f0f4f8;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.suggestion-item:hover {
-  background-color: #3498db;
-  color: white;
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .search-bar {
-    flex-direction: column;
-  }
-  
-  .search-bar button {
-    width: 100%;
-  }
-  
-  .search-control-card {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-  
-  .search-control-stats {
-    align-self: flex-start;
-    margin-left: 3.5rem;
-  }
-  
-  .button-group {
-    align-self: flex-end;
-  }
-  
-  .filter-item {
-    padding: 6px 12px;
-    font-size: 12px;
-  }
-  
-  .search-page-container {
-    padding: 0.5rem;
-  }
-}
+<style>
+@import '@/assets/css/search-page.css';
 </style>

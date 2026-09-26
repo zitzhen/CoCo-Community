@@ -1,169 +1,264 @@
 <template>
-  <div>
-    <!-- 加载动画 -->
-    <div class="progress-container" v-if="loading">
-      <div class="progress-bar"></div>
-    </div>
-    </div>
-
-    <!-- 错误提示悬浮窗 -->
-    <div v-if="errorVisibleSmall" class="card">
-      <div class="icon-container">
-        <svg viewBox="0 0 512 512" class="icon">
-          <path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4 9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z"/>
-        </svg>
-      </div>
-      <div class="message-text-container">
-        <p class="message-text">发生错误</p>
-        <p class="sub-text">{{ errorMessage }}</p>
-      </div>
-      <svg viewBox="0 0 15 15" class="cross-icon" @click="offError">
-        <path fill="currentColor" d="M11.78 4.03c.22-.22.22-.58 0-.8a.57.57 0 0 0-.81 0L7.5 6.69 4.03 3.22a.57.57 0 0 0-.81 0c-.22.22-.22.58 0 .8L6.69 7.5l-3.47 3.47c-.22.22-.22.58 0 .8.22.22.58.22.81 0L7.5 8.31l3.47 3.47c.22.22.58.22.81 0 .22-.22.22-.58 0-.8L8.31 7.5l3.47-3.47z"/>
-      </svg>
+  <div class="control-detail-page">
+    <!-- 顶部加载条 -->
+    <div v-if="loading" class="detail-loading" aria-hidden="true">
+      <div class="detail-loading-bar"></div>
     </div>
 
-    <!-- 错误提示窗口 -->
-    <div class="notifications-container" v-if="errorVisible">
-      <div class="error-alert">
-        <div class="flex">
-          <div class="flex-shrink-0">
-            <svg class="error-svg" viewBox="0 0 20 20">
-              <path clip-rule="evenodd" fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.7 7.3a1 1 0 00-1.4 1.4L8.6 10l-1.3 1.3a1 1 0 101.4 1.4L10 11.4l1.3 1.3a1 1 0 001.4-1.4L11.4 10l1.3-1.3a1 1 0 00-1.4-1.4L10 8.6 8.7 7.3z"/>
-            </svg>
-          </div>
-          <div class="error-prompt-container">
-            <p class="error-prompt-heading">发生错误</p>
-            <ul class="error-prompt-list">
-              <li>{{ errorMessage }}</li>
-            </ul>
+    <!-- 错误 toast -->
+    <Transition name="toast">
+      <div v-if="errorVisibleSmall" class="detail-toast" role="alert">
+        <i class="fas fa-circle-exclamation" aria-hidden="true"></i>
+        <span class="detail-toast-message">{{ errorMessage }}</span>
+        <button
+          type="button"
+          class="detail-toast-close"
+          aria-label="关闭错误提示"
+          @click="offError"
+        >
+          <i class="fas fa-xmark" aria-hidden="true"></i>
+        </button>
+      </div>
+    </Transition>
+
+    <div v-if="metaReady" class="page-container detail-container">
+      <!-- 面包屑 -->
+      <nav class="breadcrumb" aria-label="面包屑导航">
+        <ol>
+          <li><NuxtLink to="/">首页</NuxtLink></li>
+          <li><NuxtLink to="/#resources">资源</NuxtLink></li>
+          <li aria-current="page">{{ filename }}</li>
+        </ol>
+      </nav>
+
+      <!-- 资源头部 -->
+      <header class="resource-header">
+        <div class="resource-header-icon" aria-hidden="true">
+          <i aria-hidden="true" class="fas fa-file-code"></i>
+        </div>
+        <div class="resource-header-main">
+          <h1 class="resource-header-name">{{ filename }}</h1>
+          <div class="resource-header-meta">
+            <NuxtLink
+              v-if="metaAuthor"
+              :to="`/user/${encodeURIComponent(metaAuthor)}`"
+              class="resource-header-author"
+            >
+              <i class="fas fa-user-pen" aria-hidden="true"></i>
+              {{ metaAuthor }}
+            </NuxtLink>
+            <span v-else class="resource-header-author">
+              <i class="fas fa-user-pen" aria-hidden="true"></i>未知作者
+            </span>
+            <span class="pill">JSX</span>
+            <span v-if="currentVersion" class="pill">{{ currentVersion }}</span>
           </div>
         </div>
-      </div>
-    </div>
+        <div class="resource-header-actions">
+          <button type="button" class="btn btn-primary" @click="handleDownload">
+            <i class="fas fa-download" aria-hidden="true"></i>
+            <span>下载</span>
+          </button>
+          <a :href="sourceUrl" class="btn btn-outline">
+            <i class="fas fa-code" aria-hidden="true"></i>
+            <span>源代码</span>
+          </a>
+        </div>
+      </header>
 
-    <!-- 文件信息 -->
-    <div class="container" v-if="!errorVisible && !loading">
-      <div class="control-detail-container">
-        <div class="main-content">
-          <div class="control-header">
-            <div class="control-icon"><i class="fas fa-file-code"></i></div>
-            <div class="control-title">
-              <h2 class="control-name">{{ filename }}</h2>
-              <div class="control-meta"><span>大小: {{ fileSize }} KiB</span></div>
-            </div>
-            <button class="download-btn" @click="handleDownload"><i class="fas fa-download"></i> 下载</button>
-            <a :href="sourceUrl">
-              <button class="download-btn"><i class="fas fa-file-code"></i> 源代码</button>
-            </a>
-          </div>
+      <!-- 双栏 -->
+      <div class="detail-layout">
+        <div class="detail-content">
+          <section class="detail-section">
+            <h2 class="detail-section-title">README</h2>
+            <MarkdownView v-if="readme" :content="readme" />
+            <p v-else class="detail-empty-text">未能找到 README.md</p>
+          </section>
 
-          <div class="section">
-            <h3 class="section-title"><i class="fas fa-info-circle"></i> 控件介绍</h3>
-            <div class="control-description" v-html="introduceHtml"></div>
-          </div>
-
-          <div class="section">
-            <h3 class="section-title"><i class="fas fa-history"></i> 历史版本</h3>
-            <ul class="version-list">
-              <li class="version-item" v-for="v in versions" :key="v">
-                <div class="version-info"><div class="version-number">{{ v }}</div></div>
+          <section v-if="versions.length" class="detail-section">
+            <h2 class="detail-section-title">
+              <i class="fas fa-clock-rotate-left" aria-hidden="true"></i>
+              历史版本
+            </h2>
+            <ul class="detail-versions">
+              <li v-for="version in versions" :key="version" class="detail-version">
+                <i class="fas fa-tag detail-version-icon" aria-hidden="true"></i>
+                {{ version }}
               </li>
             </ul>
-          </div>
+          </section>
         </div>
 
-        <div class="sidebar">
-          <div class="creator-card">
-            <h3 class="section-title"><i class="fas fa-user"></i> 创作者</h3>
-            <div class="creator-info">
-              <img :src="avatar" alt="创作者头像" class="creator-avatar" />
-              <div><h4 class="creator-name">{{ authorName }}</h4></div>
+        <aside class="detail-sidebar" aria-label="资源信息">
+          <div class="sidebar-card sidebar-author">
+            <img :src="avatar" alt="" class="sidebar-author-avatar" />
+            <div class="sidebar-author-meta">
+              <div class="sidebar-author-name">{{ authorName }}</div>
+              <NuxtLink
+                v-if="metaAuthor"
+                :to="`/user/${encodeURIComponent(metaAuthor)}`"
+                class="sidebar-author-login"
+              >
+                @{{ metaAuthor }}
+              </NuxtLink>
             </div>
-            <div class="creator-bio"><p>{{ authorBio }}</p></div>
           </div>
-          <div class="stats-card">
-            <h3 class="section-title"><i class="fas fa-chart-bar"></i> 统计信息</h3>
-            <div class="stat-item"><span class="stat-label">文件大小</span><span class="stat-value">{{ fileSize }} KiB</span></div>
-            <div class="stat-item"><span class="stat-label">文件类型</span><span class="stat-value">JSX</span></div>
-          </div>
-        </div>
+
+          <dl class="sidebar-card sidebar-info">
+            <div class="sidebar-info-row">
+              <dt>文件大小</dt>
+              <dd>{{ fileSize }} KiB</dd>
+            </div>
+            <div class="sidebar-info-row">
+              <dt>文件类型</dt>
+              <dd>JSX</dd>
+            </div>
+            <div v-if="currentVersion" class="sidebar-info-row">
+              <dt>版本</dt>
+              <dd>{{ currentVersion }}</dd>
+            </div>
+            <div class="sidebar-info-row">
+              <dt>下载次数</dt>
+              <dd>{{ downloads }}</dd>
+            </div>
+            <div class="sidebar-info-row">
+              <dt>浏览次数</dt>
+              <dd>{{ Pageviews }}</dd>
+            </div>
+          </dl>
+
+          <a :href="sourceUrl" class="btn btn-outline btn-block">
+            <i class="fas fa-code" aria-hidden="true"></i>
+            查看源代码
+          </a>
+        </aside>
       </div>
+
+      <!-- 同作者更多资源 -->
+      <section v-if="related.length" class="detail-related">
+        <h2 class="detail-related-title">
+          更多来自 @{{ metaAuthor }} 的资源
+        </h2>
+        <div class="resource-grid detail-related-grid">
+          <ResourceCard
+            v-for="item in related"
+            :key="item.name"
+            v-bind="item"
+          />
+        </div>
+      </section>
     </div>
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue"
-import { marked } from "marked"
-import { checkLoginStatus } from "@/script/login"
+import MarkdownView from '@/components/MarkdownView.vue'
+import ResourceCard from '@/components/ResourceCard.vue'
+import { checkLoginStatus } from '@/script/login'
 
 // 控件资源存储在 Cloudflare R2，页面通过同源 /resource/ 路由由服务端读取
 function resourceUrl(key) {
-  return `/resource/${key.split("/").map(encodeURIComponent).join("/")}`
+  return `/resource/${key.split('/').map(encodeURIComponent).join('/')}`
 }
 
 // -------- 响应式数据 --------
 const loading = ref(true)
-const errorVisible = ref(false)
+const metaReady = ref(false)
 const errorVisibleSmall = ref(false)
-const errorMessage = ref("")
-const filename = ref("")
-const fileSize = ref("正在加载")
+const errorMessage = ref('')
+const filename = ref('')
+const fileSize = ref('—')
 const versions = ref([])
-const introduceHtml = ref("<p>正在处理</p>")
-const avatar = ref("")
-const authorName = ref("正在加载")
-const authorBio = ref("正在加载")
-const downloadObjectUrl = ref("")
-const sourceUrl = ref("")
+const readme = ref('')
+const avatar = ref('/images/user.png')
+const authorName = ref('—')
+const metaAuthor = ref('')
+const currentVersion = ref('')
+const downloads = ref(0)
+const Pageviews = ref(0)
+const downloadObjectUrl = ref('')
+const sourceUrl = ref('')
+let autoDownloadHandled = false
 
 const route = useRoute()
 const router = useRouter()
 
+function applyMeta(meta) {
+  metaAuthor.value = meta.author || ''
+  currentVersion.value = meta.currentVersion || ''
+  versions.value = Array.isArray(meta.versions) ? meta.versions : []
+  fileSize.value = meta.size ? (meta.size / 1024).toFixed(2) : '未知'
+  downloads.value = meta.downloads ?? 0
+  Pageviews.value = meta.Pageviews ?? 0
+  if (meta.author) authorName.value = meta.author
+  sourceUrl.value = meta.controlKey ? resourceUrl(meta.controlKey) : ''
+}
+
 // -------- SSR：服务端获取控件元信息与 README，首屏 HTML 直接渲染 --------
-const { data: ssrControl } = await useAsyncData(`control-${route.params.id}`, async () => {
-  const id = route.params.id
-  let meta
-  try {
-    meta = await $fetch('/api/control-meta', { query: { name: id } })
-  } catch (err) {
-    if (err?.statusCode === 404 || err?.status === 404) return { notFound: true }
-    throw err
+const { data: ssrControl } = await useAsyncData(
+  `control-${route.params.id}`,
+  async () => {
+    const id = route.params.id
+    let meta
+    try {
+      meta = await $fetch('/api/control-meta', { query: { name: id } })
+    } catch (err) {
+      if (err?.statusCode === 404 || err?.status === 404) {
+        return { notFound: true }
+      }
+      throw err
+    }
+    let readmeText = null
+    try {
+      readmeText = await $fetch(resourceUrl(`${id}/README.md`), {
+        responseType: 'text',
+      })
+    } catch {}
+    return { meta, readmeText }
   }
-  let readmeText = null
-  try {
-    readmeText = await $fetch(resourceUrl(`${id}/README.md`), { responseType: 'text' })
-  } catch {}
-  return { meta, readmeText }
-})
+)
 
 if (ssrControl.value?.notFound) {
   await navigateTo('/control/404', { replace: true })
 } else if (ssrControl.value?.meta) {
   const meta = ssrControl.value.meta
   filename.value = route.params.id
-  fileSize.value = meta.size ? (meta.size / 1024).toFixed(2) : "未知"
-  versions.value = Array.isArray(meta.versions) ? meta.versions : []
-  sourceUrl.value = meta.controlKey ? resourceUrl(meta.controlKey) : ""
-  if (meta.author) authorName.value = meta.author
-  if (ssrControl.value.readmeText) {
-    // README 内旧图片地址 https://cc.zitzhen.cn/control/... 改走同源资源路由
-    introduceHtml.value = marked.parse(String(ssrControl.value.readmeText).replaceAll("https://cc.zitzhen.cn/control/", "/resource/"))
-  } else {
-    introduceHtml.value = "<p>未能找到 README.md</p>"
-  }
+  applyMeta(meta)
+  readme.value = ssrControl.value.readmeText || ''
+  metaReady.value = true
   loading.value = false
 }
+
+// -------- 同作者资源（共享 control-list 缓存） --------
+const { data: controlData } = await useFetch('/api/control-list', {
+  key: 'control-list',
+})
+
+const related = computed(() => {
+  if (!metaAuthor.value) return []
+  return (controlData.value?.list || [])
+    .filter(
+      (item) => item.author === metaAuthor.value && item.name !== filename.value
+    )
+    .slice(0, 4)
+})
 
 // -------- 方法 --------
 function offError() {
   errorVisibleSmall.value = false
 }
 
+function throwError(msg) {
+  errorMessage.value = msg
+  errorVisibleSmall.value = true
+  loading.value = false
+}
+
 async function loadClientData() {
   try {
     const id = route.params.id
     if (!id) {
-      throwError("未检测到参数")
+      throwError('未检测到参数')
       return
     }
     if (!filename.value) filename.value = id
@@ -171,18 +266,22 @@ async function loadClientData() {
     // 1) 元信息：SSR 已取到则复用，否则兜底请求
     let meta = ssrControl.value?.meta
     if (!meta) {
-      const metaRes = await fetch(`/api/control-meta?name=${encodeURIComponent(id)}`)
+      const metaRes = await fetch(
+        `/api/control-meta?name=${encodeURIComponent(id)}`
+      )
       if (metaRes.status === 404) {
-        console.error("此控件不存在")
+        console.error('此控件不存在')
         router.push('/control/404')
         return
       }
-      if (!metaRes.ok) throw new Error(`获取控件信息失败（HTTP ${metaRes.status}）`)
+      if (!metaRes.ok) {
+        throw new Error(`获取控件信息失败（HTTP ${metaRes.status}）`)
+      }
       meta = await metaRes.json()
-      fileSize.value = meta.size ? (meta.size / 1024).toFixed(2) : "未知"
-      versions.value = Array.isArray(meta.versions) ? meta.versions : []
+      applyMeta(meta)
+      metaReady.value = true
     }
-    if (!meta.controlKey) throw new Error("未能找到该控件的控件文件")
+    if (!meta.controlKey) throw new Error('未能找到该控件的控件文件')
     const controlUrl = resourceUrl(meta.controlKey)
     sourceUrl.value = controlUrl
 
@@ -193,41 +292,55 @@ async function loadClientData() {
         if (controlRes.ok) {
           const controlBlob = await controlRes.blob()
           downloadObjectUrl.value = URL.createObjectURL(controlBlob)
-          if (!meta.size) fileSize.value = (controlBlob.size / 1024).toFixed(2)
+          if (!meta.size) {
+            fileSize.value = (controlBlob.size / 1024).toFixed(2)
+          }
         }
       } catch {}
+    }
+
+    // 卡片下载入口：?action=download，blob 就绪后自动触发一次
+    if (
+      route.query.action === 'download' &&
+      !autoDownloadHandled &&
+      downloadObjectUrl.value
+    ) {
+      autoDownloadHandled = true
+      handleDownload()
     }
 
     // 3) README 兜底（SSR 未取到时）
     if (!ssrControl.value?.readmeText) {
       try {
-        const readmeText = await $fetch(resourceUrl(`${id}/README.md`), { responseType: 'text' })
-        introduceHtml.value = marked.parse(String(readmeText).replaceAll("https://cc.zitzhen.cn/control/", "/resource/"))
+        const readmeText = await $fetch(resourceUrl(`${id}/README.md`), {
+          responseType: 'text',
+        })
+        readme.value = String(readmeText)
       } catch {
-        introduceHtml.value = "<p>未能找到 README.md</p>"
+        readme.value = ''
       }
     }
 
     // 4) Github 作者信息（依赖登录态，客户端执行）
     if (meta.author) {
       try {
-        // 检查登录状态
-        const loginStatus = await checkLoginStatus();
-        let creatorRes;
+        const loginStatus = await checkLoginStatus()
+        let creatorRes
 
         if (loginStatus && loginStatus.authenticated) {
-          // 已登录，使用内部API
-          creatorRes = await fetch(`/api/github/user/?username=${meta.author}`);
+          creatorRes = await fetch(
+            `/api/github/user/?username=${encodeURIComponent(meta.author)}`
+          )
         } else {
-          // 未登录，使用GitHub API
-          creatorRes = await fetch(`https://api.github.com/users/${meta.author}`);
+          creatorRes = await fetch(
+            `https://api.github.com/users/${encodeURIComponent(meta.author)}`
+          )
         }
 
         if (creatorRes.ok) {
           const creator = await creatorRes.json()
-          avatar.value = creator.avatar_url
+          avatar.value = creator.avatar_url || avatar.value
           authorName.value = creator.name || meta.author
-          authorBio.value = creator.bio
         } else {
           authorName.value = meta.author
         }
@@ -236,51 +349,52 @@ async function loadClientData() {
       }
     }
 
-    // ✅ 动态更新 SEO 信息
+    // 动态更新 SEO 信息
     useHead({
       title: `${filename.value} 控件 - ${authorName.value}|ZIT-CoCo-Community`,
       meta: [
-        { name: "description", content: authorBio.value || "一个自定义控件" },
-        { property: "og:title", content: `${filename.value} 控件` },
-        { property: "og:description", content: authorBio.value || "一个自定义控件" },
-        { property: "og:image", content: avatar.value || "" }
-      ]
+        {
+          name: 'description',
+          content: `由 ${metaAuthor.value} 发布的自定义控件 ${filename.value}`,
+        },
+        { property: 'og:title', content: `${filename.value} 控件` },
+        {
+          property: 'og:description',
+          content: `由 ${metaAuthor.value} 发布的自定义控件 ${filename.value}`,
+        },
+        { property: 'og:image', content: avatar.value || '' },
+      ],
     })
   } catch (e) {
-    throwError(e.message || "未知错误")
+    throwError(e.message || '未知错误')
   } finally {
     loading.value = false
   }
 }
 
-function throwError(msg) {
-  errorMessage.value = msg
-  errorVisible.value = true
-  errorVisibleSmall.value = true
-  loading.value = false
-}
-
 async function handleDownload() {
   // 统计下载次数（失败不应阻断实际下载）
-  fetch(`/api/download?name=${encodeURIComponent(filename.value)}`).catch(() => {})
+  fetch(`/api/download?name=${encodeURIComponent(filename.value)}`).catch(
+    () => {}
+  )
 
   try {
-    if (!downloadObjectUrl.value) throw new Error("文件尚未加载完成")
-    const link = document.createElement('a');
-    link.href = downloadObjectUrl.value;
-    link.download = `${filename.value}.jsx`;
-    link.click();
+    if (!downloadObjectUrl.value) throw new Error('文件尚未加载完成')
+    const link = document.createElement('a')
+    link.href = downloadObjectUrl.value
+    link.download = `${filename.value}.jsx`
+    link.click()
   } catch (error) {
-    console.error('下载过程中出错:', error);
-    throwError('下载失败: ' + (error.message || "未知错误"));
+    console.error('下载过程中出错:', error)
+    throwError('下载失败: ' + (error.message || '未知错误'))
   }
 }
 
 onMounted(() => {
   loadClientData()
   // 发送页面浏览统计请求
-  const apiUrl = `/api/pageviews?name=${encodeURIComponent(filename.value)}`;
-  fetch(apiUrl, { method: 'GET' }).catch(() => {});
+  const apiUrl = `/api/pageviews?name=${encodeURIComponent(filename.value)}`
+  fetch(apiUrl, { method: 'GET' }).catch(() => {})
 })
 
 onBeforeUnmount(() => {
@@ -289,8 +403,5 @@ onBeforeUnmount(() => {
 </script>
 
 <style>
-@import "@/assets/css/style.css";
-@import "@/assets/css/error.css";
-@import "@/assets/css/Navigation-bar.css";
-@import url(@/assets/css/dark.css);
+@import '@/assets/css/control-detail.css';
 </style>

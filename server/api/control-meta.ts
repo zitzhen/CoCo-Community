@@ -30,6 +30,23 @@ export default defineEventHandler(async (event) => {
     if (meta) size = meta.size
   }
 
+  // 计数类字段：D1 可用时按名称取单行；失败默认 0（纯增量，不影响现有字段）
+  let downloads = 0
+  let Pageviews = 0
+  try {
+    const row = await env.DB.prepare(
+      "SELECT downloads, Pageviews FROM components WHERE name = ?1"
+    )
+      .bind(name)
+      .first<{ downloads: number; Pageviews: number }>()
+    if (row) {
+      downloads = row.downloads ?? 0
+      Pageviews = row.Pageviews ?? 0
+    }
+  } catch {
+    // D1 不可用（如本地未建表）保持默认 0
+  }
+
   return {
     name,
     author: info.author,
@@ -37,5 +54,7 @@ export default defineEventHandler(async (event) => {
     versions: info.versions,
     controlKey,
     size,
+    downloads,
+    Pageviews,
   }
 })

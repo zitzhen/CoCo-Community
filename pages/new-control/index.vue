@@ -9,7 +9,7 @@
         <div class="upload-container">
             <div class="upload-header">
                 <div class="icon">
-                    <i class="fas fa-cloud-upload-alt"></i>
+                    <i aria-hidden="true" class="fas fa-cloud-upload-alt"></i>
                 </div>
                 <h2>上传文件</h2>
                 <p class="upload-description">
@@ -31,19 +31,20 @@
                             <div class="md-tab" data-tab="preview">预览</div>
                         </div>
                         <div class="md-toolbar">
-                            <button type="button" class="md-btn" data-md-command="bold" title="加粗"><i class="fas fa-bold"></i></button>
-                            <button type="button" class="md-btn" data-md-command="italic" title="斜体"><i class="fas fa-italic"></i></button>
-                            <button type="button" class="md-btn" data-md-command="heading" title="标题"><i class="fas fa-heading"></i></button>
-                            <button type="button" class="md-btn" data-md-command="quote" title="引用"><i class="fas fa-quote-right"></i></button>
-                            <button type="button" class="md-btn" data-md-command="code" title="代码"><i class="fas fa-code"></i></button>
-                            <button type="button" class="md-btn" data-md-command="link" title="链接"><i class="fas fa-link"></i></button>
-                            <button type="button" class="md-btn" data-md-command="image" title="图片"><i class="fas fa-image"></i></button>
-                            <button type="button" class="md-btn" data-md-command="ul" title="无序列表"><i class="fas fa-list-ul"></i></button>
-                            <button type="button" class="md-btn" data-md-command="ol" title="有序列表"><i class="fas fa-list-ol"></i></button>
-                            <button type="button" class="md-btn" data-md-command="table" title="表格"><i class="fas fa-table"></i></button>
-                            <button type="button" class="md-btn" data-md-command="hr" title="分隔线"><i class="fas fa-minus"></i></button>
+                            <button type="button" class="md-btn" data-md-command="bold" title="加粗" aria-label="加粗"><i aria-hidden="true" class="fas fa-bold"></i></button>
+                            <button type="button" class="md-btn" data-md-command="italic" title="斜体" aria-label="斜体"><i aria-hidden="true" class="fas fa-italic"></i></button>
+                            <button type="button" class="md-btn" data-md-command="heading" title="标题" aria-label="标题"><i aria-hidden="true" class="fas fa-heading"></i></button>
+                            <button type="button" class="md-btn" data-md-command="quote" title="引用" aria-label="引用"><i aria-hidden="true" class="fas fa-quote-right"></i></button>
+                            <button type="button" class="md-btn" data-md-command="code" title="代码" aria-label="代码"><i aria-hidden="true" class="fas fa-code"></i></button>
+                            <button type="button" class="md-btn" data-md-command="link" title="链接" aria-label="链接"><i aria-hidden="true" class="fas fa-link"></i></button>
+                            <button type="button" class="md-btn" data-md-command="image" title="图片" aria-label="图片"><i aria-hidden="true" class="fas fa-image"></i></button>
+                            <button type="button" class="md-btn" data-md-command="ul" title="无序列表" aria-label="无序列表"><i aria-hidden="true" class="fas fa-list-ul"></i></button>
+                            <button type="button" class="md-btn" data-md-command="ol" title="有序列表" aria-label="有序列表"><i aria-hidden="true" class="fas fa-list-ol"></i></button>
+                            <button type="button" class="md-btn" data-md-command="table" title="表格" aria-label="表格"><i aria-hidden="true" class="fas fa-table"></i></button>
+                            <button type="button" class="md-btn" data-md-command="hr" title="分隔线" aria-label="分隔线"><i aria-hidden="true" class="fas fa-minus"></i></button>
                         </div>
                         <div id="writeContent" class="md-content active">
+                            <label class="sr-only" for="fileDescription">文件描述</label>
                             <textarea id="fileDescription" class="md-editor" placeholder="使用Markdown格式描述文件内容或用途..."></textarea>
                         </div>
                         <div id="previewContent" class="md-content">
@@ -56,23 +57,24 @@
                     <label class="form-label">选择文件</label>
                     <div id="fileDropArea" class="file-upload-area">
                         <div class="file-upload-icon">
-                            <i class="fas fa-file-upload"></i>
+                            <i aria-hidden="true" class="fas fa-file-upload"></i>
                         </div>
                         <div class="file-upload-text">点击或拖拽文件到此处</div>
                         <div class="file-upload-hint">支持单个文件上传，最大100MB</div>
+                        <label class="sr-only" for="fileInput">选择文件</label>
                         <input type="file" id="fileInput" style="display: none;">
                     </div>
                     <div id="filePreview" class="file-preview">
                         <div class="file-info">
                             <div class="file-icon">
-                                <i class="fas fa-file"></i>
+                                <i aria-hidden="true" class="fas fa-file"></i>
                             </div>
                             <div class="file-details">
                                 <div class="file-name" id="fileName">未选择文件</div>
                                 <div class="file-size" id="fileSize">-</div>
                             </div>
                             <div class="remove-file" id="removeFile">
-                                <i class="fas fa-times"></i>
+                                <i aria-hidden="true" class="fas fa-times"></i>
                             </div>
                         </div>
                     </div>
@@ -98,13 +100,13 @@
 
                 <div class="form-group">
                     <button type="submit" id="uploadBtn" class="btn btn-block btn-disabled" disabled>
-                        <i class="fas fa-upload"></i> 开始上传
+                        <i aria-hidden="true" class="fas fa-upload"></i> 开始上传
                     </button>
                 </div>
             </form>
 
             <div class="upload-requirements">
-                <h3><i class="fas fa-info-circle"></i> 上传须知</h3>
+                <h3><i aria-hidden="true" class="fas fa-info-circle"></i> 上传须知</h3>
                 <ul>
                     <li>请勿上传受版权保护的材料，除非您拥有版权或获得明确许可</li>
                     <li>禁止上传恶意软件、病毒或任何有害内容</li>

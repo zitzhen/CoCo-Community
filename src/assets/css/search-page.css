@@ -1,0 +1,276 @@
+/* ============================================================
+   Search Page
+   ============================================================ */
+
+.search-page {
+  padding-top: var(--space-6);
+  padding-bottom: var(--space-8);
+}
+
+/* ---------- 头部 ---------- */
+.search-page-header {
+  max-width: 640px;
+}
+
+.search-page-title {
+  font-size: var(--font-h2);
+  font-weight: 700;
+  letter-spacing: -0.4px;
+}
+
+.search-page-sub {
+  margin-top: var(--space-2);
+  color: var(--muted);
+  font-size: var(--font-body);
+}
+
+.search-page-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 50px;
+  margin-top: var(--space-5);
+  padding: 0 6px 0 var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background-color: var(--card);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--duration-fast) var(--ease),
+    box-shadow var(--duration-fast) var(--ease);
+}
+
+.search-page-bar:focus-within {
+  border-color: color-mix(in srgb, var(--primary) 60%, var(--border));
+  box-shadow: 0 0 0 4px var(--ring);
+}
+
+.search-page-bar > i {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.search-page-bar input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: none;
+  background: transparent;
+  color: var(--foreground);
+  font-size: 16px;
+}
+
+.search-page-bar input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* ---------- 热门搜索 ---------- */
+.search-popular {
+  margin-top: var(--space-6);
+}
+
+.search-popular-title {
+  margin-bottom: var(--space-3);
+  font-size: var(--font-h3);
+  font-weight: 700;
+}
+
+.search-popular-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.search-popular-item {
+  cursor: pointer;
+}
+
+/* ---------- Tabs ---------- */
+.search-tabs {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+  margin-bottom: var(--space-5);
+  border-bottom: 1px solid var(--border);
+}
+
+.search-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  color: var(--muted);
+  font-size: var(--font-small);
+  font-weight: 500;
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease);
+}
+
+.search-tab:hover {
+  color: var(--foreground);
+}
+
+.search-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  font-weight: 600;
+}
+
+.search-tab-count {
+  font-size: var(--font-caption);
+  opacity: 0.8;
+}
+
+/* ---------- 状态 ---------- */
+.search-loading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-6) 0;
+  color: var(--muted);
+  font-size: var(--font-small);
+}
+
+.search-meta {
+  margin-bottom: var(--space-5);
+  color: var(--muted);
+  font-size: var(--font-small);
+}
+
+.search-result-section {
+  margin-bottom: var(--space-7);
+}
+
+.search-result-title {
+  margin-bottom: var(--space-4);
+  font-size: var(--font-h3);
+  font-weight: 700;
+}
+
+/* ---------- 文章列表 ---------- */
+.search-article-item {
+  display: block;
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.search-article-item:hover {
+  text-decoration: none;
+}
+
+.search-article-name {
+  display: block;
+  color: var(--foreground);
+  font-size: var(--font-body);
+  font-weight: 600;
+  transition: color var(--duration-fast) var(--ease);
+}
+
+.search-article-item:hover .search-article-name {
+  color: var(--primary);
+}
+
+.search-article-info {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: var(--font-caption);
+}
+
+.search-article-excerpt {
+  display: block;
+  margin-top: var(--space-2);
+  color: var(--muted);
+  font-size: var(--font-small);
+  line-height: 1.6;
+}
+
+/* ---------- 用户列表 ---------- */
+.search-user-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.search-user-item:hover {
+  text-decoration: none;
+}
+
+.search-user-avatar {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  object-fit: cover;
+}
+
+.search-user-meta {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.search-user-name {
+  color: var(--foreground);
+  font-size: var(--font-body);
+  font-weight: 600;
+}
+
+.search-user-login {
+  color: var(--muted);
+  font-size: var(--font-caption);
+}
+
+.search-user-go {
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: var(--font-caption);
+  transition: color var(--duration-fast) var(--ease);
+}
+
+.search-user-item:hover .search-user-go {
+  color: var(--primary);
+}
+
+/* ---------- 空状态 ---------- */
+.search-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-8) 0;
+  text-align: center;
+}
+
+.search-empty i {
+  font-size: 30px;
+  color: var(--muted);
+}
+
+.search-empty h2 {
+  margin-top: var(--space-3);
+  font-size: var(--font-h3);
+  font-weight: 700;
+}
+
+.search-empty p {
+  color: var(--muted);
+  font-size: var(--font-small);
+}
+
+@media (max-width: 560px) {
+  .search-page-bar button span {
+    display: none;
+  }
+
+  .search-page-bar button {
+    width: 38px;
+    padding: 0;
+  }
+}

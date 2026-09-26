@@ -199,15 +199,15 @@ export default {
 @import url(@/assets/css/dark.css);
 
 :root {
-  --primary-color: #3498db;
-  --secondary-color: #2980b9;
-  --background-color: #f5f7fa;
-  --card-color: #ffffff;
-  --text-color: #333333;
-  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --border-color: #e1e4e8;
-  --open-color: #28a745;
-  --closed-color: #cb2431;
+  --primary-color: var(--primary);
+  --secondary-color: var(--secondary);
+  --background-color: var(--background);
+  --card-color: var(--card);
+  --text-color: var(--foreground);
+  --shadow: var(--shadow-sm);
+  --border-color: var(--border);
+  --open-color: #22c55e;
+  --closed-color: #ef4444;
 }
 
 #app {
@@ -265,7 +265,7 @@ export default {
   display: flex;
   gap: 1rem;
   font-size: 0.9rem;
-  color: #586069;
+  color: var(--muted);
 }
 
 .issue-actions {
@@ -283,18 +283,18 @@ export default {
 }
 
 .issue-state-text.open {
-  background-color: #e6ffec;
+  background-color: color-mix(in srgb, #22c55e, 12%, var(--card));
   color: var(--open-color);
 }
 
 .issue-state-text.closed {
-  background-color: #ffeef0;
+  background-color: color-mix(in srgb, #ef4444, 12%, var(--card));
   color: var(--closed-color);
 }
 
 .status-btn {
-  background-color: #f6f8fa;
-  border: 1px solid #d1d5da;
+  background-color: var(--muted-background);
+  border: 1px solid var(--border);
   border-radius: 6px;
   padding: 0.3rem 0.8rem;
   font-size: 0.9rem;
@@ -302,7 +302,7 @@ export default {
 }
 
 .status-btn:hover {
-  background-color: #eaecef;
+  background-color: var(--muted-background);
 }
 
 .issue-detail-content {
@@ -334,13 +334,13 @@ export default {
 }
 
 .issue-created-date {
-  color: #586069;
+  color: var(--muted);
   font-size: 0.9rem;
 }
 
 .issue-body {
   line-height: 1.6;
-  color: #333;
+  color: var(--foreground);
   font-size: 1rem;
   margin-bottom: 1.5rem;
 }
@@ -403,7 +403,7 @@ export default {
   padding: 0.2rem 0.5rem;
   border-radius: 12px;
   font-size: 0.8rem;
-  color: white;
+  color: var(--primary-foreground);
   display: inline-block;
 }
 
@@ -450,13 +450,13 @@ export default {
 }
 
 .comment-date {
-  color: #586069;
+  color: var(--muted);
   font-size: 0.8rem;
 }
 
 .comment-body {
   line-height: 1.6;
-  color: #333;
+  color: var(--foreground);
   font-size: 0.95rem;
 }
 
@@ -513,6 +513,6 @@ export default {
   align-items: center;
   height: 50vh;
   font-size: 1.2rem;
-  color: #586069;
+  color: var(--muted);
 }
 </style>

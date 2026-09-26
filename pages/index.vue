@@ -1,160 +1,197 @@
 <template>
-  <div id="app">
-<div class="a1024card" v-show="a1024Banner">
-  <div class="Positioning"></div>
-  <h2 class="a1024title">🎉今天是我们的节日——1024🎉</h2>
-  <p class="a1024text">快来同我们一起庆祝我们的程序员节</p>
-</div>
-    <div class="notifications-container" id="no_fetch" style="display: none;">
-      <div class="error-alert">
-        <div class="flex">
-          <div class="flex-shrink-0">
-            <svg aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" class="error-svg">
-              <path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" fill-rule="evenodd"></path>
-            </svg>
-          </div>
-          <div class="error-prompt-container">
-            <p class="error-prompt-heading">很抱歉，请求无法完成
-            </p>
-            <div class="error-prompt-wrap">
-              <ul class="error-prompt-list" role="list">
-                <li>请检查您的网络连接</li>
-                <li>错误：网络不可达或服务器宕机，或者IP限制。</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
+  <div class="home-page">
+    <!-- 1024 节日横幅 -->
+    <div class="page-container">
+      <section v-if="a1024Banner" class="banner-1024" aria-label="1024 程序员节">
+        <i class="fas fa-party-horn" aria-hidden="true"></i>
+        <span>今天是我们的节日——1024 程序员节，快来同我们一起庆祝！</span>
+      </section>
     </div>
 
-    <div class="container">
-      <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="搜索文件..." v-model="searchTerm" @keyup.enter="goToGlobalSearch">
-        <button id="searchBtn" @click="goToGlobalSearch"><i class="fas fa-search"></i> 全局搜索</button>
-      </div>
-      <h2 style="text-align: center;" id="Loading_text" v-show="loading">请稍后，正在加载</h2>
-      <div class="home-control-list" id="fileList">
-        <div class="home-control-card" v-for="file in filteredFiles" :key="file.name">
-          <div class="home-control-header">
-            <div class="home-control-icon">
-              <i class="fas" :class="getFileIconClass(file.type)"></i>
-            </div>
-            <div class="home-control-meta">
-              <div class="home-control-name">{{ file.name }}</div>
-              <div class="home-control-author">作者：{{ file.Author }}</div>
-            </div>
-          </div>
+    <!-- Hero -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="page-container hero-inner">
+        <span class="hero-eyebrow">
+          <span class="hero-eyebrow-dot" aria-hidden="true"></span>
+          开源 · 开发者资源社区
+        </span>
+        <h1 id="hero-title" class="hero-title">ZIT-CoCo-Community</h1>
+        <p class="hero-subtitle">
+          面向开发者的开源资源与工具社区——浏览、搜索、下载控件，获取源码
+        </p>
 
-          <div class="home-control-stats">
-            <div><i class="fas fa-file"></i> {{ file.size }}</div>
-            <div><i class="fas fa-download"></i> {{ file.downloads }}</div>
-            <div><i class="fas fa-thumbs-up"></i> 0</div>
-            <div><i class="fas fa-star"></i> 0</div>
-            <div><i class="fas fa-eye"></i>{{ file.Pageviews }}</div>
-          </div>
+        <form class="hero-search" role="search" @submit.prevent="goToGlobalSearch">
+          <label for="home-search-input" class="sr-only">搜索资源、控件、工具</label>
+          <i class="fas fa-search hero-search-icon" aria-hidden="true"></i>
+          <input
+            id="home-search-input"
+            v-model="searchTerm"
+            type="search"
+            class="hero-search-input"
+            placeholder="搜索资源、控件、工具……"
+            autocomplete="off"
+            @keyup.enter="goToGlobalSearch"
+          />
+          <kbd class="kbd hero-search-kbd">⌃K</kbd>
+          <button type="submit" class="btn btn-primary hero-search-submit" aria-label="搜索">
+            <i class="fas fa-search" aria-hidden="true"></i>
+            <span>搜索</span>
+          </button>
+        </form>
 
-          <div class="button-group">
-            <a :href="file.url" class="icon-btn" title="下载">
-              <i class="fas fa-download"></i>
-            </a>
-            <a :href="file.url" class="text-btn">
-              <i class="fas fa-eye"></i> 去详情页面
-            </a>
-          </div>
+        <div class="hero-meta">
+          <span><strong>{{ files.length }}</strong> 个资源</span>
+          <span class="hero-meta-sep" aria-hidden="true">·</span>
+          <span><strong>{{ developerCount }}</strong> 位开发者</span>
         </div>
       </div>
-    </div>
+    </section>
+
+    <!-- 资源区 -->
+    <section id="resources" class="resources" aria-labelledby="resources-title">
+      <div class="page-container">
+        <!-- 分类过滤 -->
+        <div class="category-pills" role="group" aria-label="按分类过滤资源">
+          <button
+            v-for="category in categories"
+            :key="category.value"
+            type="button"
+            class="category-pill"
+            :class="{ active: activeCategory === category.value }"
+            :aria-pressed="activeCategory === category.value"
+            @click="activeCategory = category.value"
+          >
+            {{ category.label }}
+            <span class="category-pill-count">{{ category.count }}</span>
+          </button>
+        </div>
+
+        <header class="resources-header">
+          <h2 id="resources-title" class="resources-title">
+            {{ activeCategoryLabel }}
+          </h2>
+          <span class="resources-count">共 {{ filteredFiles.length }} 个资源</span>
+        </header>
+
+        <!-- 加载骨架 -->
+        <div v-if="loading" class="resource-grid" role="status" aria-label="资源加载中">
+          <div
+            v-for="n in 6"
+            :key="n"
+            class="resource-skeleton"
+            aria-hidden="true"
+          >
+            <div class="resource-skeleton-icon"></div>
+            <div class="resource-skeleton-line resource-skeleton-line-l"></div>
+            <div class="resource-skeleton-line resource-skeleton-line-m"></div>
+            <div class="resource-skeleton-line resource-skeleton-line-s"></div>
+          </div>
+        </div>
+
+        <!-- 网格 -->
+        <div v-else-if="filteredFiles.length" class="resource-grid">
+          <ResourceCard
+            v-for="file in filteredFiles"
+            :key="file.name"
+            v-bind="file"
+          />
+        </div>
+
+        <!-- 空状态 -->
+        <div v-else class="resources-empty">
+          <i class="fas fa-box-open" aria-hidden="true"></i>
+          <p>该分类下暂无资源</p>
+          <button type="button" class="btn btn-secondary" @click="activeCategory = 'all'">
+            清除筛选
+          </button>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
 <script setup>
+import ResourceCard from '@/components/ResourceCard.vue'
+import userlistJson from '../public/userlist.json'
+import {
+  buildCategories,
+  categorize,
+  categoryLabel,
+} from '@/utils/category'
+
 function isOctober24th() {
-    const today = new Date();
-    return today.getMonth() === 9 && today.getDate() === 24;
+  const today = new Date()
+  return today.getMonth() === 9 && today.getDate() === 24
 }
 
 const searchTerm = ref('')
 const a1024Banner = ref(false)
 const loading = ref(true)
 const files = ref([])
-const filteredFiles = computed(() => files.value)
-// 文件类型对应的图标
-const fileIcons = { code: "fa-file-code" }
+const activeCategory = ref('all')
 
-function getFileIconClass(fileType) {
-  return fileIcons[fileType] || fileIcons.default;
-}
+const developerCount = computed(() => userlistJson.list?.length || 0)
+
+const categories = computed(() => buildCategories(files.value))
+
+const activeCategoryLabel = computed(() =>
+  activeCategory.value === 'all'
+    ? '全部资源'
+    : categoryLabel(activeCategory.value)
+)
+
+const filteredFiles = computed(() => {
+  if (activeCategory.value === 'all') return files.value
+  // files 由 control-list 归一化而来，分类规则同样作用于其 name/author
+  return files.value.filter((file) => categorize(file) === activeCategory.value)
+})
 
 function goToGlobalSearch() {
   if (searchTerm.value.trim()) {
-    // 跳转到全局搜索页面并传递搜索词
-    navigateTo(`/search?q=${encodeURIComponent(searchTerm.value.trim())}`);
+    navigateTo(`/search?q=${encodeURIComponent(searchTerm.value.trim())}`)
   }
 }
 
 // SSR：服务端取数，首屏 HTML 直接包含控件列表
-const { data: controlData, error: controlError } = await useFetch('/api/control-list', { key: 'control-list' })
+const { data: controlData, error: controlError } = await useFetch('/api/control-list', {
+  key: 'control-list',
+})
 
 if (controlError.value) {
-  console.error("Error fetching directories:", controlError.value);
-  loading.value = false;
+  console.error('Error fetching directories:', controlError.value)
+  loading.value = false
 } else {
-  files.value = (controlData.value?.list || []).map(information => ({
+  files.value = (controlData.value?.list || []).map((information) => ({
     name: information.name,
-    Author: information.author || "未知",
-    type: "code",
-    size: information.size || "未知",
-    date: "未知",
+    author: information.author || '',
+    type: 'code',
+    size: information.size || '',
     downloads: information.downloads || 0,
+    likes: information.likes || 0,
     Pageviews: information.Pageviews || 0,
-    url: `/control/${information.name}`
-  }));
-  loading.value = false;
+    url: `/control/${information.name}`,
+  }))
+  loading.value = false
 }
 
-// 1024 横幅依赖客户端本地日期，放 onMounted 避免时区导致的水合不一致
+// 1024 横幅依赖客户端本地日期，放 onMounted 避免水合不一致
 onMounted(() => {
-  a1024Banner.value = isOctober24th();
+  a1024Banner.value = isOctober24th()
 })
 
 useHead({
   title: 'ZIT-CoCo-Community|CoCo编辑器的小圳社区|自定义控件下载中心',
   meta: [
-    {content: 'CoCo-Community，全称为ZIT-CoCo-Community。这是由于ZIT小圳创科工作室的创造的编程猫CoCo编辑器社区，目前提供自定义控件下载服务，后续会支持论坛的交流。' }
-  ]
+    {
+      name: 'description',
+      content:
+        'CoCo-Community，全称为ZIT-CoCo-Community。这是ZIT小圳创科工作室创造的编程猫CoCo编辑器社区，提供自定义控件下载、源码获取与开发者交流服务。',
+    },
+  ],
 })
 </script>
 
 <style>
-@import '@/assets/style/home/style.css';
-@import '@/assets/css/card.css';
-@import '@/assets/style/home/Custom_button.css';
-@import '@/assets/style/home/Loading.css';
-@import '@/assets/style/control/error.css';
-@import '@/assets/style/home/pay_button.css';
-@import '@/assets/css/1024.css';
-@import '@/assets/css/dark.css';
-</style>
-
-<style>
-/*协议/**/ 
-    .button-book {
-    font-size: 17px;
-    padding: 0.5em 2em;
-    border: transparent;
-    box-shadow: 2px 2px 4px rgba(0,0,0,0.4);
-    background: dodgerblue;
-    color: white;
-    border-radius: 4px;
-}
-
-.button-book:hover {
-    background: rgb(2,0,36);
-    background: linear-gradient(90deg, rgba(30,144,255,1) 0%, rgba(0,212,255,1) 100%);
-}
-
-.button-book:active {
-    transform: translate(0em, 0.2em);
-}
-
+/* 首页：Hero / 分类 / 资源网格 */
+@import '@/assets/css/home-page.css';
 </style>

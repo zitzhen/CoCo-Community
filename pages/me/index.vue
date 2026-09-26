@@ -34,7 +34,7 @@
       <div class="file-list-me" id="display_controls">
         <div class="file-card-me" v-for="(control, index) in controlList" :key="index">
           <div class="file-icon-me">
-            <i class="far fa-file-code"></i>
+            <i aria-hidden="true" class="far fa-file-code"></i>
           </div>
           <div class="file-info-me">
             <div class="file-name-me">{{ control }}</div>
@@ -134,7 +134,7 @@
     <div class="modal" @click.stop>
       <div class="modal-header">
         <h2 class="modal-title">抱歉暂时不能修改头像</h2>
-        <button class="close-btn" @click="closeavatarModal">×</button>
+        <button class="close-btn" aria-label="关闭" @click="closeavatarModal">×</button>
       </div>
       <div class="modal-body">
         <p>抱歉，我们暂时无法修改您的头像</p>
@@ -153,7 +153,7 @@
     <div class="modal" @click.stop>
       <div class="modal-header">
         <h2 class="modal-title">抱歉暂时不能修改昵称</h2>
-        <button class="close-btn" @click="closeNicknameModal">×</button>
+        <button class="close-btn" aria-label="关闭" @click="closeNicknameModal">×</button>
       </div>
       <div class="modal-body">
         <p>抱歉，我们暂时无法修改您的昵称</p>
@@ -173,7 +173,7 @@
     <div class="modal" @click.stop>
       <div class="modal-header">
         <h2 class="modal-title">退出登录？</h2>
-        <button class="close-btn" @click="closeModal">×</button>
+        <button class="close-btn" aria-label="关闭" @click="closeModal">×</button>
       </div>
       <div class="modal-body">
         <p>您确定要退出登录吗？</p>
@@ -199,7 +199,7 @@
 }
 
 .github-link {
-  color: #3498db;
+  color: var(--primary);
   text-decoration: none;
   word-break: break-all;
 }
@@ -209,8 +209,8 @@
 }
 
 .logout-btn {
-  background: #e74c3c;
-  color: white;
+  background: #ef4444;
+  color: var(--primary-foreground);
   border: none;
   padding: 10px 20px;
   border-radius: 4px;
@@ -218,13 +218,13 @@
 }
 
 .logout-btn:hover {
-  background: #c0392b;
+  background: #ef4444;
 }
 
 .empty-state {
   text-align: center;
   padding: 40px 0;
-  color: #7f8c8d;
+  color: var(--muted);
 }
 
 /* 个人资料编辑表单样式 */
@@ -243,7 +243,7 @@
 .form-control {
   width: 100%;
   padding: 8px 12px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 4px;
   font-size: 14px;
 }
@@ -258,7 +258,7 @@
   height: 100px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #ddd;
+  border: 2px solid var(--border);
 }
 
 .form-actions {
@@ -276,25 +276,26 @@
 }
 
 .save-btn {
-  background: #3498db;
-  color: white;
+  background: var(--primary);
+  color: var(--primary-foreground);
 }
 
 .save-btn:hover:not(:disabled) {
-  background: #2980b9;
+  background: var(--primary-hover);
 }
 
 .reset-btn {
-  background: #95a5a6;
-  color: white;
+  background: var(--muted);
+  color: var(--muted-foreground);
 }
 
 .reset-btn:hover:not(:disabled) {
-  background: #7f8c8d;
+  background: var(--muted);
 }
 
 .save-btn:disabled {
-  background: #bdc3c7;
+  background: var(--muted);
+  color: var(--muted-foreground);
   cursor: not-allowed;
 }
 
@@ -366,7 +367,7 @@
   .form-control {
     width: 100%;
     padding: 8px 12px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
     border-radius: 4px;
     font-size: 14px;
   }
@@ -381,7 +382,7 @@
     height: 100px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid #ddd;
+    border: 2px solid var(--border);
   }
   
   .form-actions {
@@ -399,25 +400,26 @@
   }
   
   .save-btn {
-    background: #3498db;
-    color: white;
+    background: var(--primary);
+    color: var(--primary-foreground);
   }
   
   .save-btn:hover:not(:disabled) {
-    background: #2980b9;
+    background: var(--primary-hover);
   }
   
   .reset-btn {
-    background: #95a5a6;
-    color: white;
+    background: var(--muted);
+    color: var(--muted-foreground);
   }
   
   .reset-btn:hover:not(:disabled) {
-    background: #7f8c8d;
+    background: var(--muted);
   }
   
   .save-btn:disabled {
-    background: #bdc3c7;
+    background: var(--muted);
+    color: var(--muted-foreground);
     cursor: not-allowed;
   }
 }

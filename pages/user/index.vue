@@ -1,4 +1,9 @@
 <template>
+    <header class="list-page-header">
+      <h1 class="list-page-title">社区开发者</h1>
+      <p class="list-page-subtitle">认识在 CoCo-Community 分享资源与工具的开发者</p>
+    </header>
+
     <div v-if="userlist.length === 0" class="empty-tip">
       暂无用户数据，请稍后再试。
     </div>
@@ -16,16 +21,16 @@
         </div>
 
         <div class="user-stats">
-          <div><i class="fas fa-code"></i> 控件数量：{{ user.number_of_controls ?? '未统计' }}个</div>
-          <div><i class="fas fa-heart"></i> 点赞：{{ user.likes }}</div>
+          <div><i aria-hidden="true" class="fas fa-code"></i> 控件数量：{{ user.number_of_controls ?? '未统计' }}个</div>
+          <div><i aria-hidden="true" class="fas fa-heart"></i> 点赞：{{ user.likes }}</div>
         </div>
 
         <div class="button-group">
           <a :href="user.home" class="icon-btn" title="查看主页">
-            <i class="fas fa-user"></i> 主页
+            <i aria-hidden="true" class="fas fa-user"></i> 主页
           </a>
           <a :href="user.github" class="text-btn">
-            <i class="fab fa-github"></i> Github
+            <i aria-hidden="true" class="fab fa-github"></i> Github
           </a>
         </div>
       </div>
@@ -60,12 +65,12 @@ useHead({
 @import url(@/assets/css/dark.css);
 
 :root {
-  --primary-color: #3498db;
-  --secondary-color: #2980b9;
-  --background-color: #f5f7fa;
-  --card-color: #ffffff;
-  --text-color: #333333;
-  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --primary-color: var(--primary);
+  --secondary-color: var(--secondary);
+  --background-color: var(--background);
+  --card-color: var(--card);
+  --text-color: var(--foreground);
+  --shadow: var(--shadow-sm);
 }
 
 #app {
@@ -138,7 +143,7 @@ useHead({
 
 .user-role {
   font-size: 0.9rem;
-  color: #888;
+  color: var(--muted);
   font-style: italic;
 }
 
@@ -147,7 +152,7 @@ useHead({
   grid-template-columns: repeat(2, 1fr);
   gap: 0.5rem 1rem;
   font-size: 0.85rem;
-  color: #555;
+  color: var(--muted);
   margin: 0.5rem 0 1rem;
 }
 
@@ -168,7 +173,7 @@ useHead({
 
 .icon-btn, .text-btn {
   background-color: var(--primary-color);
-  color: white;
+  color: var(--primary-foreground);
   padding: 0.6rem 1rem;
   border-radius: 6px;
   text-decoration: none;
@@ -187,14 +192,29 @@ useHead({
 
 .empty-tip {
   text-align: center;
-  color: #999;
+  color: var(--muted);
   font-size: 1rem;
   margin-top: 2rem;
 }
 
 .user-name-Nav {
     font-weight: 500;
-    color: #2c3e50;
+    color: var(--foreground);
     font-size: 1rem;
+}
+.list-page-header {
+  margin-bottom: var(--space-6);
+}
+.list-page-title {
+  font-size: var(--font-size-h1);
+  font-weight: 800;
+  color: var(--foreground);
+  margin: 0 0 var(--space-2);
+  letter-spacing: -0.02em;
+}
+.list-page-subtitle {
+  color: var(--muted);
+  font-size: var(--font-size-body);
+  margin: 0;
 }
 </style>

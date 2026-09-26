@@ -4,19 +4,19 @@
       <h1 style="text-align: center;">开源许可证</h1>
       
       <!-- 第一个卡片：社区开源信息和许可证说明 -->
-      <div class="license-card" style="margin-bottom: 25px; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); background: #fff;">
-        <h2 style="margin-top: 0; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">社区开源信息</h2>
-        <div style="line-height: 1.8; color: #34495e; font-size: 16px;">
-          <p>本社区是开源社区，主仓库位于 <a href="https://github.com/zitzhen/CoCo-Community" target="_blank" style="color: #3498db; text-decoration: none;">Github:zitzhen/CoCo-Community</a></p>
+      <div class="license-card" style="margin-bottom: 25px; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); background: var(--card);">
+        <h2 style="margin-top: 0; color: var(--foreground); border-bottom: 2px solid var(--primary); padding-bottom: 10px;">社区开源信息</h2>
+        <div style="line-height: 1.8; color: var(--muted); font-size: 16px;">
+          <p>本社区是开源社区，主仓库位于 <a href="https://github.com/zitzhen/CoCo-Community" target="_blank" style="color: var(--primary); text-decoration: none;">Github:zitzhen/CoCo-Community</a></p>
           <p>本社区采用 AGPL-3.0 许可证（不代表用户上传的作品使用同款许可证），请在遵循 AGPL-3.0 许可证的情况下使用本社区。</p>
           <p>以下是 AGPL-3.0 许可证原文：</p>
         </div>
       </div>
 
       <!-- 第二个卡片：AGPL-3.0许可证原文 -->
-      <div class="license-card" style="padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); background: #fff;">
-        <h2 style="margin-top: 0; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">AGPL-3.0 许可证原文</h2>
-        <div class="license-content" style="line-height: 1.8; color: #34495e; white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 14px;">
+      <div class="license-card" style="padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); background: var(--card);">
+        <h2 style="margin-top: 0; color: var(--foreground); border-bottom: 2px solid var(--primary); padding-bottom: 10px;">AGPL-3.0 许可证原文</h2>
+        <div class="license-content" style="line-height: 1.8; color: var(--muted); white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 14px;">
           {{ licenseContent }}
         </div>
       </div>

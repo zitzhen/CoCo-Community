@@ -25,11 +25,10 @@ useHead({
 
 <style scoped>
 @import '@/assets/style/agreement/style.css';
-@import '@/assets/style/home/Loading.css';
 @import url(@/assets/css/dark.css);
 @media (prefers-color-scheme: dark){
   .content{
-    color: black;
+    color: var(--foreground);
   }
 }
 </style>

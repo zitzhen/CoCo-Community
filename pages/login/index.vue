@@ -59,7 +59,7 @@ export default{
 }
 
 body {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: linear-gradient(135deg,var(--background),color-mix(in srgb,var(--primary)14%,var(--background)));
     min-height: 100vh;
 }
 
@@ -74,7 +74,7 @@ body {
 }
 
 .login-box {
-    background-color: #ffffff;
+    background-color: var(--card);
     padding: 40px;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -87,13 +87,13 @@ body {
     font-size: 1.5rem;
     font-weight: 600;
     margin-bottom: 20px;
-    color: #333;
+    color: var(--foreground);
 }
 
 .github-button {
     display: inline-block;
-    background-color: #24292e;
-    color: #ffffff;
+    background-color: #181b21;
+    color: white;
     padding: 12px 24px;
     border-radius: 6px;
     text-decoration: none;
@@ -104,12 +104,12 @@ body {
 }
 
 .github-button:hover {
-    background-color: #444c56;
+    background-color: #2a303b;
 }
 
 /* 协议链接样式 */
 .login-box a {
-    color: #3498db;
+    color: var(--primary);
     text-decoration: none;
     margin: 0 5px;
     font-size: 0.9rem;
@@ -117,7 +117,7 @@ body {
 }
 
 .login-box a:hover {
-    color: #2980b9;
+    color: var(--primary-hover);
     text-decoration: underline;
 }
 </style>

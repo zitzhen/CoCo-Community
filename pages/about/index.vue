@@ -8,7 +8,7 @@
 
     <div class="card-about" >
         <h2>CoCo-Community开发者列表</h2>
-        <a>- 刘小圳<img src="https://github-readme-stats.vercel.app/api?username=Iamliuxiaozhen" ></img></a>
+        <a>- 刘小圳<img src="https://github-readme-stats.vercel.app/api?username=Iamliuxiaozhen" alt="刘小圳的 GitHub 统计卡片" loading="lazy" decoding="async" ></img></a>
     </div>
 
       <div style="height: 20px;"></div>

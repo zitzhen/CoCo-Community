@@ -45,7 +45,7 @@
           </div>
           <div class="issues-actions">
             <button class="new-issue-btn" @click="isnewissues = true">
-              <i class="fas fa-plus"></i> 新建 Issue
+              <i aria-hidden="true" class="fas fa-plus"></i> 新建 Issue
             </button>
           </div>
         </div>
@@ -68,7 +68,7 @@
                   <span class="issue-number">#{{ issue.number }}</span>
                   <span class="issue-author">由 {{ issue.user?.login || issue.author || '未知用户' }} 创建于 {{ formatDate(issue.created_at || issue.date) }}</span>
                   <span class="issue-comments" v-if="issue.comments > 0">
-                    <i class="fas fa-comment"></i> {{ issue.comments }}
+                    <i aria-hidden="true" class="fas fa-comment"></i> {{ issue.comments }}
                   </span>
                 </div>
                 <div class="issue-labels" v-if="issue.labels && issue.labels.length > 0">
@@ -98,7 +98,7 @@
       <div class="modal" @click.stop>
         <div class="modal-header">
           <h2 class="modal-title">抱歉暂时不能新建议题</h2>
-          <button class="close-btn" @click="closenewissueModal">×</button>
+          <button class="close-btn" aria-label="关闭弹窗" @click="closenewissueModal">×</button>
         </div>
         <div class="modal-body">
           <p>抱歉，我们暂时无法新建议题</p>
@@ -298,15 +298,15 @@ export default {
 @import url(@/assets/css/dark.css);
 
 :root {
-  --primary-color: #3498db;
-  --secondary-color: #2980b9;
-  --background-color: #f5f7fa;
-  --card-color: #ffffff;
-  --text-color: #333333;
-  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --border-color: #e1e4e8;
-  --open-color: #28a745;
-  --closed-color: #cb2431;
+  --primary-color: var(--primary);
+  --secondary-color: var(--secondary);
+  --background-color: var(--background);
+  --card-color: var(--card);
+  --text-color: var(--foreground);
+  --shadow: var(--shadow-sm);
+  --border-color: var(--border);
+  --open-color: #22c55e;
+  --closed-color: #ef4444;
 }
 
 #app {
@@ -361,7 +361,7 @@ export default {
 .filter-item label {
   cursor: pointer;
   font-size: 0.9rem;
-  color: #586069;
+  color: var(--muted);
 }
 
 .label-list {
@@ -374,7 +374,7 @@ export default {
   padding: 0.2rem 0.5rem;
   border-radius: 12px;
   font-size: 0.8rem;
-  color: white;
+  color: var(--primary-foreground);
   display: inline-block;
 }
 
@@ -403,8 +403,8 @@ export default {
 }
 
 .issues-count {
-  background-color: #eaecef;
-  color: #586069;
+  background-color: var(--muted-background);
+  color: var(--muted);
   border-radius: 20px;
   padding: 0.2rem 0.6rem;
   font-size: 0.9rem;
@@ -416,8 +416,8 @@ export default {
 }
 
 .new-issue-btn {
-  background-color: #2ea44f;
-  color: white;
+  background-color: #22c55e;
+  color: var(--primary-foreground);
   border: none;
   border-radius: 6px;
   padding: 0.6rem 1rem;
@@ -429,7 +429,7 @@ export default {
 }
 
 .new-issue-btn:hover {
-  background-color: #2c834d;
+  background-color: #16a34a;
 }
 
 .issues-list {
@@ -449,7 +449,7 @@ export default {
 }
 
 .issue-item:hover {
-  background-color: #f6f8fa;
+  background-color: var(--muted-background);
 }
 
 .issue-item:last-child {
@@ -497,15 +497,15 @@ export default {
   flex-wrap: wrap;
   gap: 1rem;
   font-size: 0.85rem;
-  color: #586069;
+  color: var(--muted);
 }
 
 .issue-number {
-  color: #586069;
+  color: var(--muted);
 }
 
 .issue-author {
-  color: #586069;
+  color: var(--muted);
 }
 
 .issue-comments {
@@ -555,7 +555,7 @@ export default {
 }
 
 .issue-author {
-  color: #586069;
+  color: var(--muted);
   font-size: 0.9rem;
 }
 
@@ -574,18 +574,18 @@ export default {
 }
 
 .issue-state-text.open {
-  background-color: #e6ffec;
+  background-color: color-mix(in srgb, #22c55e, 12%, var(--card));
   color: var(--open-color);
 }
 
 .issue-state-text.closed {
-  background-color: #ffeef0;
+  background-color: color-mix(in srgb, #ef4444, 12%, var(--card));
   color: var(--closed-color);
 }
 
 .status-btn {
-  background-color: #f6f8fa;
-  border: 1px solid #d1d5da;
+  background-color: var(--muted-background);
+  border: 1px solid var(--border);
   border-radius: 6px;
   padding: 0.3rem 0.8rem;
   font-size: 0.9rem;
@@ -593,12 +593,12 @@ export default {
 }
 
 .status-btn:hover {
-  background-color: #eaecef;
+  background-color: var(--muted-background);
 }
 
 .issue-detail-content {
   line-height: 1.6;
-  color: #333;
+  color: var(--foreground);
   font-size: 1rem;
 }
 

@@ -2,9 +2,9 @@
     <div class="container-error-card">
         <div class="error-content">
             <div class="error-icon">
-                <i class="fas fa-exclamation-triangle"></i>
+                <i aria-hidden="true" class="fas fa-exclamation-triangle"></i>
             </div>
-            <h2 class="error-title">请检查路径</h2>
+            <h1 class="error-title">请检查路径</h1>
             <p class="error-message">
                 抱歉，您访问的是根路径。不能使用路径访问。
             </p>
@@ -15,12 +15,12 @@
 @import url(@/assets/css/dark.css);
 
     :root {
-    --primary-color: #3498db;
-    --secondary-color: #2980b9;
-    --background-color: #f5f7fa;
-    --card-color: #ffffff;
-    --text-color: #333333;
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --primary-color: var(--primary);
+    --secondary-color: var(--secondary);
+    --background-color: var(--background);
+    --card-color: var(--card);
+    --text-color: var(--foreground);
+    --shadow: var(--shadow-sm);
 }
 
 .container-error-card{
@@ -39,7 +39,7 @@
 
 .error-icon {
     font-size: 5rem;
-    color: #e74c3c;
+    color: #ef4444;
     margin-bottom: 1.5rem;
 }
 

@@ -2,9 +2,9 @@
 <div class="a_404_container">
         <div class="a_404_error-content">
             <div class="error-icon">
-                <i class="fas fa-exclamation-triangle"></i>
+                <i aria-hidden="true" class="fas fa-exclamation-triangle"></i>
             </div>
-            <h2 class="error-title">404 - 控件未找到</h2>
+            <h1 class="error-title">404 - 控件未找到</h1>
             <p class="a_404_error-message">
                 抱歉，您访问的控件不存在或已被移除。<br>
                 可能是URL地址输入错误，或者控件已被删除。

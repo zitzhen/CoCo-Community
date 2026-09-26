@@ -9,7 +9,7 @@
     <div class="container_safe">
       <div class="page-header_safe">
         <div class="icon_safe">
-          <i class="fas fa-shield-alt"></i>
+          <i aria-hidden="true" class="fas fa-shield-alt"></i>
         </div>
         <h2>安全漏洞报告中心</h2>
         <p class="page-description_safe">
@@ -22,12 +22,12 @@
             <!-- 状态通知 -->
             <div class="status-notice">
               <div class="alert-error_safe">
-                <strong><i class="fas fa-exclamation-triangle"></i> 通道临时关闭通知：</strong>
+                <strong><i aria-hidden="true" class="fas fa-exclamation-triangle"></i> 通道临时关闭通知：</strong>
                 漏洞提交通道暂时关闭，请通过右侧的联系方式报告安全问题。
               </div>
 
               <div class="alert-warning_safe">
-                <strong><i class="fas fa-exclamation-triangle"></i> 重要提示：</strong>
+                <strong><i aria-hidden="true" class="fas fa-exclamation-triangle"></i> 重要提示：</strong>
                 请不要在公开场合讨论未修复的安全漏洞。请通过安全渠道私下报告安全问题。
               </div>
             </div>
@@ -113,10 +113,10 @@
 
                 <div class="form-group_safe">
                   <button type="submit" class="btn_safe btn-block_safe" :disabled="isFormDisabled">
-                    <i class="fas fa-paper-plane"></i> 提交漏洞报告
+                    <i aria-hidden="true" class="fas fa-paper-plane"></i> 提交漏洞报告
                   </button>
                   <p class="form-closed-notice">
-                    <i class="fas fa-info-circle"></i> 此提交通道暂时关闭，请通过右侧联系方式提交报告
+                    <i aria-hidden="true" class="fas fa-info-circle"></i> 此提交通道暂时关闭，请通过右侧联系方式提交报告
                   </p>
                 </div>
               </form>
@@ -127,12 +127,12 @@
             <!-- 安全公告 -->
             <div class="card_safe">
               <h3 class="section-title_safe">
-                <i class="fas fa-bullhorn"></i> 安全公告
+                <i aria-hidden="true" class="fas fa-bullhorn"></i> 安全公告
               </h3>
               <ul class="disclosure-list_safe">
                 <li class="disclosure-item_safe" v-for="(announcement, index) in announcements" :key="index">
                   <div class="disclosure-title_safe">
-                    <i :class="announcement.icon" :style="{ color: announcement.color }"></i>
+                    <i aria-hidden="true" :class="announcement.icon" :style="{ color: announcement.color }"></i>
                     {{ announcement.title }}
                     <span class="disclosure-date_safe">{{ announcement.date }}</span>
                   </div>
@@ -146,10 +146,10 @@
             <!-- 漏洞奖励计划 -->
             <div class="card_safe">
               <h3 class="section-title_safe">
-                <i class="fas fa-gift"></i> 漏洞奖励计划
+                <i aria-hidden="true" class="fas fa-gift"></i> 漏洞奖励计划
               </h3>
               <div class="alert-info_safe">
-                <strong><i class="fas fa-award"></i> 我们感谢您的贡献！</strong>
+                <strong><i aria-hidden="true" class="fas fa-award"></i> 我们感谢您的贡献！</strong>
                 对于高质量的安全漏洞报告，我们可能会提供奖励或公开致谢。
               </div>
               <p>奖励标准包括但不限于：</p>
@@ -161,11 +161,11 @@
             <!-- 联系我们 -->
             <div class="card_safe">
               <h3 class="section-title_safe">
-                <i class="fas fa-envelope"></i> 联系我们
+                <i aria-hidden="true" class="fas fa-envelope"></i> 联系我们
               </h3>
               <div class="contact-info_safe">
                 <div class="contact-method_safe" v-for="(contact, index) in contactMethods" :key="index">
-                  <i :class="contact.icon"></i>
+                  <i aria-hidden="true" :class="contact.icon"></i>
                   <span>{{ contact.details }}</span>
                 </div>
               </div>

@@ -31,7 +31,7 @@
         <div class="file-list-user" id="display_controls">
             <div class="file-card-user" v-for="(control, index) in controlList" :key="index">
                 <div class="file-icon-user">
-                    <i class="far fa-file-code"></i>
+                    <i aria-hidden="true" class="far fa-file-code"></i>
                 </div>
                 <div class="file-info-user">
                     <div class="file-name-user">{{ control }}</div>
@@ -71,7 +71,7 @@
     display: flex;
     align-items: center;
     padding: 32px 0 24px 0;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border);
 }
 .avatar-user {
     width: 96px;
@@ -79,7 +79,7 @@
     border-radius: 50%;
     margin-right: 32px;
     object-fit: cover;
-    border: 2px solid #3498db;
+    border: 2px solid var(--primary);
 }
 .user-info-user {
     flex: 1;
@@ -95,30 +95,30 @@
 .stat-number-user {
     font-size: 1.5rem;
     font-weight: bold;
-    color: #3498db;
+    color: var(--primary);
 }
 .stat-label-user {
     font-size: 0.95rem;
-    color: #666;
+    color: var(--muted);
 }
 .tabs-user {
     display: flex;
     gap: 16px;
     margin: 32px 0 0 0;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border);
 }
 .tab-user {
     padding: 12px 32px;
     cursor: pointer;
     font-size: 1.1rem;
-    color: #666;
+    color: var(--muted);
     border-radius: 8px 8px 0 0;
-    background: #f7f7f7;
+    background: var(--muted-background);
     transition: background 0.2s, color 0.2s;
 }
 .tab-user.active-user {
-    background: #3498db;
-    color: #fff;
+    background: var(--primary);
+    color: var(--primary-foreground);
     font-weight: bold;
 }
 .tab-content-user {
@@ -131,7 +131,7 @@
 .section-title-user {
     font-size: 1.3rem;
     margin-bottom: 16px;
-    color: #3498db;
+    color: var(--primary);
 }
 .file-list-user {
     display: flex;
@@ -139,7 +139,7 @@
     gap: 24px;
 }
 .file-card-user {
-    background: #fff;
+    background: var(--card);
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(52, 152, 219, 0.08);
     padding: 16px;
@@ -150,7 +150,7 @@
 }
 .file-icon-user {
     font-size: 2rem;
-    color: #3498db;
+    color: var(--primary);
     margin-bottom: 8px;
 }
 .file-info-user {
@@ -160,14 +160,14 @@
 .file-name-user {
     font-size: 1.1rem;
     font-weight: bold;
-    color: #333;
+    color: var(--foreground);
 }
 .file-actions-user {
     margin-top: auto;
 }
 .download-btn-user {
-    background: #3498db;
-    color: #fff;
+    background: var(--primary);
+    color: var(--primary-foreground);
     border: none;
     border-radius: 4px;
     padding: 6px 16px;
@@ -176,7 +176,7 @@
     transition: background 0.2s;
 }
 .download-btn-user:hover {
-    background: #217dbb;
+    background: var(--primary-hover);
 }
 .article-list-user {
     min-height: 80px;
@@ -184,10 +184,10 @@
 }
 footer {
     margin-top: 48px;
-    background: #f7f7f7;
+    background: var(--muted-background);
     padding: 24px 0;
     text-align: center;
-    color: #888;
+    color: var(--muted);
 }
 @media (max-width: 600px) {
     .profile-header-user {

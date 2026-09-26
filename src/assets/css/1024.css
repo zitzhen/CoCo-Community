@@ -8,7 +8,7 @@
 
 .a1024card{
     width: 100%;
-    background-color: #5dade2;
+    background-color: var(--primary);
     height: 400px;
     display: flex;
     flex-direction: column;
@@ -69,10 +69,10 @@
 .countdown-number {
   font-size: 24px;
   font-weight: bold;
-  background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  background: linear-gradient(45deg, var(--accent-cyan), var(--primary));
   padding: 6px 12px;
   border-radius: 8px;
-  color: white;
+  color: var(--primary-foreground);
   min-width: 40px;
   text-align: center;
 }
@@ -80,14 +80,14 @@
 .countdown-label {
   font-size: 14px;
   margin-top: 4px;
-  color: #333;
+  color: var(--foreground);
 }
 
 .countdown-separator {
   font-size: 20px;
   font-weight: bold;
   margin: 0 4px;
-  color: #333;
+  color: var(--foreground);
 }
 
 .Positioning {
@@ -109,7 +109,7 @@
   margin: 20px auto;
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
   text-align: left;
-  background-color: #ffffff;
+  background-color: var(--card);
   border-radius: 8px;
   padding: 1.5rem;
   box-sizing: border-box;
@@ -154,18 +154,18 @@
 .card-1024 hr {
   margin: 1.5rem 0;
   border: 0;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--border);
 }
 
 .card-1024 blockquote {
-  border-left: 4px solid #3498db;
+  border-left: 4px solid var(--primary);
   padding: 0.5rem 1rem;
   margin: 1rem 0;
-  background-color: #f8f9fa;
+  background-color: var(--muted-background);
 }
 
 .card-1024 pre {
-  background: #eee;
+  background: var(--muted-background);
   padding: 10px;
   overflow-x: auto;
   border-radius: 4px;

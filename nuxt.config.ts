@@ -29,7 +29,6 @@ export default defineNuxtConfig({
           src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7240019936857616',
           crossorigin: 'anonymous',
         },
-        { src: 'https://cdn.tailwindcss.com' },
         {
           innerHTML: `
 (function() {

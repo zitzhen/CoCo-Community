@@ -4,7 +4,7 @@
     margin: 0 auto;
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
     text-align: left;
-    background-color: #ffffff;
+    background-color: var(--card);
     border-radius: 8px;
     padding: 1.5rem;
     box-sizing: border-box;
@@ -50,7 +50,7 @@
 }
 
 .card-agreement table, .card-agreement th, .card-agreement td {
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
 }
 
 .card-agreement th, .card-agreement td {
@@ -59,8 +59,8 @@
 }
 
 .card-agreement blockquote {
-    border-left: 4px solid #3498db;
+    border-left: 4px solid var(--primary);
     padding: 0.5rem 1rem;
     margin: 1rem 0;
-    background-color: #f8f9fa;
+    background-color: var(--muted-background);
 }

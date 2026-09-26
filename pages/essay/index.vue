@@ -1,4 +1,9 @@
 <template>
+    <header class="list-page-header">
+      <h1 class="list-page-title">文章</h1>
+      <p class="list-page-subtitle">来自社区的技术文章与经验分享</p>
+    </header>
+
     <div v-if="essaylist.length === 0" class="empty-tip">
       暂无文章数据，请稍后再试。
     </div>
@@ -6,7 +11,7 @@
     <div class="article-list">
       <div v-for="article in essaylist" :key="article.name" class="article-card">
         <div class="article-header">
-          <div class="article-icon"><i class="fas fa-newspaper"></i></div>
+          <div class="article-icon"><i aria-hidden="true" class="fas fa-newspaper"></i></div>
           <div class="article-meta">
             <div class="article-title">{{ article.name }}</div>
             <div class="article-author">作者：{{ article.author }}</div>
@@ -18,15 +23,15 @@
         </div>
 
         <div class="article-stats">
-          <div><i class="fas fa-eye"></i> {{ article.pageviews }} 浏览</div>
-          <div><i class="fas fa-thumbs-up"></i> {{ article.Like }} 点赞</div>
-          <div><i class="fas fa-star"></i> {{ article.collect }} 收藏</div>
-          <div><i class="fas fa-comment"></i> {{ article.comments || 0 }} 评论</div>
+          <div><i aria-hidden="true" class="fas fa-eye"></i> {{ article.pageviews }} 浏览</div>
+          <div><i aria-hidden="true" class="fas fa-thumbs-up"></i> {{ article.Like }} 点赞</div>
+          <div><i aria-hidden="true" class="fas fa-star"></i> {{ article.collect }} 收藏</div>
+          <div><i aria-hidden="true" class="fas fa-comment"></i> {{ article.comments || 0 }} 评论</div>
         </div>
 
         <div class="button-group">
           <a :href="`/essay/${encodeURIComponent(article.id)}`" class="text-btn">
-            <i class="fas fa-book-open"></i> 去详情页面
+            <i aria-hidden="true" class="fas fa-book-open"></i> 去详情页面
           </a>
         </div>
       </div>
@@ -67,12 +72,12 @@ useHead({
 @import url(@/assets/css/dark.css);
 
 :root {
-  --primary-color: #3498db;
-  --secondary-color: #2980b9;
-  --background-color: #f5f7fa;
-  --card-color: #ffffff;
-  --text-color: #333333;
-  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --primary-color: var(--primary);
+  --secondary-color: var(--secondary);
+  --background-color: var(--background);
+  --card-color: var(--card);
+  --text-color: var(--foreground);
+  --shadow: var(--shadow-sm);
 }
 
 #app {
@@ -136,12 +141,12 @@ useHead({
 
 .article-author {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--muted);
 }
 
 .article-summary {
   font-size: 0.95rem;
-  color: #555;
+  color: var(--muted);
   line-height: 1.5;
   margin: 0.8rem 0 1rem;
 }
@@ -151,7 +156,7 @@ useHead({
   grid-template-columns: repeat(2, 1fr);
   gap: 0.5rem 1rem;
   font-size: 0.85rem;
-  color: #555;
+  color: var(--muted);
   margin: 0.5rem 0 1rem;
 }
 
@@ -172,7 +177,7 @@ useHead({
 
 .icon-btn, .text-btn {
   background-color: var(--primary-color);
-  color: white;
+  color: var(--primary-foreground);
   border-radius: 6px;
   text-decoration: none;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
@@ -199,14 +204,29 @@ useHead({
 
 .empty-tip {
   text-align: center;
-  color: #999;
+  color: var(--muted);
   font-size: 1rem;
   margin-top: 2rem;
 }
 
 .user-name-Nav {
     font-weight: 500;
-    color: #2c3e50;
+    color: var(--foreground);
     font-size: 1rem;
+}
+.list-page-header {
+  margin-bottom: var(--space-6);
+}
+.list-page-title {
+  font-size: var(--font-size-h1);
+  font-weight: 800;
+  color: var(--foreground);
+  margin: 0 0 var(--space-2);
+  letter-spacing: -0.02em;
+}
+.list-page-subtitle {
+  color: var(--muted);
+  font-size: var(--font-size-body);
+  margin: 0;
 }
 </style>
