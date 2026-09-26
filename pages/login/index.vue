@@ -4,7 +4,7 @@
             <div class="login-box">
                 <h2 class="login-title">{{ Welcome_text }}</h2>
                 <a
-                    href="https://github.com/login/oauth/authorize?client_id=Ov23lii4E31EzV9VMW7B&redirect_uri=https://cc.zitzhen.cn/auth/github?client=web"
+                    :href="githubAuthUrl"
                     class="github-button"
                 >
                     使用 GitHub 登录
@@ -32,9 +32,17 @@ export default{
     data(){
         return{
             Welcome_text:"Hello,欢迎来到CoCo-Community，请使用GitHub登录",
+            githubAuthUrl:"https://github.com/login/oauth/authorize?client_id=Ov23lii4E31EzV9VMW7B&redirect_uri=https://cc.zitzhen.cn/auth/github?client=web",
         }
     },
     async mounted(){
+        // pages.dev 访问时，登录后跳回当前 pages.dev 域名，而不是生产域名
+        const { origin, hostname } = window.location;
+        if (hostname.endsWith(".pages.dev")) {
+            const redirectUri = encodeURIComponent(`${origin}/auth/github?client=web`);
+            this.githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=Ov23lii4E31EzV9VMW7B&redirect_uri=${redirectUri}`;
+        }
+
         checkLoginStatus().then((logininformation) => {
         if (!logininformation || !logininformation.authenticated) {
 
