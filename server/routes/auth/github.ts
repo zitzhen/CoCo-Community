@@ -60,7 +60,10 @@ export default defineEventHandler(async (event) => {
     const secretKey = env.COCO_COMMUNITY_JWT;
     
     if (!secretKey) {
-      return new Response(JSON.stringify({ error: "server_configuration_error" }), {
+      return new Response(JSON.stringify({
+        error: "server_configuration_error",
+        detail: "missing env: COCO_COMMUNITY_JWT",
+      }), {
         status: 500,
         headers: { "Content-Type": "application/json" },
       });
