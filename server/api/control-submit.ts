@@ -181,9 +181,10 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    // ---------- 5. D1 登记计数行（已存在则不动，失败不影响提交） ----------
-    // 注意：不能用 ON CONFLICT(name) DO NOTHING——该表 name 列历史上没有 UNIQUE 约束，
+    // ---------- 5. D1 登记计数行（附属操作，失败不阻断 R2 提交，但必须记录） ----------
+    // 不能用 ON CONFLICT(name) DO NOTHING——该表 name 列历史上没有 UNIQUE 约束，
     // 那样写会在旧表结构上必然报错（ON CONFLICT clause does not match ...）。
+    let d1Registered = true;
     try {
       const existingRow = await env.DB.prepare(
         "SELECT 1 FROM components WHERE name = ?1"
@@ -197,12 +198,14 @@ export default defineEventHandler(async (event) => {
           .bind(name)
           .run();
       }
-    } catch {
-      // D1 不可用（如本地未建表）不影响控件提交
+    } catch (dbErr: any) {
+      // 预期降级：本地 D1 未建表等；但生产环境出现说明有真实故障，需留日志可排查
+      console.error("[control-submit] D1 register failed:", dbErr?.message);
+      d1Registered = false;
     }
 
     return new Response(
-      JSON.stringify({ ok: true, name, version, existing: Boolean(existingObj) }),
+      JSON.stringify({ ok: true, name, version, existing: Boolean(existingObj), d1_registered: d1Registered }),
       {
         status: 200,
         headers: { "Content-Type": "application/json" },
