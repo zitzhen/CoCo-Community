@@ -1,9 +1,5 @@
 <template>
-    <header class="list-page-header">
-      <h1 class="list-page-title">文章</h1>
-      <p class="list-page-subtitle">来自社区的技术文章与经验分享</p>
-    </header>
-
+    <h1 class="sr-only">文章</h1>
     <div v-if="essaylist.length === 0" class="empty-tip">
       暂无文章数据，请稍后再试。
     </div>
@@ -208,20 +204,5 @@ useHead({
     font-weight: 500;
     color: var(--foreground);
     font-size: 1rem;
-}
-.list-page-header {
-  margin-bottom: var(--space-6);
-}
-.list-page-title {
-  font-size: var(--font-size-h1);
-  font-weight: 800;
-  color: var(--foreground);
-  margin: 0 0 var(--space-2);
-  letter-spacing: -0.02em;
-}
-.list-page-subtitle {
-  color: var(--muted);
-  font-size: var(--font-size-body);
-  margin: 0;
 }
 </style>
