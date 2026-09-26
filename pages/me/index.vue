@@ -594,7 +594,10 @@ export default {
         const res = await fetch('/api/control-list');
         if (res.ok) {
           const data = await res.json();
-          const mine = (data?.list || []).filter((c) => c.author === username_github);
+          // GitHub 用户名不区分大小写；R2 旧数据的 author 可能与登录名大小写不一致
+          const mine = (data?.list || []).filter(
+            (c) => c.author?.toLowerCase() === username_github.toLowerCase()
+          );
           controlList.value = mine.map((c) => c.name);
           Control_number.value = String(mine.length);
         } else {

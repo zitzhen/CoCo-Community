@@ -243,7 +243,10 @@ function render_information(basicInformation) {
 // 控件清单改用实时 /api/control-list 按 author 过滤（与首页/搜索共享缓存 key，零额外请求）；
 // 旧的静态 information/user/*.json 已无更新机制且数据腐烂（存在死链控件名）
 const { data: controlData } = await useFetch('/api/control-list', { key: 'control-list' })
-const myControls = (controlData.value?.list || []).filter((c) => c.author === username)
+// GitHub 用户名不区分大小写；R2 旧数据的 author 可能与路由参数大小写不一致
+const myControls = (controlData.value?.list || []).filter(
+  (c) => c.author?.toLowerCase() === username.toLowerCase()
+)
 
 // SSR：服务端获取用户基本信息，首屏 HTML 直接渲染
 const { data: userData } = await useAsyncData(`user-page-${username}`, async () => {
