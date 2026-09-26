@@ -211,6 +211,16 @@ export default defineEventHandler(async (event) => {
       });
     }
 
+    // 让 /api/control-list 的 nitro 缓存失效，首页/搜索能立即看到新控件
+    // （缓存清理失败不影响提交结果本身）
+    try {
+      const cache = useStorage("cache");
+      const keys = await cache.getKeys();
+      await Promise.all(
+        keys.filter((k) => k.includes("control-list")).map((k) => cache.removeItem(k))
+      );
+    } catch { /* 忽略缓存清理失败 */ }
+
     return new Response(
       JSON.stringify({ ok: true, name, version, existing: Boolean(existingObj) }),
       {

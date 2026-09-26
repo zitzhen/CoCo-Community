@@ -587,19 +587,16 @@ export default {
     };
     
     
-    // 获取用户控件信息
+    // 获取用户控件信息（实时数据：/api/control-list 枚举 R2，按 author 过滤）
+    // 旧的 /information/user/<login>.json 是旧工作流生成的静态快照，本分支已无更新机制
     async function fetch_user_information(username_github) {
-      //console.log(username_github);
       try {
-        const url = `https://${window.location.host}/information/user/${username_github}.json`;
-        //console.log(url);
-        const res = await fetch(url);
+        const res = await fetch('/api/control-list');
         if (res.ok) {
-          const user_introduction = await res.json();
-          Control_number.value =  user_introduction.number_of_controls;
-          if (user_introduction?.list_of_controls) {
-            controlList.value = user_introduction.list_of_controls;
-          }
+          const data = await res.json();
+          const mine = (data?.list || []).filter((c) => c.author === username_github);
+          controlList.value = mine.map((c) => c.name);
+          Control_number.value = String(mine.length);
         } else {
           console.error('无法获取用户控件信息');
           Control_number.value = '0';

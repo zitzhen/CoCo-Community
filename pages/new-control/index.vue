@@ -434,6 +434,8 @@ async function handleSubmit() {
     form.append('file', file.value)
 
     const res = await $fetch('/api/control-submit', { method: 'POST', body: form })
+    // 清掉 SPA 会话内的列表缓存，返回首页/搜索时强制重新拉取（服务端缓存已由接口清理）
+    clearNuxtData('control-list')
     submittedName.value = res.name || name.value.trim()
     submittedVersion.value = res.version || version.value.trim()
     submitted.value = true

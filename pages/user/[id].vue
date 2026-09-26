@@ -210,9 +210,6 @@ footer {
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { checkLoginStatus } from '@/script/login'
-// 详细资料（控件清单等）仍在静态 information 目录，构建期打包
-const userDetailModules = import.meta.glob('../../public/information/user/*.json', { eager: true, import: 'default' })
 
 const Nickname = ref('')
 const bio = ref('加载中...')
@@ -237,25 +234,29 @@ useHead({
 const route = useRoute()
 const username = route.params.id
 
-function render_information(basicInformation, detailedInformation) {
+function render_information(basicInformation) {
   Nickname.value = basicInformation?.nickname || basicInformation?.name || basicInformation?.username || '未知用户'
   bio.value = basicInformation?.bio || '此人很懒，什么都没有'
   avatar.value = basicInformation?.avatar || ''
-  Control_number.value = detailedInformation ? detailedInformation.number_of_controls : basicInformation?.number_of_controls || '0'
-  if (detailedInformation?.list_of_controls) controlList.value = detailedInformation.list_of_controls
 }
 
-// SSR：服务端获取用户基本与详细信息，首屏 HTML 直接渲染
+// 控件清单改用实时 /api/control-list 按 author 过滤（与首页/搜索共享缓存 key，零额外请求）；
+// 旧的静态 information/user/*.json 已无更新机制且数据腐烂（存在死链控件名）
+const { data: controlData } = await useFetch('/api/control-list', { key: 'control-list' })
+const myControls = (controlData.value?.list || []).filter((c) => c.author === username)
+
+// SSR：服务端获取用户基本信息，首屏 HTML 直接渲染
 const { data: userData } = await useAsyncData(`user-page-${username}`, async () => {
   const basic = await $fetch('/api/user-list')
     .then(r => (r.list || []).find(u => u.username === username))
     .catch(() => null)
-  const detailed = userDetailModules[`../../public/information/user/${username}.json`] || null
-  return { basic, detailed }
+  return { basic }
 })
 
 if (userData.value?.basic) {
-  render_information(userData.value.basic, userData.value.detailed)
+  render_information(userData.value.basic)
+  Control_number.value = String(myControls.length)
+  controlList.value = myControls.map((c) => c.name)
 } else {
   // 用户不存在于 userlist.json 中
   Nickname.value = username
