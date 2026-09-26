@@ -182,12 +182,21 @@ export default defineEventHandler(async (event) => {
     }
 
     // ---------- 5. D1 登记计数行（已存在则不动，失败不影响提交） ----------
+    // 注意：不能用 ON CONFLICT(name) DO NOTHING——该表 name 列历史上没有 UNIQUE 约束，
+    // 那样写会在旧表结构上必然报错（ON CONFLICT clause does not match ...）。
     try {
-      await env.DB.prepare(
-        "INSERT INTO components (name, downloads, likes, collections, Pageviews) VALUES (?1, 0, 0, 0, 0) ON CONFLICT(name) DO NOTHING"
+      const existingRow = await env.DB.prepare(
+        "SELECT 1 FROM components WHERE name = ?1"
       )
         .bind(name)
-        .run();
+        .first();
+      if (!existingRow) {
+        await env.DB.prepare(
+          "INSERT INTO components (name, downloads, likes, collections, Pageviews) VALUES (?1, 0, 0, 0, 0)"
+        )
+          .bind(name)
+          .run();
+      }
     } catch {
       // D1 不可用（如本地未建表）不影响控件提交
     }
