@@ -134,8 +134,9 @@
 
 <script setup>
 import ResourceCard from '@/components/ResourceCard.vue'
-import essaylistJson from '../../public/essaylist.json'
-import userlistJson from '../../public/userlist.json'
+// SSR：服务端直接查询 Cloudflare D1（key 与列表页共享，避免重复请求）
+const { data: essayData } = await useFetch('/api/essay-list', { key: 'essaylist' })
+const { data: userData } = await useFetch('/api/user-list', { key: 'userlist' })
 
 const route = useRoute()
 const searchTerm = ref('')
@@ -197,7 +198,7 @@ function performSearch() {
     }))
 
   // 搜索文章（essaylist.json 字段：name/author/publication_time/content）
-  const articles = (essaylistJson.list || [])
+  const articles = (essayData.value?.list || [])
     .filter(
       (article) =>
         (article.name && article.name.toLowerCase().includes(lower)) ||
@@ -222,7 +223,7 @@ function performSearch() {
     })
 
   // 搜索用户（userlist.json 字段：username/nickname/avatar）
-  const users = (userlistJson.list || [])
+  const users = (userData.value?.list || [])
     .filter(
       (user) =>
         (user.username && user.username.toLowerCase().includes(lower)) ||

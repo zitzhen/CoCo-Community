@@ -35,11 +35,11 @@
 </template>
 
 <script setup>
-// SSR：静态 JSON 在构建期打包进 bundle（服务端内部 fetch 静态文件会落到渲染层返回 HTML）
-import essaylistJson from '../../public/essaylist.json'
+// SSR：服务端直接查询 Cloudflare D1（内部 fetch 走真实 nitro API 路由）
+const { data: rawEssays } = await useFetch('/api/essay-list', { key: 'essaylist' })
 
 const essaylist = computed(() =>
-  (essaylistJson.list || []).map(article => ({
+  (rawEssays.value?.list || []).map(article => ({
     ...article,
     pageviews: article.pageviews || 0,
     Like: article.Like || 0,

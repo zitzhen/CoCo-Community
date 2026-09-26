@@ -171,8 +171,6 @@
 <script>
 import { marked } from 'marked';
 import { checkLoginStatus } from '@/script/login';
-// SSR：静态 JSON 在构建期打包进 bundle（服务端内部 fetch 静态文件会落到渲染层返回 HTML）
-import essaylistJson from '../../public/essaylist.json';
 
 export default {
   data() {
@@ -205,7 +203,8 @@ export default {
 
     // SSR：服务端获取文章详情与评论，首屏 HTML 直接渲染
     const { data: ssrData } = await useAsyncData(`essay-detail-${essayId}`, async () => {
-      const list = essaylistJson.list || [];
+      const response = await $fetch('/api/essay-list').catch(() => null);
+      const list = response?.list || [];
       const found = list.find(item => item.id && item.id.toString() === essayId);
       if (!found) return { essay: null, comments: [] };
 

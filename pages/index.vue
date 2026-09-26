@@ -107,12 +107,14 @@
 
 <script setup>
 import ResourceCard from '@/components/ResourceCard.vue'
-import userlistJson from '../public/userlist.json'
 import {
   buildCategories,
   categorize,
   categoryLabel,
 } from '@/utils/category'
+
+// SSR：服务端直接查询 Cloudflare D1（用户总数，key 与用户列表页共享）
+const { data: rawUsers } = await useFetch('/api/user-list', { key: 'userlist' })
 
 function isOctober24th() {
   const today = new Date()
@@ -125,7 +127,7 @@ const loading = ref(true)
 const files = ref([])
 const activeCategory = ref('all')
 
-const developerCount = computed(() => userlistJson.list?.length || 0)
+const developerCount = computed(() => rawUsers.value?.list?.length || 0)
 
 const categories = computed(() => buildCategories(files.value))
 
