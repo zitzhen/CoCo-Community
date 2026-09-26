@@ -38,11 +38,11 @@
 </template>
 
 <script setup>
-// SSR：静态 JSON 在构建期打包进 bundle（服务端内部 fetch 静态文件会落到渲染层返回 HTML）
-import userlistJson from '../../public/userlist.json'
+// SSR：服务端直接查询 Cloudflare D1（内部 fetch 走真实 nitro API 路由）
+const { data: rawUsers } = await useFetch('/api/user-list', { key: 'userlist' })
 
 const userlist = computed(() =>
-  (userlistJson.list || []).map(user => ({
+  (rawUsers.value?.list || []).map(user => ({
     ...user,
     nickname: user.nickname || user.username,
     avatar: user.avatar || `https://avatars.githubusercontent.com/u/${user.github_id || '149680880'}?v=4`,

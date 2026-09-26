@@ -211,8 +211,7 @@ footer {
 <script setup>
 import { ref, onMounted } from 'vue'
 import { checkLoginStatus } from '@/script/login'
-// SSR：静态 JSON 在构建期打包进 bundle（服务端内部 fetch 静态文件会落到渲染层返回 HTML）
-import userlistJson from '../../public/userlist.json'
+// 详细资料（控件清单等）仍在静态 information 目录，构建期打包
 const userDetailModules = import.meta.glob('../../public/information/user/*.json', { eager: true, import: 'default' })
 
 const Nickname = ref('')
@@ -247,8 +246,10 @@ function render_information(basicInformation, detailedInformation) {
 }
 
 // SSR：服务端获取用户基本与详细信息，首屏 HTML 直接渲染
-const { data: userData } = await useAsyncData(`user-page-${username}`, () => {
-  const basic = (userlistJson.list || []).find(u => u.username === username) || null
+const { data: userData } = await useAsyncData(`user-page-${username}`, async () => {
+  const basic = await $fetch('/api/user-list')
+    .then(r => (r.list || []).find(u => u.username === username))
+    .catch(() => null)
   const detailed = userDetailModules[`../../public/information/user/${username}.json`] || null
   return { basic, detailed }
 })
