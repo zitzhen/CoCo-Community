@@ -231,26 +231,6 @@
   padding-top: var(--space-4);
 }
 
-.resources-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-3);
-  margin-bottom: var(--space-5);
-}
-
-.resources-title {
-  font-size: var(--font-h3);
-  font-weight: 700;
-  letter-spacing: -0.2px;
-}
-
-.resources-count {
-  flex-shrink: 0;
-  color: var(--muted);
-  font-size: var(--font-small);
-}
-
 .resource-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -389,10 +369,6 @@
   .resource-grid {
     grid-template-columns: 1fr;
     gap: var(--space-3);
-  }
-
-  .resources-header {
-    align-items: center;
   }
 }
 

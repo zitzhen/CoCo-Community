@@ -66,12 +66,7 @@
           </button>
         </div>
 
-        <header class="resources-header">
-          <h2 id="resources-title" class="resources-title">
-            {{ activeCategoryLabel }}
-          </h2>
-          <span class="resources-count">共 {{ filteredFiles.length }} 个资源</span>
-        </header>
+        <h2 id="resources-title" class="sr-only">{{ activeCategoryLabel }}</h2>
 
         <!-- 加载骨架 -->
         <div v-if="loading" class="resource-grid" role="status" aria-label="资源加载中">
