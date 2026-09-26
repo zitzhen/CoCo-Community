@@ -10,15 +10,6 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   background-color: var(--card);
-  transition: border-color var(--duration-fast) var(--ease),
-    box-shadow var(--duration-fast) var(--ease),
-    transform var(--duration-fast) var(--ease);
-}
-
-.resource-card:hover {
-  border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
 }
 
 /* ---------- 顶部：图标 + 类型 ---------- */
@@ -113,10 +104,4 @@
 
 .resource-card-detail {
   flex: 1;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .resource-card:hover {
-    transform: none;
-  }
 }

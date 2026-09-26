@@ -85,14 +85,8 @@ h1 {
     border-radius: 8px;
     padding: 1.5rem;
     box-shadow: var(--shadow);
-    transition: transform 0.25s, box-shadow 0.25s;
     display: flex;
     flex-direction: column;
-}
-
-.home-control-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .home-control-icon {

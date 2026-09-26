@@ -445,11 +445,6 @@ export default {
   padding: 1rem;
   border-bottom: 1px solid var(--border-color);
   cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.issue-item:hover {
-  background-color: var(--muted-background);
 }
 
 .issue-item:last-child {

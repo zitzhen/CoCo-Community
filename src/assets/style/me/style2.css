@@ -128,12 +128,6 @@ body {
     border: 1px solid var(--border);
     border-radius: 6px;
     overflow: hidden;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.article-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .article-image {
