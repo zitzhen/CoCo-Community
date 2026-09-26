@@ -179,10 +179,13 @@ export default defineEventHandler(async (event) => {
         .bind(name)
         .first();
       if (!existingRow) {
+        // size/author 必须给值：远程表的 size 列是 NOT NULL 无默认值，
+        // 缺省会报 NOT NULL constraint failed（本地表无此约束，测不出来）
+        const sizeText = `${(filePart.data.length / 1024).toFixed(2)} KiB`;
         await env.DB.prepare(
-          "INSERT INTO components (name, downloads, likes, collections, Pageviews) VALUES (?1, 0, 0, 0, 0)"
+          "INSERT INTO components (name, size, downloads, likes, collections, Pageviews, author) VALUES (?1, ?2, 0, 0, 0, 0, ?3)"
         )
-          .bind(name)
+          .bind(name, sizeText, user.login)
           .run();
       }
     } catch (dbErr: any) {
