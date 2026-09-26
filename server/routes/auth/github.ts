@@ -9,7 +9,10 @@ export default defineEventHandler(async (event) => {
     const clientType = url.searchParams.get("client") || request.headers.get("X-Client");
 
     if (!code) {
-      return new Response(JSON.stringify({ error: "missing_code" }), { status: 400 });
+      return new Response(JSON.stringify({ error: "missing_code" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     const tokenRes = await fetch("https://github.com/login/oauth/access_token", {
@@ -37,7 +40,10 @@ export default defineEventHandler(async (event) => {
           GITHUB_CLIENT_ID: !env.GITHUB_CLIENT_ID,
           GITHUB_CLIENT_SECRET: !env.GITHUB_CLIENT_SECRET,
         },
-      }), { status: 401 });
+      }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     // 请求用户Github信息
