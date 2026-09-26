@@ -69,7 +69,9 @@
     <div v-else class="submit-layout">
       <div>
         <!-- 页面头部 -->
-        <header class="submit-hero">
+        <!-- 用 div 而非 header：旧页面的全局 header { background: var(--primary-color) }
+             会在 SPA 导航后残留，把语义化 header 染成蓝底 -->
+        <div class="submit-hero">
           <h1 class="submit-hero-title">
             <span class="submit-hero-icon" aria-hidden="true">
               <i class="fas fa-cloud-arrow-up"></i>
@@ -79,7 +81,7 @@
           <p class="submit-hero-desc">
             分享你的 CoCo 自定义控件，让代码"发扬光大"。提交后即刻发布到资源区。
           </p>
-        </header>
+        </div>
 
         <form class="submit-card card" novalidate @submit.prevent="handleSubmit">
           <!-- 基本信息 -->
