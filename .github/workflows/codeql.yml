@@ -1,0 +1,43 @@
+name: CodeQL Security Scan
+
+# push/PR 时扫描新增漏洞；每周一定时全量扫描以获取最新规则集
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # 周一 07:27 UTC，避开整点高峰
+    - cron: '27 7 * * 1'
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: Analyze (JavaScript/TypeScript)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: javascript-typescript
+          # 首次接入使用默认安全查询套件；后续如需更严格可改为 +security-extended
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v4
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: '/language:javascript-typescript'

@@ -1,0 +1,38 @@
+name: CI
+
+# main 分支推送与所有指向 main 的 PR 均执行构建验证
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+# 同一分支的新推送自动取消旧运行，节省额度
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          # package.json 要求 node >=24.11.0，与 .nvmrc / wrangler.toml 保持一致
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (Nuxt / Cloudflare Pages preset)
+        run: npm run build
