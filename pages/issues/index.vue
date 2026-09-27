@@ -144,7 +144,7 @@ export default {
     return {
       issues: [],
       filteredIssues: [],
-      filterStatus: "all",
+      filterStatus: "open",
       uniqueLabels: [],
       loginstatus: false
     };
@@ -153,7 +153,8 @@ export default {
     // SSR：服务端通过 GitHub 公共 API 获取议题，首屏 HTML 直接渲染
     const { data: ssrIssues } = await useAsyncData('github-issues', () => fetch_github_issues(false));
     const issues = ref(ssrIssues.value || []);
-    const filteredIssues = ref([...issues.value]);
+    // 默认档位为“已打开”，首屏 SSR 数据同样按此过滤
+    const filteredIssues = ref(issues.value.filter(issue => issue.state !== 'closed'));
     const allLabels = issues.value.flatMap(issue => issue.labels || []);
     const uniqueLabels = ref([...new Set(allLabels.map(label => label.name))]);
     return { issues, filteredIssues, uniqueLabels };
@@ -215,7 +216,8 @@ export default {
       this.issues = await fetch_github_issues(false);
     }
     this.extractUniqueLabels();
-    this.filteredIssues = [...this.issues];
+    // 按默认档位（已打开）应用筛选，而不是重置为全部
+    this.filterIssues();
   }
 }
 </script>
