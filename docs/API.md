@@ -514,7 +514,12 @@ Content-Type: application/json
 
 ## 7. GitHub 代理
 
-这组接口在服务端携带用户 Cookie 中的 token 转发 GitHub API，受 1.3 的 Origin 白名单保护。未登录返回 401；白名单外返回 403 `{ "error": "Forbidden: Invalid origin" }`；上游失败透传 GitHub 状态码与 `details`。
+这组接口在服务端转发 GitHub API，受 1.3 的 Origin 白名单保护，白名单外返回 403 `{ "error": "Forbidden: Invalid origin" }`。
+
+**鉴权规则**：
+
+- `GET`（读公开数据）：**允许匿名**——Cookie 中有 token 时携带（5000 次/小时），无 token 时省略 Authorization 走 GitHub 公共 API（60 次/小时/IP）；上游失败透传 GitHub 状态码与 `details`
+- `POST`（创建 issue / 评论）：**必须登录**，无有效 token 返回 401 `{ "authenticated": false }`
 
 | 方法 | 路径 | 说明 |
 | --- | --- | --- |

@@ -12,12 +12,6 @@ export default defineEventHandler(async (event) => {
   if (forbidden) return forbidden;
 
   const token = getGithubToken(request);
-  if (!token || token.length < 10) {
-    return new Response(JSON.stringify({ authenticated: false }), {
-      status: 401,
-      headers: JSON_HEADERS,
-    });
-  }
 
   const number = getRouterParam(event, "number");
   if (!number || !/^\d+$/.test(number)) {
@@ -27,8 +21,14 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  // ---------- POST：发表评论 ----------
+  // ---------- POST：发表评论（必须登录） ----------
   if (request.method === "POST") {
+    if (!token || token.length < 10) {
+      return new Response(JSON.stringify({ authenticated: false }), {
+        status: 401,
+        headers: JSON_HEADERS,
+      });
+    }
     let body;
     try {
       body = await request.json();

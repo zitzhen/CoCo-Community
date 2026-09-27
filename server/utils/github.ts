@@ -40,9 +40,10 @@ export function assertAllowedOrigin(request: Request) {
   return null;
 }
 
-export function githubHeaders(token: string) {
+// token 为空时返回匿名请求头（无 Authorization），用于公开数据的匿名 GET
+export function githubHeaders(token?: string | null) {
   return {
-    Authorization: `Bearer ${token}`,
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
     Accept: "application/vnd.github+json",
     "User-Agent": "Cloudflare-Worker",
   };
@@ -67,6 +68,6 @@ export function getClientKind(request: Request): "web" | "api" {
 // 在用户正文末尾空两行追加来源标记（HTML 注释，GitHub 渲染时不可见，raw 中可审计）
 export function withViaSignature(body: string, client: "web" | "api"): string {
   const tag = `<!-- via coco-community ${client} -->`;
-  const trimmed = (body || "").trimEnd();
+  const trimmed = (body || "").replace(/\s+$/, "");
   return trimmed ? `${trimmed}\n\n\n${tag}` : tag;
 }

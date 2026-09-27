@@ -6,17 +6,12 @@ export default defineEventHandler(async (event) => {
   const forbidden = assertAllowedOrigin(request);
   if (forbidden) return forbidden;
 
+  // 议题详情为公开数据：允许匿名 GET（token 为空时走 GitHub 公共 API）
   const token = getGithubToken(request);
-  if (!token || token.length < 10) {
-    return new Response(JSON.stringify({ authenticated: false }), {
-      status: 401,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
 
   const number = getRouterParam(event, "number");
-  if (!number) {
-    return new Response(JSON.stringify({ error: "Missing issue number" }), {
+  if (!number || !/^\d+$/.test(number)) {
+    return new Response(JSON.stringify({ error: "Missing or invalid issue number" }), {
       status: 400,
       headers: { "Content-Type": "application/json" },
     });

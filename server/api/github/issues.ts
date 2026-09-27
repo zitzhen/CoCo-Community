@@ -12,7 +12,7 @@ const BODY_MAX = 10000
 
 const JSON_HEADERS = { "Content-Type": "application/json" }
 
-async function fetchAllIssues(state: string, token: string) {
+async function fetchAllIssues(state: string, token: string | null) {
   const all: any[] = []
   for (let page = 1; page <= MAX_PAGES; page++) {
     const res = await fetch(
@@ -29,8 +29,8 @@ async function fetchAllIssues(state: string, token: string) {
   return { data: all }
 }
 
-// GET：拉取 open + closed 全量议题（过滤 PR）
-async function handleList(token: string) {
+// GET：拉取 open + closed 全量议题（过滤 PR）。token 可为空（匿名公共 API）
+async function handleList(token: string | null) {
   const [openResult, closedResult] = await Promise.all([
     fetchAllIssues("open", token),
     fetchAllIssues("closed", token),
@@ -131,17 +131,18 @@ export default defineEventHandler(async (event) => {
   const forbidden = assertAllowedOrigin(request)
   if (forbidden) return forbidden
 
-  // 解析 Cookie 中的 GitHub token
+  // 解析 Cookie 中的 GitHub token（GET 允许匿名，POST 必须登录）
   const token = getGithubToken(request)
-  if (!token || token.length < 10) {
-    return new Response(JSON.stringify({ authenticated: false }), {
-      status: 401,
-      headers: JSON_HEADERS,
-    })
-  }
 
   if (request.method === "POST") {
+    if (!token || token.length < 10) {
+      return new Response(JSON.stringify({ authenticated: false }), {
+        status: 401,
+        headers: JSON_HEADERS,
+      })
+    }
     return handleCreate(request, token)
   }
+  // 无 token 时以匿名方式请求 GitHub 公共 API（githubHeaders 会省略 Authorization）
   return handleList(token)
 })
