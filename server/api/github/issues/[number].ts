@@ -35,7 +35,17 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  return new Response(JSON.stringify(await githubResponse.json()), {
+  const issue = await githubResponse.json();
+
+  // /issues/{number} 对 PR 编号也会返回对象，必须显式排除（与列表口径一致）
+  if (issue.pull_request) {
+    return new Response(JSON.stringify({ error: "Not an issue (pull request)", number }), {
+      status: 404,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  return new Response(JSON.stringify(issue), {
     status: 200,
     headers: {
       "Content-Type": "application/json",

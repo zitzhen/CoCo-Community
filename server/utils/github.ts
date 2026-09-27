@@ -3,6 +3,13 @@ function checkOrigin(value: string) {
   try {
     const url = new URL(value);
     if (url.origin === "https://cc.zitzhen.cn") return true;
+    // Cloudflare Pages 预览部署（<branch>.<project>.pages.dev）
+    if (
+      url.protocol === "https:" &&
+      (url.hostname === "pages.dev" || url.hostname.endsWith(".pages.dev"))
+    ) {
+      return true;
+    }
     // 开发环境白名单
     if (url.hostname === "localhost" || url.hostname === "127.0.0.1" || url.hostname.endsWith(".test")) return true;
   } catch {
