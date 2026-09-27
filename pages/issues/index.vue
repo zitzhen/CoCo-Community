@@ -114,8 +114,6 @@
 </template>
 
 <script>
-import { marked } from 'marked';
-
 async function fetch_github_issues(loginstatus) {
     try{
       let open_issues_response;

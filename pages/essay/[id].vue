@@ -170,6 +170,7 @@
 
 <script>
 import { marked } from 'marked';
+import { sanitizeHtmlOutput } from '@/utils/sanitize';
 import { checkLoginStatus } from '@/script/login';
 
 export default {
@@ -218,7 +219,7 @@ export default {
           Like: found.Like || 0,
           collect: found.collect || 0,
           comments: commentRes?.data?.count || found.comments || 0,
-          content: marked(found.content || "")
+          content: sanitizeHtmlOutput(marked(found.content || ""))
         },
         comments: commentRes?.data?.comment || []
       };
@@ -269,7 +270,7 @@ export default {
         
         if (essay) {
           // 使用marked解析Markdown内容
-          const parsedContent = marked(essay.content || "");
+          const parsedContent = sanitizeHtmlOutput(marked(essay.content || ""));
           this.essay = {
             name: essay.name,
             author: essay.author,

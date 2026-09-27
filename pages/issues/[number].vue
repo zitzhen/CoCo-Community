@@ -61,6 +61,7 @@
 
 <script>
 import { marked } from 'marked';
+import { sanitizeHtmlOutput } from '@/utils/sanitize';
 
 async function fetchIssueDetails(number, loginstatus) {
   try {
@@ -163,7 +164,8 @@ export default {
   },
   computed: {
     issueBodyContent() {
-      return this.issue?.body ? marked.parse(this.issue.body) : '';
+      // GitHub issue 正文是任意用户可写内容，必须消毒后才能 v-html
+      return this.issue?.body ? sanitizeHtmlOutput(marked.parse(this.issue.body)) : '';
     }
   },
   methods: {
@@ -177,7 +179,8 @@ export default {
       });
     },    
     commentBodyContent(comment) {
-      return comment.body ? marked.parse(comment.body) : '';
+      // GitHub 评论同样是任意用户可写内容
+      return comment.body ? sanitizeHtmlOutput(marked.parse(comment.body)) : '';
     }
   },
   async mounted() {

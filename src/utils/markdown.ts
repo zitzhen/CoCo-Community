@@ -1,4 +1,5 @@
 import { Marked } from 'marked'
+import { sanitizeHtmlOutput } from '@/utils/sanitize'
 
 /* ============================================================
    Markdown 渲染（marked v16，独立实例，不影响全局 marked）
@@ -67,5 +68,5 @@ export function renderMarkdown(markdown) {
     'https://cc.zitzhen.cn/control/',
     '/resource/'
   )
-  return markedInstance.parse(normalized)
+  return sanitizeHtmlOutput(markedInstance.parse(normalized))
 }
