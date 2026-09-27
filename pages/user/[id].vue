@@ -1,6 +1,4 @@
 <template>
-<div id="app">
-</div>
     <div class="container-user" id="avatar">
     <!-- 用户信息头部 -->
     <div class="profile-header-user">
