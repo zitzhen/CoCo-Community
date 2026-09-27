@@ -44,9 +44,9 @@
             <span class="issues-count">{{ filteredIssues.length }}</span>
           </div>
           <div class="issues-actions">
-            <button class="new-issue-btn" @click="isnewissues = true">
+            <NuxtLink to="/issues/new" class="new-issue-btn">
               <i aria-hidden="true" class="fas fa-plus"></i> 新建 Issue
-            </button>
+            </NuxtLink>
           </div>
         </div>
 
@@ -88,65 +88,6 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
-
-    
-    
-    <!-- 新建议题弹窗 -->
-    <div v-show="isnewissues" class="modal-overlay" :class="{ active: isnewissues }" @click="closenewissueModal">
-      <div class="modal create-issue-modal" @click.stop>
-        <div class="modal-header">
-          <h2 class="modal-title">新建 Issue</h2>
-          <button class="close-btn" aria-label="关闭弹窗" @click="closenewissueModal">×</button>
-        </div>
-
-        <!-- 未登录 -->
-        <template v-if="!currentUser">
-          <div class="modal-body">
-            <p>登录 GitHub 账号后即可在社区内提交 Issue。</p>
-            <p>也可以直接在 GitHub 上创建：<a href="https://github.com/zitzhen/CoCo-Community/issues" target="_blank" rel="noopener noreferrer">github.com/zitzhen/CoCo-Community/issues</a></p>
-          </div>
-          <div class="modal-footer">
-            <NuxtLink to="/login" class="modal-btn modal-btn-primary">去登录</NuxtLink>
-            <button type="button" class="modal-btn modal-btn-cancel" @click="closenewissueModal">取消</button>
-          </div>
-        </template>
-
-        <!-- 已登录：创建表单 -->
-        <template v-else>
-          <div class="modal-body">
-            <div class="form-group">
-              <label for="issue-title">标题</label>
-              <input
-                id="issue-title"
-                v-model="newIssue.title"
-                type="text"
-                maxlength="256"
-                placeholder="简要描述问题或建议"
-                :disabled="creating"
-              >
-            </div>
-            <div class="form-group">
-              <label for="issue-body">正文（支持 Markdown，可选）</label>
-              <textarea
-                id="issue-body"
-                v-model="newIssue.body"
-                rows="10"
-                maxlength="10000"
-                placeholder="复现步骤、期望行为、实际行为、环境信息……"
-                :disabled="creating"
-              ></textarea>
-            </div>
-            <p class="form-error" v-if="createError">{{ createError }}</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="modal-btn modal-btn-cancel" @click="closenewissueModal" :disabled="creating">取消</button>
-            <button type="button" class="modal-btn modal-btn-primary" @click="submitIssue" :disabled="creating">
-              {{ creating ? '提交中…' : '提交 Issue' }}
-            </button>
-          </div>
-        </template>
       </div>
     </div>
 </template>
@@ -205,14 +146,6 @@ export default {
       filteredIssues: [],
       filterStatus: "all",
       uniqueLabels: [],
-      isnewissues: false,
-      creating: false,
-      createError: '',
-      currentUser: null,
-      newIssue: {
-        title: '',
-        body: ''
-      },
       loginstatus: false
     };
   },
@@ -268,69 +201,12 @@ export default {
     },
     goToIssueDetail(issueNumber) {
       this.$router.push(`/issues/${issueNumber}`);
-    },
-    closenewissueModal() {
-      this.isnewissues = false;
-      this.createError = '';
-    },
-    resetNewIssueForm() {
-      this.newIssue.title = '';
-      this.newIssue.body = '';
-      this.createError = '';
-    },
-    async submitIssue() {
-      const title = this.newIssue.title.trim();
-      if (!title) {
-        this.createError = '请填写标题';
-        return;
-      }
-
-      this.creating = true;
-      this.createError = '';
-      try {
-        const res = await fetch('/api/github/issues', {
-          method: 'POST',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            title,
-            body: this.newIssue.body.trim()
-          })
-        });
-        const data = await res.json().catch(() => ({}));
-
-        if (!res.ok) {
-          if (res.status === 401) {
-            this.currentUser = null;
-            this.loginstatus = false;
-            this.createError = '登录已失效，请重新登录';
-          } else if (data?.error === 'forbidden' || res.status === 403) {
-            this.createError = '请求来源不被允许';
-          } else if (data?.error === 'GitHub API create issue failed') {
-            this.createError = 'GitHub 拒绝了创建请求（可能触发了频率限制），请稍后再试';
-          } else {
-            this.createError = data?.detail || data?.error || '提交失败，请稍后再试';
-          }
-          return;
-        }
-
-        // 创建成功：跳转到新议题详情页
-        this.isnewissues = false;
-        this.resetNewIssueForm();
-        this.$router.push(`/issues/${data.number}`);
-      } catch (err) {
-        console.error('创建 Issue 失败:', err);
-        this.createError = '网络错误，请稍后再试';
-      } finally {
-        this.creating = false;
-      }
     }
   },
   async mounted() {
     // 先确认登录态（旧实现从未更新该值，导致代理接口永远不会被调用）
     const loginInfo = await checkLoginStatus();
-    this.currentUser = loginInfo?.authenticated ? loginInfo.user : null;
-    this.loginstatus = !!this.currentUser;
+    this.loginstatus = !!(loginInfo?.authenticated);
 
     if (this.loginstatus) {
       // 登录后用代理重新拉取（额度更高）；SSR 公共 API 数据可被替换
@@ -340,13 +216,11 @@ export default {
     }
     this.extractUniqueLabels();
     this.filteredIssues = [...this.issues];
-    this.isnewissues = false;
   }
 }
 </script>
 
 <style>
-@import url(@/assets/css/popup.css);
 @import url(@/assets/css/dark.css);
 
 :root {
@@ -478,6 +352,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  text-decoration: none;
 }
 
 .new-issue-btn:hover {
@@ -694,75 +569,6 @@ export default {
   max-width: 100%;
   border-radius: 8px;
   margin: 1rem 0;
-}
-
-/* ---------- 新建 Issue 表单 ---------- */
-.create-issue-modal {
-  width: min(640px, 92vw);
-  max-height: 86vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.create-issue-modal .modal-body {
-  overflow-y: auto;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.form-group label {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-color);
-}
-
-.form-group input,
-.form-group textarea {
-  width: 100%;
-  padding: 0.55rem 0.7rem;
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  background: var(--background-color);
-  color: var(--text-color);
-  font-size: 0.95rem;
-  font-family: inherit;
-  resize: vertical;
-  box-sizing: border-box;
-}
-
-.form-group input:focus,
-.form-group textarea:focus {
-  outline: 2px solid color-mix(in srgb, var(--primary) 35%, transparent);
-  border-color: var(--primary);
-}
-
-.form-error {
-  color: var(--closed-color, #ef4444);
-  font-size: 0.85rem;
-  margin: 0.5rem 0 0;
-}
-
-.modal-btn-primary {
-  background-color: #22c55e;
-  color: #fff;
-  border: none;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-}
-
-.modal-btn-primary:hover {
-  background-color: #16a34a;
-}
-
-.modal-btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }
 
 @media (max-width: 1024px) {
