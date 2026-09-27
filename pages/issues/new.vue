@@ -81,6 +81,11 @@ export default {
       errorMsg: ''
     };
   },
+  setup() {
+    // 浏览器标签页标题
+    useHead({ title: '新建 Issue | Issues | CoCo-Community' });
+    return {};
+  },
   methods: {
     async submitIssue() {
       const title = this.form.title.trim();

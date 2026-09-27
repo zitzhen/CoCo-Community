@@ -208,6 +208,16 @@ export default {
 
     const issue = ref(ssrData.value?.issue ?? null);
     const comments = ref(ssrData.value?.comments ?? []);
+
+    // 浏览器标签页标题：<issue 标题> #<编号> | Issues | CoCo-Community
+    useHead({
+      titleTemplate: null,
+      title: () =>
+        issue.value
+          ? `${issue.value.title} #${issue.value.number} | Issues | CoCo-Community`
+          : 'Issues | CoCo-Community',
+    });
+
     return { issue, comments };
   },
   computed: {

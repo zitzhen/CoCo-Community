@@ -157,6 +157,10 @@ export default {
     const filteredIssues = ref(issues.value.filter(issue => issue.state !== 'closed'));
     const allLabels = issues.value.flatMap(issue => issue.labels || []);
     const uniqueLabels = ref([...new Set(allLabels.map(label => label.name))]);
+
+    // 浏览器标签页标题
+    useHead({ title: 'Issues | CoCo-Community' });
+
     return { issues, filteredIssues, uniqueLabels };
   },
 
