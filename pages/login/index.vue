@@ -32,7 +32,9 @@ export default{
     data(){
         return{
             Welcome_text:"Hello,欢迎来到CoCo-Community，请使用GitHub登录",
-            githubAuthUrl:"https://github.com/login/oauth/authorize?client_id=Ov23lii4E31EzV9VMW7B&redirect_uri=https://cc.zitzhen.cn/auth/github?client=web",
+            // scope=public_repo：在公共仓库创建 issue / 发表评论所必需；
+            // 不带 scope 的令牌只有公开读权限，写操作会被 GitHub 403
+            githubAuthUrl:"https://github.com/login/oauth/authorize?client_id=Ov23lii4E31EzV9VMW7B&scope=public_repo&redirect_uri=https://cc.zitzhen.cn/auth/github?client=web",
         }
     },
     async mounted(){
@@ -40,7 +42,7 @@ export default{
         const { origin, hostname } = window.location;
         if (hostname.endsWith(".pages.dev")) {
             const redirectUri = encodeURIComponent(`${origin}/auth/github?client=web`);
-            this.githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=Ov23lii4E31EzV9VMW7B&redirect_uri=${redirectUri}`;
+            this.githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=Ov23lii4E31EzV9VMW7B&scope=public_repo&redirect_uri=${redirectUri}`;
         }
 
         checkLoginStatus().then((logininformation) => {

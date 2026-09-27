@@ -1,5 +1,10 @@
 import { getCloudflareContext } from "~/server/utils/cloudflare"
 import { assertAllowedOrigin, getGithubToken, githubHeaders } from "~/server/utils/github"
+// @ts-nocheck
+
+const REPO = "zitzhen/CoCo-Community"
+const BODY_MAX = 5000
+const JSON_HEADERS = { "Content-Type": "application/json" }
 
 export default defineEventHandler(async (event) => {
   const { request } = getCloudflareContext(event);
@@ -10,20 +15,71 @@ export default defineEventHandler(async (event) => {
   if (!token || token.length < 10) {
     return new Response(JSON.stringify({ authenticated: false }), {
       status: 401,
-      headers: { "Content-Type": "application/json" },
+      headers: JSON_HEADERS,
     });
   }
 
   const number = getRouterParam(event, "number");
-  if (!number) {
-    return new Response(JSON.stringify({ error: "Missing issue number" }), {
+  if (!number || !/^\d+$/.test(number)) {
+    return new Response(JSON.stringify({ error: "Missing or invalid issue number" }), {
       status: 400,
-      headers: { "Content-Type": "application/json" },
+      headers: JSON_HEADERS,
     });
   }
 
+  // ---------- POST：发表评论 ----------
+  if (request.method === "POST") {
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return new Response(JSON.stringify({ error: "invalid_json" }), {
+        status: 400,
+        headers: JSON_HEADERS,
+      });
+    }
+
+    const content = typeof body?.body === "string" ? body.body.trim() : "";
+    if (!content) {
+      return new Response(JSON.stringify({ error: "missing_body" }), {
+        status: 400,
+        headers: JSON_HEADERS,
+      });
+    }
+    if (content.length > BODY_MAX) {
+      return new Response(
+        JSON.stringify({ error: "body_too_long", detail: `评论不能超过 ${BODY_MAX} 个字符` }),
+        { status: 400, headers: JSON_HEADERS }
+      );
+    }
+
+    const githubResponse = await fetch(
+      `https://api.github.com/repos/${REPO}/issues/${number}/comments`,
+      {
+        method: "POST",
+        headers: { ...githubHeaders(token), "Content-Type": "application/json" },
+        body: JSON.stringify({ body: content }),
+      }
+    );
+
+    const text = await githubResponse.text();
+    if (!githubResponse.ok) {
+      // 议题不存在 / 已关闭不可评论等情况透传 GitHub 状态码
+      return new Response(
+        JSON.stringify({ error: "GitHub API create comment failed", details: text }),
+        { status: githubResponse.status, headers: JSON_HEADERS }
+      );
+    }
+
+    return new Response(text, {
+      status: githubResponse.status,
+      headers: { ...JSON_HEADERS, "Access-Control-Allow-Origin": "https://cc.zitzhen.cn" },
+    });
+  }
+
+  // ---------- GET：评论列表（GitHub 默认每页 30 条） ----------
   const githubResponse = await fetch(
-    `https://api.github.com/repos/zitzhen/CoCo-Community/issues/${number}/comments`,
+    `https://api.github.com/repos/${REPO}/issues/${number}/comments`,
     { headers: githubHeaders(token) },
   );
 
@@ -31,14 +87,14 @@ export default defineEventHandler(async (event) => {
     const errorText = await githubResponse.text();
     return new Response(JSON.stringify({ error: "GitHub API request failed", details: errorText }), {
       status: githubResponse.status,
-      headers: { "Content-Type": "application/json" },
+      headers: JSON_HEADERS,
     });
   }
 
   return new Response(JSON.stringify(await githubResponse.json()), {
     status: 200,
     headers: {
-      "Content-Type": "application/json",
+      ...JSON_HEADERS,
       "Access-Control-Allow-Origin": "https://cc.zitzhen.cn",
     },
   });

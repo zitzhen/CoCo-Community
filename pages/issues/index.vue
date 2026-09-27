@@ -93,55 +93,91 @@
 
     
     
-    <!--不能新建议题弹窗-->
+    <!-- 新建议题弹窗 -->
     <div v-show="isnewissues" class="modal-overlay" :class="{ active: isnewissues }" @click="closenewissueModal">
-      <div class="modal" @click.stop>
+      <div class="modal create-issue-modal" @click.stop>
         <div class="modal-header">
-          <h2 class="modal-title">抱歉暂时不能新建议题</h2>
+          <h2 class="modal-title">新建 Issue</h2>
           <button class="close-btn" aria-label="关闭弹窗" @click="closenewissueModal">×</button>
         </div>
-        <div class="modal-body">
-          <p>抱歉，我们暂时无法新建议题</p>
-          <p>这可能是此功能正在开发</p>
-          <p>如果您想立即新建议题，请通过Github创建议题</p>
-          <p>打开Github:<a href="https://github.com/zitzhen/CoCo-Community/issues">https://github.com/zitzhen/CoCo-Community/issues</a></p>
-        </div>
-        <div class="modal-footer">
-          <button class="modal-btn modal-btn-cancel" @click="closenewissueModal">好的</button>
-        </div>
+
+        <!-- 未登录 -->
+        <template v-if="!currentUser">
+          <div class="modal-body">
+            <p>登录 GitHub 账号后即可在社区内提交 Issue。</p>
+            <p>也可以直接在 GitHub 上创建：<a href="https://github.com/zitzhen/CoCo-Community/issues" target="_blank" rel="noopener noreferrer">github.com/zitzhen/CoCo-Community/issues</a></p>
+          </div>
+          <div class="modal-footer">
+            <NuxtLink to="/login" class="modal-btn modal-btn-primary">去登录</NuxtLink>
+            <button type="button" class="modal-btn modal-btn-cancel" @click="closenewissueModal">取消</button>
+          </div>
+        </template>
+
+        <!-- 已登录：创建表单 -->
+        <template v-else>
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="issue-title">标题</label>
+              <input
+                id="issue-title"
+                v-model="newIssue.title"
+                type="text"
+                maxlength="256"
+                placeholder="简要描述问题或建议"
+                :disabled="creating"
+              >
+            </div>
+            <div class="form-group">
+              <label for="issue-body">正文（支持 Markdown，可选）</label>
+              <textarea
+                id="issue-body"
+                v-model="newIssue.body"
+                rows="10"
+                maxlength="10000"
+                placeholder="复现步骤、期望行为、实际行为、环境信息……"
+                :disabled="creating"
+              ></textarea>
+            </div>
+            <p class="form-error" v-if="createError">{{ createError }}</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="modal-btn modal-btn-cancel" @click="closenewissueModal" :disabled="creating">取消</button>
+            <button type="button" class="modal-btn modal-btn-primary" @click="submitIssue" :disabled="creating">
+              {{ creating ? '提交中…' : '提交 Issue' }}
+            </button>
+          </div>
+        </template>
       </div>
     </div>
 </template>
 
 <script>
+import { checkLoginStatus } from '@/script/login';
+
 async function fetch_github_issues(loginstatus) {
     try{
-      let open_issues_response;
-      let closed_issues_response;
+      let rawIssues;
 
       if (loginstatus) {
-          open_issues_response = await fetch('/api/github/issues');
-          closed_issues_response = { ok: true, json: async () => [] }; // 本地 API 不区分状态，直接空数组
+          // 登录后走同源代理：服务端已聚合 open+closed 全量并过滤 PR
+          const response = await fetch('/api/github/issues');
+          if (!response.ok) throw new Error('代理接口请求失败');
+          rawIssues = await response.json();
       } else {
-          open_issues_response = await fetch('https://api.github.com/repos/zitzhen/CoCo-Community/issues?state=open');
-          closed_issues_response = await fetch('https://api.github.com/repos/zitzhen/CoCo-Community/issues?state=closed');
+          // 未登录走 GitHub 公共 API（SSR 首屏同样走这里）
+          const [openRes, closedRes] = await Promise.all([
+            fetch('https://api.github.com/repos/zitzhen/CoCo-Community/issues?state=open'),
+            fetch('https://api.github.com/repos/zitzhen/CoCo-Community/issues?state=closed')
+          ]);
+          if (!openRes.ok || !closedRes.ok) throw new Error('网络响应失败');
+          rawIssues = [].concat(await openRes.json(), await closedRes.json());
       }
-
-      // 检查请求是否成功
-      if (!open_issues_response.ok || !closed_issues_response.ok) {
-          throw new Error('网络响应失败');
-      }
-
-      // 获取数据
-      const openData = await open_issues_response.json();
-      const closedData = await closed_issues_response.json();
 
       // 过滤掉 PR
-      const pureOpen = openData.filter(item => !item.pull_request);
-      const pureClosed = closedData.filter(item => !item.pull_request);
+      const pureIssues = rawIssues.filter(item => !item.pull_request);
 
-      // 将 GitHub API 数据结构映射为前端使用的格式
-      const mapIssueData = (issue) => ({
+      // 映射为前端使用的格式（保留 labels / user 原始对象用于徽章与头像）
+      return pureIssues.map(issue => ({
         id: issue.id,
         number: issue.number,
         title: issue.title,
@@ -149,18 +185,11 @@ async function fetch_github_issues(loginstatus) {
         date: issue.created_at,
         body: issue.body || '',
         comments: issue.comments || 0,
-        state: issue.state, // GitHub API 使用 state 字段
-        closed_at: issue.closed_at
-      });
-
-      // 映射数据结构
-      const mappedOpenIssues = pureOpen.map(mapIssueData);
-      const mappedClosedIssues = pureClosed.map(mapIssueData);
-
-      // 合并返回
-      const data = mappedOpenIssues.concat(mappedClosedIssues);
-      return data;
-
+        state: issue.state,
+        closed_at: issue.closed_at,
+        labels: issue.labels || [],
+        user: issue.user || null
+      }));
     } catch (error) {
         console.error('获取 GitHub 议题失败:', error);
         return [];
@@ -175,11 +204,11 @@ export default {
       issues: [],
       filteredIssues: [],
       filterStatus: "all",
-      showIssueDetail: false,
-      selectedIssue: null,
-      selectedIssueContent: "",
       uniqueLabels: [],
       isnewissues: false,
+      creating: false,
+      createError: '',
+      currentUser: null,
       newIssue: {
         title: '',
         body: ''
@@ -192,9 +221,8 @@ export default {
     const { data: ssrIssues } = await useAsyncData('github-issues', () => fetch_github_issues(false));
     const issues = ref(ssrIssues.value || []);
     const filteredIssues = ref([...issues.value]);
-    const uniqueLabels = ref([]);
     const allLabels = issues.value.flatMap(issue => issue.labels || []);
-    uniqueLabels.value = [...new Set(allLabels.map(label => label.name))];
+    const uniqueLabels = ref([...new Set(allLabels.map(label => label.name))]);
     return { issues, filteredIssues, uniqueLabels };
   },
 
@@ -222,70 +250,96 @@ export default {
     },
     extractUniqueLabels() {
       const allLabels = this.issues.flatMap(issue => issue.labels || []);
-      const labelNames = [...new Set(allLabels.map(label => label.name))];
-      this.uniqueLabels = labelNames;
+      this.uniqueLabels = [...new Set(allLabels.map(label => label.name))];
     },
     getLabelColor(labelName) {
       // 根据标签名称生成颜色 - 简单的哈希函数
       const colors = [
-        "#e11d21", "#d93f0b", "#d1bcf9", "#5319e7", 
-        "#84b6eb", "#0052cc", "#2e7b32", "#a2eeef", 
+        "#e11d21", "#d93f0b", "#d1bcf9", "#5319e7",
+        "#84b6eb", "#0052cc", "#2e7b32", "#a2eeef",
         "#c6c6c6", "#fbca04"
       ];
-      
+
       let hash = 0;
       for (let i = 0; i < labelName.length; i++) {
         hash = labelName.charCodeAt(i) + ((hash << 5) - hash);
       }
-      const index = Math.abs(hash) % colors.length;
-      return colors[index];
+      return colors[Math.abs(hash) % colors.length];
     },
     goToIssueDetail(issueNumber) {
       this.$router.push(`/issues/${issueNumber}`);
     },
-    createNewIssue() {
-      // 在实际应用中，这里应该跳转到创建新issue的页面
-      alert('创建新 Issue 功能正在开发中');
-    },
     closenewissueModal() {
       this.isnewissues = false;
+      this.createError = '';
     },
-    cancelNewIssue() {
+    resetNewIssueForm() {
       this.newIssue.title = '';
       this.newIssue.body = '';
+      this.createError = '';
     },
     async submitIssue() {
-      if (!this.newIssue.title.trim() || !this.newIssue.body.trim()) {
-        alert('请填写标题和内容');
+      const title = this.newIssue.title.trim();
+      if (!title) {
+        this.createError = '请填写标题';
         return;
       }
-      
-      // 创建新议题
-      const issue = {
-        id: this.issues.length + 1,
-        number: this.issues.length + 1,
-        title: this.newIssue.title,
-        author: this.username,
-        date: new Date(),
-        body: this.newIssue.body,
-        comments: 0,
-        state: "open"  // 修复：使用state而不是status
-      };
-      
-      this.issues.unshift(issue);
-      this.cancelNewIssue();
-      // 更新过滤后的 issues
-      this.filterIssues();
-    },
+
+      this.creating = true;
+      this.createError = '';
+      try {
+        const res = await fetch('/api/github/issues', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title,
+            body: this.newIssue.body.trim()
+          })
+        });
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          if (res.status === 401) {
+            this.currentUser = null;
+            this.loginstatus = false;
+            this.createError = '登录已失效，请重新登录';
+          } else if (data?.error === 'forbidden' || res.status === 403) {
+            this.createError = '请求来源不被允许';
+          } else if (data?.error === 'GitHub API create issue failed') {
+            this.createError = 'GitHub 拒绝了创建请求（可能触发了频率限制），请稍后再试';
+          } else {
+            this.createError = data?.detail || data?.error || '提交失败，请稍后再试';
+          }
+          return;
+        }
+
+        // 创建成功：跳转到新议题详情页
+        this.isnewissues = false;
+        this.resetNewIssueForm();
+        this.$router.push(`/issues/${data.number}`);
+      } catch (err) {
+        console.error('创建 Issue 失败:', err);
+        this.createError = '网络错误，请稍后再试';
+      } finally {
+        this.creating = false;
+      }
+    }
   },
   async mounted() {
-    // SSR 已取到议题则跳过，避免客户端重复请求
-    if (this.issues.length === 0) {
-      this.issues = await fetch_github_issues(this.loginstatus);
-      this.extractUniqueLabels();
+    // 先确认登录态（旧实现从未更新该值，导致代理接口永远不会被调用）
+    const loginInfo = await checkLoginStatus();
+    this.currentUser = loginInfo?.authenticated ? loginInfo.user : null;
+    this.loginstatus = !!this.currentUser;
+
+    if (this.loginstatus) {
+      // 登录后用代理重新拉取（额度更高）；SSR 公共 API 数据可被替换
+      this.issues = await fetch_github_issues(true);
+    } else if (this.issues.length === 0) {
+      this.issues = await fetch_github_issues(false);
     }
+    this.extractUniqueLabels();
     this.filteredIssues = [...this.issues];
-    // 确保在页面加载时不会显示新建议题弹窗
     this.isnewissues = false;
   }
 }
@@ -640,6 +694,75 @@ export default {
   max-width: 100%;
   border-radius: 8px;
   margin: 1rem 0;
+}
+
+/* ---------- 新建 Issue 表单 ---------- */
+.create-issue-modal {
+  width: min(640px, 92vw);
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.create-issue-modal .modal-body {
+  overflow-y: auto;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--background-color);
+  color: var(--text-color);
+  font-size: 0.95rem;
+  font-family: inherit;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: 2px solid color-mix(in srgb, var(--primary) 35%, transparent);
+  border-color: var(--primary);
+}
+
+.form-error {
+  color: var(--closed-color, #ef4444);
+  font-size: 0.85rem;
+  margin: 0.5rem 0 0;
+}
+
+.modal-btn-primary {
+  background-color: #22c55e;
+  color: #fff;
+  border: none;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.modal-btn-primary:hover {
+  background-color: #16a34a;
+}
+
+.modal-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 @media (max-width: 1024px) {

@@ -519,15 +519,50 @@ Content-Type: application/json
 | 方法 | 路径 | 说明 |
 | --- | --- | --- |
 | GET | `/api/github/issues` | 分页拉取 open + closed 全量议题（100 条/页，最多 10 页），过滤 PR 后合并返回 GitHub 原始数组 |
+| POST | `/api/github/issues` | 代登录用户创建议题，见 [7.1](#71-创建议题) |
 | GET | `/api/github/issues/{number}` | 单个议题；number 命中 PR 时返回 404 `{ "error": "Not an issue (pull request)" }` |
 | GET | `/api/github/issues/{number}/comments` | 议题评论的 GitHub 原始数组 |
+| POST | `/api/github/issues/{number}/comments` | 代登录用户发表评论，见 [7.2](#72-发表评论) |
 | GET | `/api/github/user?username={login}` | 代理 `GET api.github.com/users/{login}` 公开资料 |
+
+### 7.1 创建议题
+
+```
+POST /api/github/issues
+Content-Type: application/json
+```
+
+**认证**：Cookie 中的 GitHub token（同时受 Origin 白名单保护）。以 token 所属用户身份创建。
+
+请求体：
+
+```json
+{
+  "title": "必填，trim 后 1-256 字符",
+  "body": "可选，Markdown，trim 后 ≤ 10000 字符"
+}
+```
+
+成功：透传 GitHub 201 响应（创建结果原始对象，前端使用其中的 `number` 跳转详情页）。错误：400 `invalid_json` / `missing_title` / `title_too_long` / `body_too_long`；401 未登录；403 来源不在白名单；其余失败透传 GitHub 状态码与 `{ error: "GitHub API create issue failed", details }`。
+
+> 服务端不设置 labels：非仓库协作者指定标签会被 GitHub 静默丢弃，标签由维护者后续在 GitHub 端添加。
+
+### 7.2 发表评论
+
+```
+POST /api/github/issues/{number}/comments
+Content-Type: application/json
+```
+
+请求体：`{ "body": "必填，trim 后 1-5000 字符，支持 Markdown" }`
+
+成功：透传 GitHub 201 响应（新建评论原始对象）。错误：400 `invalid_json` / `missing_body` / `body_too_long` / `Missing or invalid issue number`；401 未登录；403 来源不合法；议题不存在等错误透传 GitHub 状态码与 `{ error: "GitHub API create comment failed", details }`。
 
 注意事项：
 
-- 议题列表已服务端聚合分页，单次最多返回 1000 条；评论接口仍遵循 GitHub 默认每页 30 条，暂未分页
+- 议题列表已服务端聚合分页，单次最多返回 1000 条；评论 GET 接口仍遵循 GitHub 默认每页 30 条，暂未分页
 - 成功响应头带 `Access-Control-Allow-Origin: https://cc.zitzhen.cn`
-- 前端目前 SSR 阶段直连 GitHub 公共 API（未认证额度 60 次/小时），这组代理主要供登录后的客户端使用
+- 所有渲染到页面的议题/评论正文在前端经 `sanitize-html` 消毒后才会插入 HTML
 
 ---
 
