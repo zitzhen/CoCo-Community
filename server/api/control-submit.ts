@@ -7,7 +7,7 @@ import { jwtVerify } from 'jose'
 // - 已有控件：仅作者本人可提交新版本，合并版本列表并更新 Current_version
 const MAX_JSX_SIZE = 100 * 1024 // 100 KiB
 const MAX_README_SIZE = 100 * 1024 // 100 KiB
-const NAME_RE = /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/
+const NAME_RE = /^[A-Za-z0-9一-鿿][A-Za-z0-9_一-鿿-]{0,63}$/
 const VERSION_RE = /^\d{1,4}(\.\d{1,4}){0,3}$/
 
 export default defineEventHandler(async (event) => {
