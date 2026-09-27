@@ -283,6 +283,10 @@
             <i class="fas fa-code-branch" aria-hidden="true"></i>
             <span>重复提交同名版本会覆盖旧文件，请确认版本号后再提交。</span>
           </li>
+          <li>
+            <i class="fab fa-github" aria-hidden="true"></i>
+            <span>也可以 <NuxtLink to="/new-control/repo">从 Git 仓库导入并自动同步</NuxtLink>。</span>
+          </li>
         </ul>
       </aside>
     </div>

@@ -124,6 +124,40 @@
         </form>
       </div>
       
+      <!-- Git 仓库同步 -->
+      <div class="profile-edit-section">
+        <h3>Git 仓库同步</h3>
+        <p style="color: var(--muted-foreground); font-size: 14px;">
+          将基于 control-template 模板的 GitHub 仓库绑定到控件，push 后自动增量同步新版本。
+          <NuxtLink to="/new-control/repo" style="color: var(--primary);">去绑定仓库 →</NuxtLink>
+        </p>
+        <div v-if="syncBindings.length > 0" style="margin-top: 12px;">
+          <div
+            v-for="b in syncBindings"
+            :key="b.controlName"
+            style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); flex-wrap: wrap;"
+          >
+            <div style="flex: 1; min-width: 200px;">
+              <div style="font-weight: 600;">{{ b.controlName }}</div>
+              <div style="font-size: 13px; color: var(--muted-foreground);">
+                <a :href="`https://github.com/${b.repo}`" target="_blank" rel="noopener noreferrer" style="color: var(--primary);">{{ b.repo }}</a>
+                · 分支 {{ b.branch }}
+                <span v-if="b.lastSyncedAt"> · 最近同步 {{ formatSyncTime(b.lastSyncedAt) }}（{{ syncStatusText(b.lastSyncStatus) }}）</span>
+                <span v-else> · 尚未同步</span>
+              </div>
+            </div>
+            <button type="button" class="save-btn" :disabled="b._syncing" @click="syncBinding(b)">
+              {{ b._syncing ? '同步中…' : '立即同步' }}
+            </button>
+            <button type="button" class="save-btn" style="background:#ef4444;" @click="unbindControl(b.controlName)">
+              解绑
+            </button>
+          </div>
+          <p v-if="syncMessage" style="margin-top: 10px; font-size: 14px;" :style="{ color: syncMessageType === 'error' ? '#ef4444' : 'var(--muted-foreground)' }">{{ syncMessage }}</p>
+        </div>
+        <p v-else style="margin-top: 12px; color: var(--muted-foreground); font-size: 14px;">暂无绑定的仓库</p>
+      </div>
+
       <h2>账户及相关管理</h2>
       <button @click="openModal" class="logout-btn">退出登录</button>
     </div>
@@ -498,6 +532,73 @@ export default {
     const editNickname = ref("");
     const editAvatar = ref("");
     const isUpdating = ref(false);
+
+    // Git 仓库同步绑定列表
+    const syncBindings = ref([]);
+    const syncMessage = ref("");
+    const syncMessageType = ref("info");
+
+    async function fetchSyncBindings() {
+      try {
+        const data = await $fetch('/api/github-sync/list');
+        syncBindings.value = (data?.list || []).map((b) => ({ ...b, _syncing: false }));
+      } catch {
+        syncBindings.value = [];
+      }
+    }
+
+    function formatSyncTime(iso) {
+      try {
+        return new Date(iso).toLocaleString('zh-CN', { hour12: false });
+      } catch {
+        return iso;
+      }
+    }
+
+    function syncStatusText(status) {
+      const map = { ok: '成功', partial: '部分成功', failed: '失败', never: '未同步' };
+      return map[status] || status || '未同步';
+    }
+
+    async function syncBinding(b) {
+      b._syncing = true;
+      syncMessage.value = '';
+      try {
+        const res = await $fetch('/api/github-sync/sync', {
+          method: 'POST',
+          body: { controlName: b.controlName },
+        });
+        const added = res?.added?.length || 0;
+        syncMessageType.value = 'info';
+        syncMessage.value = added > 0
+          ? `「${b.controlName}」同步完成，新增版本：${res.added.join('、')}`
+          : `「${b.controlName}」同步完成，无新版本`;
+        await fetchSyncBindings();
+      } catch (err) {
+        syncMessageType.value = 'error';
+        const code = err?.data?.error;
+        syncMessage.value = code === 'sync_too_frequent'
+          ? '同步过于频繁，请稍后再试'
+          : `「${b.controlName}」同步失败，请稍后重试`;
+      } finally {
+        b._syncing = false;
+      }
+    }
+
+    async function unbindControl(controlName) {
+      try {
+        await $fetch('/api/github-sync/unbind', {
+          method: 'POST',
+          body: { controlName },
+        });
+        syncBindings.value = syncBindings.value.filter((x) => x.controlName !== controlName);
+        syncMessageType.value = 'info';
+        syncMessage.value = `「${controlName}」已解绑`;
+      } catch {
+        syncMessageType.value = 'error';
+        syncMessage.value = '解绑失败，请稍后重试';
+      }
+    }
     
     // 切换标签页
     const switchTab = (tabName) => {
@@ -579,6 +680,7 @@ export default {
           if (logininformation.user.login) {
             await fetch_user_information(logininformation.user.login);
           }
+          await fetchSyncBindings();
         }
       } catch (err) {
         console.error("登录检查失败：", err);
@@ -683,6 +785,16 @@ export default {
       editNickname,
       editAvatar,
       isUpdating,
+
+      // Git 仓库同步
+      syncBindings,
+      syncMessage,
+      syncMessageType,
+      fetchSyncBindings,
+      formatSyncTime,
+      syncStatusText,
+      syncBinding,
+      unbindControl,
       
       // 方法
       switchTab,
