@@ -51,9 +51,8 @@
 GitHub 代理、昵称更新接口通过 `server/utils/github.ts` 的 `assertAllowedOrigin` 校验 `Origin` / `Referer`：
 
 - `https://cc.zitzhen.cn`
-- `localhost`、`127.0.0.1`、`*.test`（任意端口）
-
-> 注意：`*.pages.dev` 当前**不在**白名单内，预览环境调用这些接口会得到 403。
+- `https://*.pages.dev`（Cloudflare Pages 预览部署，仅 HTTPS）
+- `localhost`、`127.0.0.1`、`*.test`（任意端口、任意协议）
 
 ### 响应约定
 
@@ -78,8 +77,8 @@ GitHub 代理、昵称更新接口通过 `server/utils/github.ts` 的 `assertAll
 | --- | --- | --- |
 | `GITHUB_CLIENT_ID` | `/auth/github` | GitHub OAuth App Client ID |
 | `GITHUB_CLIENT_SECRET` | `/auth/github` | GitHub OAuth App Client Secret |
-| `COCO_COMMUNITY_JWT` | `/auth/github`、`/api/me`、`/api/control-submit` | JWT HS256 对称密钥 |
-| `COCO_COMMUNITY_JWT_P` | `/api/essay/like`、`/api/essay/collect` | 同上（历史命名，需单独配置，否则点赞/收藏返回 401/500） |
+| `COCO_COMMUNITY_JWT` | `/auth/github`、`/api/me`、`/api/control-submit`、`/api/essay/like`、`/api/essay/collect`、`/api/update_nickname` | JWT HS256 对称密钥（全站统一） |
+| `COCO_COMMUNITY_JWT_P` | 仅作为点赞/收藏接口的**历史回退** | 已废弃，新环境无需配置；配置时仅在主变量缺失时生效 |
 
 ### wrangler.toml 绑定
 
@@ -363,7 +362,6 @@ GET /api/fetch-comment-essay?EssayID={id}
         "username": "Iamliuxiaozhen",
         "content": "评论内容",
         "time": "2026-09-26T10:00:00.000Z",
-        "ip": "1.2.3.4",
         "essayid": 1,
         "nickname": "刘小圳",
         "avatar": "https://.../avatar.png"
@@ -375,7 +373,7 @@ GET /api/fetch-comment-essay?EssayID={id}
 
 `nickname` / `avatar` 由服务端按 username 关联 `user` 表补充，查不到时回退为用户名与 `/images/user.png`。评论按 `time DESC` 排序。400（缺参/非整数）、405（非 GET）、500。
 
-> 注意：响应中包含评论者 IP，后续如需公开该接口建议去除该字段。
+> 评论者 IP 仅在发表时写入 `comment` 表供内部审计，查询接口不返回该字段。
 
 ### 5.4 发表文章评论
 
@@ -403,7 +401,6 @@ Content-Type: application/json
     "username": "Iamliuxiaozhen",
     "content": "评论内容",
     "time": "2026-09-26T10:00:00.000Z",
-    "ip": "1.2.3.4",
     "essayid": 1
   }
 }
@@ -417,7 +414,7 @@ Content-Type: application/json
 GET /api/essay/like?EssayID={id}
 ```
 
-**认证**：双 Cookie（JWT 密钥取 `COCO_COMMUNITY_JWT_P`，并校验用户名一致）。CORS 为 `*`。
+**认证**：双 Cookie（JWT 密钥为 `COCO_COMMUNITY_JWT`，并校验用户名一致）。CORS 为 `*`。
 
 - 200 `{ "status": "success", "message": "Essay liked successfully" }`
 - 400 `Essay already liked by this user`（重复点赞）
@@ -495,11 +492,23 @@ POST /api/update_nickname
 Content-Type: application/json
 ```
 
-**认证 / 来源**：无 Cookie 校验，但要求通过 Origin/Referer 白名单（见 1.3）。
+**认证 / 来源**：双 Cookie（与 `/api/me` 相同校验链）+ Origin/Referer 白名单（见 1.3）。用户名**一律取自登录态**，请求体中的 username 会被忽略，无法修改他人昵称。
 
-请求体：`{ "username": "login", "nickname": "新昵称" }`，两者必填。
+请求体：
 
-> ⚠️ **已知缺陷**：当前实现查询/更新的是 `users` 表，而线上实际表名为 `user`，该接口现在会走到 500 `Error: no such table: users`。修复前不应在前端启用。
+```json
+{ "nickname": "新昵称（trim 后 1-32 字符）" }
+```
+
+行为：`user` 表中已有记录则更新，无记录则插入新行（`avatar` 取 GitHub 头像，其余计数字段为 0）。
+
+**200**
+
+```json
+{ "success": true, "data": { "username": "Iamliuxiaozhen", "nickname": "新昵称" } }
+```
+
+错误：400 `invalid_json` / `invalid_nickname`；401 `unauthenticated` / `invalid_session` / `invalid_github_token` / `username_mismatch`；403 来源不在白名单；405 非 POST；500 `server_configuration_error` / `database_error`。
 
 ---
 
@@ -509,14 +518,14 @@ Content-Type: application/json
 
 | 方法 | 路径 | 说明 |
 | --- | --- | --- |
-| GET | `/api/github/issues` | 并行拉取 open + closed 议题，过滤 PR 后合并返回 GitHub 原始数组 |
-| GET | `/api/github/issues/{number}` | 单个议题（**未过滤 PR**，number 命中 PR 时也会返回） |
+| GET | `/api/github/issues` | 分页拉取 open + closed 全量议题（100 条/页，最多 10 页），过滤 PR 后合并返回 GitHub 原始数组 |
+| GET | `/api/github/issues/{number}` | 单个议题；number 命中 PR 时返回 404 `{ "error": "Not an issue (pull request)" }` |
 | GET | `/api/github/issues/{number}/comments` | 议题评论的 GitHub 原始数组 |
 | GET | `/api/github/user?username={login}` | 代理 `GET api.github.com/users/{login}` 公开资料 |
 
 注意事项：
 
-- 未显式设置 `per_page`，遵循 GitHub 默认每页 30 条，当前无分页
+- 议题列表已服务端聚合分页，单次最多返回 1000 条；评论接口仍遵循 GitHub 默认每页 30 条，暂未分页
 - 成功响应头带 `Access-Control-Allow-Origin: https://cc.zitzhen.cn`
 - 前端目前 SSR 阶段直连 GitHub 公共 API（未认证额度 60 次/小时），这组代理主要供登录后的客户端使用
 

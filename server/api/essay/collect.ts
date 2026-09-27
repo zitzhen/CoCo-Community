@@ -10,9 +10,10 @@ interface JwtPayload {
 export default defineEventHandler(async (event) => {
   const { request, env } = getCloudflareContext(event);
   
-  // 从Cloudflare环境变量获取JWT公钥
+  // 统一使用 COCO_COMMUNITY_JWT（与登录/me/控件提交一致）；
+  // COCO_COMMUNITY_JWT_P 为历史变量名，保留回退以免漏配环境导致服务中断
   const secret = new TextEncoder().encode(
-    (env.COCO_COMMUNITY_JWT_P as string) || ""
+    (env.COCO_COMMUNITY_JWT as string) || (env.COCO_COMMUNITY_JWT_P as string) || ""
   );
   const url = new URL(request.url);
 

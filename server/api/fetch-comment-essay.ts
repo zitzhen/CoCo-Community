@@ -6,7 +6,6 @@ export interface Comment {
   username: string;
   content: string;
   time: string;
-  ip: string;
   essayid: number;
   nickname?: string;
   avatar?: string;
@@ -70,9 +69,9 @@ export default defineEventHandler(async (event) => {
       );
     }
     
-    // 查询数据库中对应EssayID的所有评论
+    // 查询数据库中对应EssayID的所有评论（ip 属敏感信息，不对前端返回）
     const queryResult = await env.DB.prepare(
-      "SELECT id, username, content, time, ip, essayid FROM comment WHERE essayid = ? ORDER BY time DESC"
+      "SELECT id, username, content, time, essayid FROM comment WHERE essayid = ? ORDER BY time DESC"
     ).bind(essayId).all();
     
     const comments = queryResult.results as Comment[];

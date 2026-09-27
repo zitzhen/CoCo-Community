@@ -141,7 +141,6 @@ export default defineEventHandler(async (event) => {
           username,
           content: content.trim(),
           time: new Date().toISOString(),
-          ip,
           essayid: EssayID
         }
       }),
