@@ -106,7 +106,7 @@
                 @input="onNameInput"
               />
               <p class="submit-hint">
-                唯一标识，仅限字母、数字、下划线与连字符，将作为访问地址 /control/&lt;名称&gt;
+                唯一标识，仅限中文、字母、数字、下划线与连字符，将作为访问地址 /control/&lt;名称&gt;
               </p>
               <p
                 v-if="nameStatus.message"
@@ -325,7 +325,7 @@ const mdTab = ref('write')
 const fileInputRef = ref(null)
 const dragover = ref(false)
 
-const NAME_RE = /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/
+const NAME_RE = /^[A-Za-z0-9一-鿿][A-Za-z0-9_一-鿿-]{0,63}$/
 const VERSION_RE = /^\d{1,4}(\.\d{1,4}){0,3}$/
 const MAX_FILE_SIZE = 100 * 1024
 
@@ -345,7 +345,7 @@ function onNameInput() {
 async function checkName() {
   const value = name.value.trim()
   if (!NAME_RE.test(value)) {
-    nameStatus.value = { type: 'error', message: '名称格式不正确：仅限字母、数字、下划线与连字符', icon: 'fas fa-circle-exclamation' }
+    nameStatus.value = { type: 'error', message: '名称格式不正确：仅限中文、字母、数字、下划线与连字符', icon: 'fas fa-circle-exclamation' }
     return
   }
 
