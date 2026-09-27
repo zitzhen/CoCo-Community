@@ -119,7 +119,11 @@ export default {
           return;
         }
 
-        // 创建成功：跳转到新议题详情页
+        // 创建成功：跳转到新议题详情页（GitHub 返回异常时防止跳 /issues/undefined）
+        if (!data?.number) {
+          this.errorMsg = 'GitHub 创建成功，但未返回 Issue 编号，请稍后在列表中查看';
+          return;
+        }
         this.$router.push(`/issues/${data.number}`);
       } catch (err) {
         console.error('创建 Issue 失败:', err);

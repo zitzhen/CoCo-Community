@@ -141,6 +141,24 @@ export default defineEventHandler(async (event) => {
   // 解析 Cookie 中的 GitHub token（GET 允许匿名，POST 必须登录）
   const token = getGithubToken(request)
 
+  // 跨域预检：同源请求不会走到这里，移动端等跨域客户端需要
+  if (request.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        "Access-Control-Allow-Origin": "https://cc.zitzhen.cn",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, X-Client",
+        "Access-Control-Max-Age": "86400",
+      },
+    })
+  }
+
+  if (request.method === "GET") {
+    // 无 token 时以匿名方式请求 GitHub 公共 API（githubHeaders 会省略 Authorization）
+    return handleList(token)
+  }
+
   if (request.method === "POST") {
     if (!token || token.length < 10) {
       return new Response(JSON.stringify({ authenticated: false }), {
@@ -150,6 +168,10 @@ export default defineEventHandler(async (event) => {
     }
     return handleCreate(request, token)
   }
-  // 无 token 时以匿名方式请求 GitHub 公共 API（githubHeaders 会省略 Authorization）
-  return handleList(token)
+
+  // 其余方法一律拒绝，避免落到 handleList 造成语义混乱
+  return new Response(JSON.stringify({ error: "Method Not Allowed" }), {
+    status: 405,
+    headers: { ...JSON_HEADERS, Allow: "GET, POST, OPTIONS" },
+  })
 })

@@ -527,8 +527,10 @@ Content-Type: application/json
 | GET | `/api/github/issues` | 登录用户：分页拉取 open + closed 全量议题（100 条/页，最多 10 页），过滤 PR 后合并；匿名用户：仅第一页（每状态前 100 条，`X-List-Truncated: true`） |
 | POST | `/api/github/issues` | 代登录用户创建议题，见 [7.1](#71-创建议题) |
 | GET | `/api/github/issues/{number}` | 单个议题；number 命中 PR 时返回 404 `{ "error": "Not an issue (pull request)" }` |
-| GET | `/api/github/issues/{number}/comments` | 议题评论的 GitHub 原始数组 |
+| GET | `/api/github/issues/{number}/comments` | 议题评论的 GitHub 原始数组（服务端聚合分页：100 条/页，最多 5 页 = 500 条，超出时响应头 `X-List-Truncated: true`） |
 | POST | `/api/github/issues/{number}/comments` | 代登录用户发表评论，见 [7.2](#72-发表评论) |
+| OPTIONS | `/api/github/*` | 跨域预检（同源请求不触发）：返回 204，`Allow-Methods: GET, POST, OPTIONS`，`Allow-Headers: Content-Type, X-Client` |
+| 任意 | 其他 HTTP 方法 | 返回 405 `{ "error": "Method Not Allowed" }`，响应头 `Allow: GET, POST, OPTIONS` |
 | GET | `/api/github/user?username={login}` | 代理 `GET api.github.com/users/{login}` 公开资料 |
 
 ### 7.1 创建议题
@@ -554,6 +556,10 @@ Content-Type: application/json
 > 服务端不设置 labels：非仓库协作者指定标签会被 GitHub 静默丢弃，标签由维护者后续在 GitHub 端添加。
 >
 > 来源标记：服务端自动在正文末尾空两行追加 `<!-- via coco-community web -->` 或 `<!-- via coco-community api -->`（浏览器同源请求为 web；携带 `X-Client: mobile/api` 头或 `?client=mobile/api` 为 api）。正文为空时仅写入该标记。标记为 HTML 注释，GitHub 页面渲染不可见。
+>
+> ⚠️ 来源标记仅表示客户端**自我声明**的渠道（可被伪造），不是可信身份认证或审计证据；可信凭据只有服务端校验的 Cookie token。
+>
+> ⚠️ 权限范围：登录采用 GitHub 经典 OAuth App，`public_repo` 是其最小可行 scope，但语义为"用户全部公开仓库的读写"。服务端只将 token 用于本节固定的 GitHub API 调用（创建/读取本仓库议题与评论），**不存在任意 URL 转发代理**；新增 GitHub 代理接口时必须保持这一约束。
 
 ### 7.2 发表评论
 
@@ -570,7 +576,7 @@ Content-Type: application/json
 
 注意事项：
 
-- 议题列表已服务端聚合分页，单次最多返回 1000 条；评论 GET 接口仍遵循 GitHub 默认每页 30 条，暂未分页
+- 议题列表与评论 GET 均已服务端聚合分页：议题单次最多 1000 条（100 条/页 × 10 页），评论单次最多 500 条（100 条/页 × 5 页），超出上限时响应头带 `X-List-Truncated: true`
 - 成功响应头带 `Access-Control-Allow-Origin: https://cc.zitzhen.cn`
 - 所有渲染到页面的议题/评论正文在前端经 `sanitize-html` 消毒后才会插入 HTML
 

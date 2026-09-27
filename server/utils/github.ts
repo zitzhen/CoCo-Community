@@ -68,6 +68,7 @@ export function getClientKind(request: Request): "web" | "api" {
 // 在用户正文末尾空两行追加来源标记（HTML 注释，GitHub 渲染时不可见，raw 中可审计）
 export function withViaSignature(body: string, client: "web" | "api"): string {
   const tag = `<!-- via coco-community ${client} -->`;
-  const trimmed = (body || "").replace(/\s+$/, "");
+  // 只剥掉尾部换行（保留用户正文中有意义的末尾空白结构），再空两行接来源标记
+  const trimmed = (body || "").replace(/\n+$/, "");
   return trimmed ? `${trimmed}\n\n\n${tag}` : tag;
 }

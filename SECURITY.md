@@ -48,6 +48,7 @@
 ### 授权与来源校验
 
 - GitHub 代理类接口带有 Origin / Referer 白名单（生产域名 + 本地开发域名）
+- GitHub token 采用经典 OAuth App 的 `public_repo` scope（经典 OAuth 下的最小可行授权，语义为"用户全部公开仓库的读写"）。服务端仅将其用于固定的本仓库议题/评论 GitHub API 调用，不提供任意 URL 转发代理；新增 GitHub 代理接口必须保持该约束，禁止把用户 token 暴露给客户端或第三方
 - 控件提交采用归属校验：已有控件只有原作者可发新版本；`author` 缺失的历史数据允许认领
 
 ### 用户内容防护

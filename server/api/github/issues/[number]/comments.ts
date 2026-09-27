@@ -4,6 +4,9 @@ import { assertAllowedOrigin, getGithubToken, githubHeaders, getClientKind, with
 
 const REPO = "zitzhen/CoCo-Community"
 const BODY_MAX = 5000
+// 评论 GET 分页聚合：100 条/页，最多 5 页（500 条），防止异常议题拖垮 Worker
+const COMMENTS_PER_PAGE = 100
+const COMMENTS_MAX_PAGES = 5
 const JSON_HEADERS = { "Content-Type": "application/json" }
 
 export default defineEventHandler(async (event) => {
@@ -78,25 +81,36 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  // ---------- GET：评论列表（GitHub 默认每页 30 条） ----------
-  const githubResponse = await fetch(
-    `https://api.github.com/repos/${REPO}/issues/${number}/comments`,
-    { headers: githubHeaders(token) },
-  );
+  // ---------- GET：评论列表（分页聚合，突破 GitHub 默认 30 条截断） ----------
+  const allComments = []
+  let truncated = false
+  for (let page = 1; page <= COMMENTS_MAX_PAGES; page++) {
+    const githubResponse = await fetch(
+      `https://api.github.com/repos/${REPO}/issues/${number}/comments?per_page=${COMMENTS_PER_PAGE}&page=${page}`,
+      { headers: githubHeaders(token) },
+    );
 
-  if (!githubResponse.ok) {
-    const errorText = await githubResponse.text();
-    return new Response(JSON.stringify({ error: "GitHub API request failed", details: errorText }), {
-      status: githubResponse.status,
-      headers: JSON_HEADERS,
-    });
+    if (!githubResponse.ok) {
+      const errorText = await githubResponse.text();
+      return new Response(JSON.stringify({ error: "GitHub API request failed", details: errorText }), {
+        status: githubResponse.status,
+        headers: JSON_HEADERS,
+      });
+    }
+
+    const data = await githubResponse.json();
+    allComments.push(...data);
+    // 不足整页说明已到末尾；超过页数上限则标记截断
+    if (data.length < COMMENTS_PER_PAGE) break;
+    if (page === COMMENTS_MAX_PAGES) truncated = true;
   }
 
-  return new Response(JSON.stringify(await githubResponse.json()), {
+  return new Response(JSON.stringify(allComments), {
     status: 200,
     headers: {
       ...JSON_HEADERS,
       "Access-Control-Allow-Origin": "https://cc.zitzhen.cn",
+      "X-List-Truncated": truncated ? "true" : "false",
     },
   });
 });
