@@ -1,103 +1,171 @@
-# 这是CoCo-Community
+# ZIT-CoCo-Community
 
 ![GitHub Stars](https://img.shields.io/github/stars/zitzhen/CoCo-Community?style=flat)
 ![GitHub Forks](https://img.shields.io/github/forks/zitzhen/CoCo-Community?style=flat)
 ![GitHub Issues](https://img.shields.io/github/issues/zitzhen/CoCo-Community?style=flat)
 ![GitHub Top Language](https://img.shields.io/github/languages/top/zitzhen/CoCo-Community?style=flat)
+![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)
+
+ZIT 小圳创科工作室维护的**编程猫 CoCo 编辑器开发者社区**——浏览、搜索、下载 CoCo 自定义控件，阅读社区文章，通过 GitHub OAuth 登录后提交你自己的控件。
+
+- 官方站点：<https://cc.zitzhen.cn/>
+- 主仓库（一切以 GitHub 为准）：<https://github.com/zitzhen/CoCo-Community>
+- 镜像仓库：[GitLab](https://gitlab.com/zitzhen/CoCo-Community) · [GitCode](https://gitcode.com/zitzhen/CoCo-Community) · Gitee
+
+> 若在未公布的平台发现本仓库，欢迎通过 [SECURITY.md](SECURITY.md) 中的联系方式举报。
 
 ---
 
-CoCo-Community，全称为ZIT-CoCo-Community  
-这是由于ZIT小圳创科工作室的创造的编程猫CoCo编辑器社区，目前提供自定义控件下载服务，后续会支持论坛的交流，目前与ZIT-Community隔离
-## CoCo-Community代办事项
-|功能|进度|
-|--|---|
-|控件查看|✅完成|
-|Github登录|✅完成|
-|控件信息统计|✅完成|
-|文章查看|✅完成|
-|文章信息统计|等待|
-|控件发布|等待|
-|文章发布|等待|
+## 功能
 
->[!tip]
->🎉🎉🎉  
->自2025年09月24日以来，CoCo-Community的技术栈从HTML转为Vue
-
->[!tip]
->自2025年09月30日 00:55以来，我们已将所有控件转移到子仓库。
-
->[!tip]
->自2025年20月8日20:55 07b93c1提交之后，CoCo-Community登录功能正式完结上线！
-
->[!important]
->我们已彻底接入GithubAPI认证系统，在请求GithubAPI时，我们会走认证通道，未认证走未认证通道。  
->之前产生的Bug已修复。  
----
-## 项目所在的所有仓库：
-此项目在GitHub为主仓库，目前在以下几个社区发布：
-
-|图标|名称|
-|---|---|
-|<img src="https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png" width="50" height="50" alt="Github的图片"> | [Github](https://Github.com/zitzhen/CoCo-Community) |
-|<img src="src/assets/images/icon/Gitee-logo.png" width="50" height="50" alt="Gitee的图片">| [Gitee](https://Github.com/zitzhen/CoCo-Community) | 
-|<img src="https://about.gitlab.com/images/press/logo/png/gitlab-logo-500.png" width="50" height="50" alt="GitLab的图片"> | [GitLab](https://gitlab.com/zitzhen/CoCo-Community) |
-|<img src="https://cdn-static.gitcode.com/static/images/logo-favicon.png" width="50" height="50" alt="gitcode的图片">| [gitcode](https://gitcode.com/zitzhen/CoCo-Community) |
-
->[!tip]
->请您首选Github访问CoCo-Community
->
->
-> 若您发现未在此公布的平台出现仓库，请您即使举报并联系ZIT-CoCo-Community开发者名单
->
->签名提交一切认证请以GitHub为主。
-
----
-## 快速体验：
->[!tip]
->
->重定向
->
->自从2025年06月08日 15:40 起，通过GitHub Pages链接和Cloudflare Pages链接访问的，将重定向至ZIT-CoCo-Comunity官方链接
->
->从2025年7月3日 21:45起，关闭GitHub Pages。
-
-ZIT-CoCo-Community官方链接（推荐）：https://cc.zitzhen.cn/
+| 模块 | 说明 | 状态 |
+| --- | --- | :--: |
+| 控件浏览 / 搜索 / 详情 | 实时枚举 R2 控件目录，合并 D1 下载量、浏览量等计数 | ✅ |
+| 控件下载 | 详情页一键下载 `.jsx`，自动累计下载量 | ✅ |
+| 控件在线提交 | GitHub 登录后通过 `/new-control` 上传控件（R2 + D1） | ✅ |
+| GitHub 登录 | OAuth 授权码模式 + JWT 双令牌会话，支持 Web / Mobile | ✅ |
+| 文章系统 | 文章列表、详情、浏览量、点赞、收藏、评论 | ✅ |
+| 用户主页 | 用户资料、TA 的控件（按 R2 实时数据聚合） | ✅ |
+| Issues 镜像 | 代理 GitHub Issues 列表 / 详情 / 评论 | ✅ |
+| 文章在线发布 | — | 🚧 |
 
 ---
 
-## ZIT-CoCo-Community开发者名单
+## 技术架构
 
-| 姓名   | 头像 | Github |
-| ------ | ---- | ------ |
-| 刘小圳 | <img src="https://avatars.githubusercontent.com/u/149680880?v=4" width="50" height="50" alt="刘小圳的图片"> | [Github](https://github.com/Iamliuxiaozhen) |
+```text
+浏览器 (SSR 首屏 + SPA 客户端导航)
+        │
+        ▼
+Nuxt 4 / Vue 3  ── Nitro (preset: cloudflare_pages)
+        │
+        ├── Cloudflare Workers 边缘函数（server/api、server/routes）
+        ├── Cloudflare R2   绑定 RESOURCES —— 控件文件与信息（<name>/<version>/control.jsx）
+        ├── Cloudflare D1   绑定 DB        —— 用户 / 文章 / 评论 / 点赞收藏 / 计数 / 日志
+        └── GitHub API     —— OAuth 登录、Issues 代理、登录态校验
+```
+
+- **框架**：Nuxt 4（Vue 3），SSR 与 SPA 混合渲染
+- **运行时**：Cloudflare Pages + Workers（Node ≥ 24.11 构建）
+- **存储**：R2 对象存储（控件本体）、D1 SQLite（关系数据与计数器）
+- **认证**：GitHub OAuth 2.0 授权码流程 + `jose` 签发的 HS256 JWT
+- **Markdown**：`marked` 渲染，`sanitize-html` 统一消毒（防止用户内容 XSS）
+
 ---
-## 上传您的自定义控件：
->你可以通过发送到：liuxiaozhen2024@163.com
->
->你也可以通过GitHub议题向我们提交您的自定义控件哦~
+
+## 快速开始（本地开发）
+
+### 1. 环境要求
+
+- Node.js ≥ 24.11（推荐 nvm 安装）
+- npm
+- 一个 [Cloudflare 账号](https://dash.cloudflare.com/)（用于 D1 / R2 绑定）
+- 一个 [GitHub OAuth App](https://github.com/settings/developers)
+
+### 2. 安装依赖
+
+```bash
+npm ci
+```
+
+### 3. 配置本地密钥
+
+在项目根目录创建 `.dev.vars`（**不要提交到 Git**）：
+
+```ini
+GITHUB_CLIENT_ID=你的 OAuth Client ID
+GITHUB_CLIENT_SECRET=你的 OAuth Client Secret
+COCO_COMMUNITY_JWT=任意足够长的随机字符串（HS256 密钥）
+```
+
+OAuth App 的回调地址需包含本地回调，例如 `http://localhost:3000/auth/github`。
+
+### 4. Cloudflare 资源
+
+[wrangler.toml](wrangler.toml) 已声明绑定，无需修改：
+
+| 绑定 | 类型 | 名称 |
+| --- | --- | --- |
+| `DB` | D1 数据库 | `CoCo-Community` |
+| `RESOURCES` | R2 存储桶 | `coco-community`（本地 `remote = true`，直连真实桶） |
+
+本地连接远程 R2 / D1 需要 `CLOUDFLARE_API_TOKEN`：
+
+```bash
+npx wrangler login          # 或 export CLOUDFLARE_API_TOKEN=xxx
+```
+
+D1 表结构需与远程一致（`components`、`essay`、`essay_like`、`essay_collect`、`comment`、`user`、`log`），可用 `wrangler d1 execute CoCo-Community --local --command "..."` 初始化。
+
+### 5. 启动
+
+```bash
+npm run dev        # http://localhost:3000，开发环境接口不缓存
+```
+
+> 沙箱 / 非交互终端中无法启动 wrangler 远程代理时，R2 / D1 不可达属于本地环境限制，不是代码问题。
+
 ---
-## 控件贡献名单
 
-| 昵称   |头像| 贡献数量/个 |
-| ------ |---| ----------- |
-| 刘小圳 |<a href="https://github.com/iamliuxiaozhen"><img src="https://avatars.githubusercontent.com/u/149680880?v=4" width="50" height="50" alt="刘小圳的图片"></a> | 1           |
-| 小宏 |<a href="https://github.com/xiaohong2022"><img src="https://avatars.githubusercontent.com/u/97574185?v=4" width="50" height="50" alt="小宏的图片"></a> |9 |
-| QiQi |<a href="https://github.com/Qiqi29"><img src="https://avatars.githubusercontent.com/u/112358908?v=4" width="50" height="50" alt="QiQi的图片"></a> | 22|
-| Inventocode |<a href="https://github.com/Inventocode"><img src="https://avatars.githubusercontent.com/u/138981212?v=4" width="50" height="50" alt="Inventocode的图片"></a> | 1|
-| 垃圾桶 |<a href="https://github.com/LJT-YTWH"><img src="https://avatars.githubusercontent.com/u/202535413?v=4" width="50" height="50" alt="垃圾桶的图片"></a> | 7|
-| XJ王大哥 |<a href="https://github.com/xjwangdage"><img src="https://avatars.githubusercontent.com/u/114815506?v=4" width="50" height="50" alt="XJ王大哥的头像">|10|
+## 构建与部署
 
+```bash
+npm run build      # 产物输出到 dist/
+npx wrangler pages dev dist        # 本地以 Pages 模式预览生产产物
+npx wrangler pages deploy dist     # 部署到 Cloudflare Pages
+```
+
+Cloudflare Pages 后台需要配置的 Secrets / Variables：
+
+| 变量 | 用途 | 示例环境 |
+| --- | --- | --- |
+| `GITHUB_CLIENT_ID` | GitHub OAuth Client ID | Production + Preview |
+| `GITHUB_CLIENT_SECRET` | GitHub OAuth Client Secret | Production + Preview |
+| `COCO_COMMUNITY_JWT` | JWT HS256 签名密钥 | Production + Preview |
+| `NODE_VERSION` | 构建 Node 版本（=24） | 已在 wrangler.toml 声明 |
+
+> 机密变量只允许放在 Cloudflare 后台或 `.dev.vars`，**禁止写入 wrangler.toml**。
+
+---
+
+## 文档
+
+- [贡献指南](CONTRIBUTING.md) —— 开发规范、分支与提交约定
+- [API 文档](docs/API.md) —— 全部服务端接口与数据模型
+- [安全策略](SECURITY.md) —— 漏洞报告渠道与安全机制
+- [社区行为守则](CODE_OF_CONDUCT.md)
+- [用户协议](https://cc.zitzhen.cn/agreement/useragreement) · [隐私政策](https://cc.zitzhen.cn/agreement/privacypolicy) · [开源许可证](https://cc.zitzhen.cn/agreement/license)
+- `docs/` 目录下另有登录、文章、点赞收藏等历史开发手册
+
+---
+
+## 提交你的控件
+
+1. 使用 GitHub 账号登录 <https://cc.zitzhen.cn/login>
+2. 访问 <https://cc.zitzhen.cn/new-control>，或点击首页的「上传控件」
+3. 填写控件名、语义化版本号，上传 `.jsx` 文件（≤ 100 KiB），可选附 README（Markdown，≤ 100 KiB）
+4. 提交后立即可在首页、搜索与个人主页看到
+
+也可以通过 GitHub Issue 或邮件 `liuxiaozhen2024@163.com` 联系我们代提交。
+
+---
+
+## 开发者
+
+| 姓名 | GitHub |
+| --- | --- |
+| 刘小圳 | [Iamliuxiaozhen](https://github.com/Iamliuxiaozhen) |
+
+### 控件贡献者
+
+| 昵称 | GitHub | 昵称 | GitHub |
+| --- | --- | --- | --- |
+| 刘小圳 | [iamliuxiaozhen](https://github.com/iamliuxiaozhen) | 小宏 | [xiaohong2022](https://github.com/xiaohong2022) |
+| QiQi | [Qiqi29](https://github.com/Qiqi29) | Inventocode | [Inventocode](https://github.com/Inventocode) |
+| 垃圾桶 | [LJT-YTWH](https://github.com/LJT-YTWH) | XJ王大哥 | [xjwangdage](https://github.com/xjwangdage) |
+
+---
 
 ## 许可证
-本项目采用 [AGPL-3.0 许可证](LICENSE)
 
-## 安全政策
-***请勿公开讨论漏洞与BUG信息***
-[安全政策](SECURITY.md)
-
-## 调试
-请参阅我们的文档，本仓库docx文件夹
-一键生成CA证书：
-```bash
-openssl req -x509 -newkey rsa:2048 -keyout coco-community.test-key.pem -out coco-community.test.pem -days 3650 -nodes -subj "/CN=coco-community.test" -addext "subjectAltName=DNS:coco-community.test,DNS:www.coco-community.test,DNS:localhost,IP:127.0.0.1,IP:::1"```
+本项目基于 [AGPL-3.0](LICENSE) 开源。**不代表用户上传的控件作品使用同款许可证**，具体以各控件作者声明为准。
