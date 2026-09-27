@@ -519,11 +519,12 @@ Content-Type: application/json
 **鉴权规则**：
 
 - `GET`（读公开数据）：**允许匿名**——Cookie 中有 token 时携带（5000 次/小时），无 token 时省略 Authorization 走 GitHub 公共 API（60 次/小时/IP）；上游失败透传 GitHub 状态码与 `details`
+  - 列表接口对**匿名用户只返回第一页**（open/closed 各前 100 条，共最多 2 次上游请求），响应头带 `X-List-Truncated: true`；登录用户不受限，拉取全量（响应头 `X-List-Truncated: false`）
 - `POST`（创建 issue / 评论）：**必须登录**，无有效 token 返回 401 `{ "authenticated": false }`
 
 | 方法 | 路径 | 说明 |
 | --- | --- | --- |
-| GET | `/api/github/issues` | 分页拉取 open + closed 全量议题（100 条/页，最多 10 页），过滤 PR 后合并返回 GitHub 原始数组 |
+| GET | `/api/github/issues` | 登录用户：分页拉取 open + closed 全量议题（100 条/页，最多 10 页），过滤 PR 后合并；匿名用户：仅第一页（每状态前 100 条，`X-List-Truncated: true`） |
 | POST | `/api/github/issues` | 代登录用户创建议题，见 [7.1](#71-创建议题) |
 | GET | `/api/github/issues/{number}` | 单个议题；number 命中 PR 时返回 404 `{ "error": "Not an issue (pull request)" }` |
 | GET | `/api/github/issues/{number}/comments` | 议题评论的 GitHub 原始数组 |

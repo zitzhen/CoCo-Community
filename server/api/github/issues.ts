@@ -12,9 +12,12 @@ const BODY_MAX = 10000
 
 const JSON_HEADERS = { "Content-Type": "application/json" }
 
-async function fetchAllIssues(state: string, token: string | null) {
+async function fetchAllIssues(state: string, token: string | null, firstPageOnly = false) {
+  // 匿名用户仅允许查看第一页（每个状态最多 1 次上游请求），
+  // 登录用户按 MAX_PAGES 循环拉全量
+  const maxPages = firstPageOnly ? 1 : MAX_PAGES
   const all: any[] = []
-  for (let page = 1; page <= MAX_PAGES; page++) {
+  for (let page = 1; page <= maxPages; page++) {
     const res = await fetch(
       `https://api.github.com/repos/${REPO}/issues?state=${state}&per_page=${PER_PAGE}&page=${page}`,
       { headers: githubHeaders(token) }
@@ -29,11 +32,13 @@ async function fetchAllIssues(state: string, token: string | null) {
   return { data: all }
 }
 
-// GET：拉取 open + closed 全量议题（过滤 PR）。token 可为空（匿名公共 API）
+// GET：拉取 open + closed 议题（过滤 PR）。token 可为空（匿名公共 API）。
+// 匿名用户仅返回第一页（每状态前 100 条）；登录用户拉全量。
 async function handleList(token: string | null) {
+  const isAnonymous = !token
   const [openResult, closedResult] = await Promise.all([
-    fetchAllIssues("open", token),
-    fetchAllIssues("closed", token),
+    fetchAllIssues("open", token, isAnonymous),
+    fetchAllIssues("closed", token, isAnonymous),
   ])
 
   for (const result of [openResult, closedResult]) {
@@ -55,6 +60,8 @@ async function handleList(token: string | null) {
     headers: {
       ...JSON_HEADERS,
       "Access-Control-Allow-Origin": "https://cc.zitzhen.cn",
+      // 标注本次列表是否为匿名截断结果，便于客户端提示登录查看全部
+      "X-List-Truncated": isAnonymous ? "true" : "false",
     },
   })
 }
