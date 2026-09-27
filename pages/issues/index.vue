@@ -7,16 +7,16 @@
           <h3>筛选选项</h3>
           <div class="filter-group">
             <div class="filter-item">
-              <input type="radio" id="all-issues" name="filter" value="all" v-model="filterStatus" @change="filterIssues">
-              <label for="all-issues">所有 issues</label>
-            </div>
-            <div class="filter-item">
               <input type="radio" id="open-issues" name="filter" value="open" v-model="filterStatus" @change="filterIssues">
-              <label for="open-issues">开启</label>
+              <label for="open-issues">已打开</label>
             </div>
             <div class="filter-item">
               <input type="radio" id="closed-issues" name="filter" value="closed" v-model="filterStatus" @change="filterIssues">
               <label for="closed-issues">已关闭</label>
+            </div>
+            <div class="filter-item">
+              <input type="radio" id="all-issues" name="filter" value="all" v-model="filterStatus" @change="filterIssues">
+              <label for="all-issues">所有 issues</label>
             </div>
           </div>
         </div>
