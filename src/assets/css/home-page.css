@@ -160,6 +160,7 @@
 /* ---------- Hero 统计 ---------- */
 .hero-meta {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: var(--space-3);
@@ -175,6 +176,15 @@
 
 .hero-meta-sep {
   color: var(--border);
+}
+
+.hero-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.35rem 0.9rem;
+  font-size: var(--font-small);
+  text-decoration: none;
 }
 
 /* ============================================================

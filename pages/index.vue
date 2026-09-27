@@ -43,6 +43,11 @@
           <span><strong>{{ files.length }}</strong> 个资源</span>
           <span class="hero-meta-sep" aria-hidden="true">·</span>
           <span><strong>{{ developerCount }}</strong> 位开发者</span>
+          <span class="hero-meta-sep" aria-hidden="true">·</span>
+          <NuxtLink to="/new-control" class="btn btn-secondary hero-upload-btn">
+            <i class="fas fa-cloud-arrow-up" aria-hidden="true"></i>
+            上传控件
+          </NuxtLink>
         </div>
       </div>
     </section>
