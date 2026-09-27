@@ -272,7 +272,8 @@ body {
     }
 }
 
-header {
+/* :not([class]) 限制作用域：避免全局 header 规则在 SPA 导航后泄漏到新页面的类名头部 */
+header:not([class]) {
     background-color: var(--primary-color);
     color: var(--primary-foreground);
     padding: 1.5rem 0;

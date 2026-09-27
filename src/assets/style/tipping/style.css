@@ -22,7 +22,8 @@ body {
 	padding-bottom: 30px;
 }
 
-header {
+/* :not([class]) 限制作用域：避免全局 header 规则在 SPA 导航后泄漏到新页面的类名头部 */
+header:not([class]) {
 	background: linear-gradient(135deg, var(--accent-purple) 0%, var(--primary) 100%);
 	color: white;
 	padding: 30px 20px;
