@@ -40,10 +40,35 @@ export function assertAllowedOrigin(request: Request) {
   return null;
 }
 
-export function githubHeaders(token: string) {
+// token 为空时返回匿名请求头（无 Authorization），用于公开数据的匿名 GET
+export function githubHeaders(token?: string | null) {
   return {
-    Authorization: `Bearer ${token}`,
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
     Accept: "application/vnd.github+json",
     "User-Agent": "Cloudflare-Worker",
   };
+}
+
+// 判断调用来源：浏览器同源请求为 web；移动端携带 X-Client: mobile/api
+// 或 ?client=mobile/api 时为 api（与 /auth/github 的约定一致）
+export function getClientKind(request: Request): "web" | "api" {
+  const xClient = (request.headers.get("X-Client") || "").toLowerCase();
+  let queryClient = "";
+  try {
+    queryClient = (new URL(request.url).searchParams.get("client") || "").toLowerCase();
+  } catch {
+    // ignore
+  }
+  return xClient === "mobile" || xClient === "api" ||
+    queryClient === "mobile" || queryClient === "api"
+    ? "api"
+    : "web";
+}
+
+// 在用户正文末尾空两行追加来源标记（HTML 注释，GitHub 渲染时不可见，raw 中可审计）
+export function withViaSignature(body: string, client: "web" | "api"): string {
+  const tag = `<!-- via coco-community ${client} -->`;
+  // 只剥掉尾部换行（保留用户正文中有意义的末尾空白结构），再空两行接来源标记
+  const trimmed = (body || "").replace(/\n+$/, "");
+  return trimmed ? `${trimmed}\n\n\n${tag}` : tag;
 }

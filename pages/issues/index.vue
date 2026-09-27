@@ -7,16 +7,16 @@
           <h3>筛选选项</h3>
           <div class="filter-group">
             <div class="filter-item">
-              <input type="radio" id="all-issues" name="filter" value="all" v-model="filterStatus" @change="filterIssues">
-              <label for="all-issues">所有 issues</label>
-            </div>
-            <div class="filter-item">
               <input type="radio" id="open-issues" name="filter" value="open" v-model="filterStatus" @change="filterIssues">
-              <label for="open-issues">开启</label>
+              <label for="open-issues">已打开</label>
             </div>
             <div class="filter-item">
               <input type="radio" id="closed-issues" name="filter" value="closed" v-model="filterStatus" @change="filterIssues">
               <label for="closed-issues">已关闭</label>
+            </div>
+            <div class="filter-item">
+              <input type="radio" id="all-issues" name="filter" value="all" v-model="filterStatus" @change="filterIssues">
+              <label for="all-issues">所有 issues</label>
             </div>
           </div>
         </div>
@@ -44,9 +44,9 @@
             <span class="issues-count">{{ filteredIssues.length }}</span>
           </div>
           <div class="issues-actions">
-            <button class="new-issue-btn" @click="isnewissues = true">
+            <NuxtLink to="/issues/new" class="new-issue-btn">
               <i aria-hidden="true" class="fas fa-plus"></i> 新建 Issue
-            </button>
+            </NuxtLink>
           </div>
         </div>
 
@@ -90,58 +90,35 @@
         </div>
       </div>
     </div>
-
-    
-    
-    <!--不能新建议题弹窗-->
-    <div v-show="isnewissues" class="modal-overlay" :class="{ active: isnewissues }" @click="closenewissueModal">
-      <div class="modal" @click.stop>
-        <div class="modal-header">
-          <h2 class="modal-title">抱歉暂时不能新建议题</h2>
-          <button class="close-btn" aria-label="关闭弹窗" @click="closenewissueModal">×</button>
-        </div>
-        <div class="modal-body">
-          <p>抱歉，我们暂时无法新建议题</p>
-          <p>这可能是此功能正在开发</p>
-          <p>如果您想立即新建议题，请通过Github创建议题</p>
-          <p>打开Github:<a href="https://github.com/zitzhen/CoCo-Community/issues">https://github.com/zitzhen/CoCo-Community/issues</a></p>
-        </div>
-        <div class="modal-footer">
-          <button class="modal-btn modal-btn-cancel" @click="closenewissueModal">好的</button>
-        </div>
-      </div>
-    </div>
 </template>
 
 <script>
+import { checkLoginStatus } from '@/script/login';
+
 async function fetch_github_issues(loginstatus) {
     try{
-      let open_issues_response;
-      let closed_issues_response;
+      let rawIssues;
 
       if (loginstatus) {
-          open_issues_response = await fetch('/api/github/issues');
-          closed_issues_response = { ok: true, json: async () => [] }; // 本地 API 不区分状态，直接空数组
+          // 登录后走同源代理：服务端已聚合 open+closed 全量并过滤 PR
+          const response = await fetch('/api/github/issues');
+          if (!response.ok) throw new Error('代理接口请求失败');
+          rawIssues = await response.json();
       } else {
-          open_issues_response = await fetch('https://api.github.com/repos/zitzhen/CoCo-Community/issues?state=open');
-          closed_issues_response = await fetch('https://api.github.com/repos/zitzhen/CoCo-Community/issues?state=closed');
+          // 未登录走 GitHub 公共 API（SSR 首屏同样走这里）
+          const [openRes, closedRes] = await Promise.all([
+            fetch('https://api.github.com/repos/zitzhen/CoCo-Community/issues?state=open'),
+            fetch('https://api.github.com/repos/zitzhen/CoCo-Community/issues?state=closed')
+          ]);
+          if (!openRes.ok || !closedRes.ok) throw new Error('网络响应失败');
+          rawIssues = [].concat(await openRes.json(), await closedRes.json());
       }
-
-      // 检查请求是否成功
-      if (!open_issues_response.ok || !closed_issues_response.ok) {
-          throw new Error('网络响应失败');
-      }
-
-      // 获取数据
-      const openData = await open_issues_response.json();
-      const closedData = await closed_issues_response.json();
 
       // 过滤掉 PR
-      const pureOpen = openData.filter(item => !item.pull_request);
-      const pureClosed = closedData.filter(item => !item.pull_request);
+      const pureIssues = rawIssues.filter(item => !item.pull_request);
 
-      // 将 GitHub API 数据结构映射为前端使用的格式
-      const mapIssueData = (issue) => ({
+      // 映射为前端使用的格式（保留 labels / user 原始对象用于徽章与头像）
+      return pureIssues.map(issue => ({
         id: issue.id,
         number: issue.number,
         title: issue.title,
@@ -149,18 +126,11 @@ async function fetch_github_issues(loginstatus) {
         date: issue.created_at,
         body: issue.body || '',
         comments: issue.comments || 0,
-        state: issue.state, // GitHub API 使用 state 字段
-        closed_at: issue.closed_at
-      });
-
-      // 映射数据结构
-      const mappedOpenIssues = pureOpen.map(mapIssueData);
-      const mappedClosedIssues = pureClosed.map(mapIssueData);
-
-      // 合并返回
-      const data = mappedOpenIssues.concat(mappedClosedIssues);
-      return data;
-
+        state: issue.state,
+        closed_at: issue.closed_at,
+        labels: issue.labels || [],
+        user: issue.user || null
+      }));
     } catch (error) {
         console.error('获取 GitHub 议题失败:', error);
         return [];
@@ -174,16 +144,8 @@ export default {
     return {
       issues: [],
       filteredIssues: [],
-      filterStatus: "all",
-      showIssueDetail: false,
-      selectedIssue: null,
-      selectedIssueContent: "",
+      filterStatus: "open",
       uniqueLabels: [],
-      isnewissues: false,
-      newIssue: {
-        title: '',
-        body: ''
-      },
       loginstatus: false
     };
   },
@@ -191,10 +153,14 @@ export default {
     // SSR：服务端通过 GitHub 公共 API 获取议题，首屏 HTML 直接渲染
     const { data: ssrIssues } = await useAsyncData('github-issues', () => fetch_github_issues(false));
     const issues = ref(ssrIssues.value || []);
-    const filteredIssues = ref([...issues.value]);
-    const uniqueLabels = ref([]);
+    // 默认档位为“已打开”，首屏 SSR 数据同样按此过滤
+    const filteredIssues = ref(issues.value.filter(issue => issue.state !== 'closed'));
     const allLabels = issues.value.flatMap(issue => issue.labels || []);
-    uniqueLabels.value = [...new Set(allLabels.map(label => label.name))];
+    const uniqueLabels = ref([...new Set(allLabels.map(label => label.name))]);
+
+    // 浏览器标签页标题
+    useHead({ title: 'Issues | CoCo-Community' });
+
     return { issues, filteredIssues, uniqueLabels };
   },
 
@@ -222,77 +188,45 @@ export default {
     },
     extractUniqueLabels() {
       const allLabels = this.issues.flatMap(issue => issue.labels || []);
-      const labelNames = [...new Set(allLabels.map(label => label.name))];
-      this.uniqueLabels = labelNames;
+      this.uniqueLabels = [...new Set(allLabels.map(label => label.name))];
     },
     getLabelColor(labelName) {
       // 根据标签名称生成颜色 - 简单的哈希函数
       const colors = [
-        "#e11d21", "#d93f0b", "#d1bcf9", "#5319e7", 
-        "#84b6eb", "#0052cc", "#2e7b32", "#a2eeef", 
+        "#e11d21", "#d93f0b", "#d1bcf9", "#5319e7",
+        "#84b6eb", "#0052cc", "#2e7b32", "#a2eeef",
         "#c6c6c6", "#fbca04"
       ];
-      
+
       let hash = 0;
       for (let i = 0; i < labelName.length; i++) {
         hash = labelName.charCodeAt(i) + ((hash << 5) - hash);
       }
-      const index = Math.abs(hash) % colors.length;
-      return colors[index];
+      return colors[Math.abs(hash) % colors.length];
     },
     goToIssueDetail(issueNumber) {
       this.$router.push(`/issues/${issueNumber}`);
-    },
-    createNewIssue() {
-      // 在实际应用中，这里应该跳转到创建新issue的页面
-      alert('创建新 Issue 功能正在开发中');
-    },
-    closenewissueModal() {
-      this.isnewissues = false;
-    },
-    cancelNewIssue() {
-      this.newIssue.title = '';
-      this.newIssue.body = '';
-    },
-    async submitIssue() {
-      if (!this.newIssue.title.trim() || !this.newIssue.body.trim()) {
-        alert('请填写标题和内容');
-        return;
-      }
-      
-      // 创建新议题
-      const issue = {
-        id: this.issues.length + 1,
-        number: this.issues.length + 1,
-        title: this.newIssue.title,
-        author: this.username,
-        date: new Date(),
-        body: this.newIssue.body,
-        comments: 0,
-        state: "open"  // 修复：使用state而不是status
-      };
-      
-      this.issues.unshift(issue);
-      this.cancelNewIssue();
-      // 更新过滤后的 issues
-      this.filterIssues();
-    },
+    }
   },
   async mounted() {
-    // SSR 已取到议题则跳过，避免客户端重复请求
-    if (this.issues.length === 0) {
-      this.issues = await fetch_github_issues(this.loginstatus);
-      this.extractUniqueLabels();
+    // 先确认登录态（旧实现从未更新该值，导致代理接口永远不会被调用）
+    const loginInfo = await checkLoginStatus();
+    this.loginstatus = !!(loginInfo?.authenticated);
+
+    if (this.loginstatus) {
+      // 登录后用代理重新拉取（额度更高）；SSR 公共 API 数据可被替换
+      this.issues = await fetch_github_issues(true);
+    } else if (this.issues.length === 0) {
+      this.issues = await fetch_github_issues(false);
     }
-    this.filteredIssues = [...this.issues];
-    // 确保在页面加载时不会显示新建议题弹窗
-    this.isnewissues = false;
+    this.extractUniqueLabels();
+    // 按默认档位（已打开）应用筛选，而不是重置为全部
+    this.filterIssues();
   }
 }
 </script>
 
 <style>
-@import url(@/assets/css/popup.css);
 @import url(@/assets/css/dark.css);
 
 :root {
@@ -424,6 +358,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  text-decoration: none;
 }
 
 .new-issue-btn:hover {
