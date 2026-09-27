@@ -1,0 +1,497 @@
+/* ============================================================
+   控件提交页（/new-control）
+   复用全局 tokens / base（btn、input、card、page-container）
+   ============================================================ */
+
+.submit-page {
+  padding: var(--space-6) 0 var(--space-8);
+}
+
+/* ---------- 面包屑 ---------- */
+.submit-breadcrumb ol {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-5);
+  padding: 0;
+  list-style: none;
+  font-size: var(--font-small);
+  color: var(--muted);
+}
+
+.submit-breadcrumb li + li::before {
+  content: "/";
+  margin-right: var(--space-2);
+  color: var(--border);
+}
+
+.submit-breadcrumb a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease);
+}
+
+.submit-breadcrumb a:hover {
+  color: var(--primary);
+}
+
+.submit-breadcrumb [aria-current="page"] {
+  color: var(--foreground);
+  font-weight: 500;
+}
+
+/* ---------- 页面头部 ---------- */
+.submit-hero {
+  margin-bottom: var(--space-6);
+}
+
+.submit-hero-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-h2);
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.submit-hero-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  color: var(--primary);
+  font-size: 20px;
+}
+
+.submit-hero-desc {
+  margin: 0;
+  font-size: var(--font-body);
+  color: var(--muted);
+}
+
+/* ---------- 布局：主表单 + 侧栏 ---------- */
+.submit-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: var(--space-5);
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .submit-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- 卡片分区 ---------- */
+.submit-card {
+  padding: var(--space-5);
+}
+
+.submit-section + .submit-section {
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border);
+}
+
+.submit-section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-4);
+  font-size: var(--font-h3);
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.submit-section-title i {
+  color: var(--primary);
+  font-size: 15px;
+}
+
+/* ---------- 字段 ---------- */
+.submit-field + .submit-field {
+  margin-top: var(--space-4);
+}
+
+.submit-hint {
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-caption);
+  color: var(--muted);
+}
+
+.submit-field-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: var(--space-2);
+  font-size: var(--font-caption);
+}
+
+.submit-field-status.ok {
+  color: #16a34a;
+}
+
+.submit-field-status.warn {
+  color: #b45309;
+}
+
+.submit-field-status.error {
+  color: #dc2626;
+}
+
+/* 名称输入用等宽字体，强调它是唯一标识 */
+.submit-mono {
+  font-family: var(--font-mono);
+}
+
+/* ---------- 文件拖放区 ---------- */
+.submit-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-6) var(--space-4);
+  border: 1.5px dashed var(--input);
+  border-radius: var(--radius-lg);
+  background-color: var(--muted-background);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease),
+    background-color var(--duration-fast) var(--ease);
+}
+
+.submit-dropzone:hover,
+.submit-dropzone.dragover {
+  border-color: var(--primary);
+  background-color: color-mix(in srgb, var(--primary) 6%, var(--card));
+}
+
+.submit-dropzone-icon {
+  font-size: 26px;
+  color: var(--primary);
+}
+
+.submit-dropzone-text {
+  font-size: var(--font-small);
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.submit-dropzone-hint {
+  font-size: var(--font-caption);
+  color: var(--muted);
+}
+
+/* 已选择文件 */
+.submit-file {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--card);
+}
+
+.submit-file-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  color: var(--primary);
+}
+
+.submit-file-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.submit-file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--font-small);
+  font-weight: 500;
+  color: var(--foreground);
+  font-family: var(--font-mono);
+}
+
+.submit-file-size {
+  font-size: var(--font-caption);
+  color: var(--muted);
+}
+
+.submit-file-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease),
+    color var(--duration-fast) var(--ease);
+}
+
+.submit-file-remove:hover {
+  background-color: color-mix(in srgb, #dc2626 12%, transparent);
+  color: #dc2626;
+}
+
+/* ---------- Markdown 编辑/预览 ---------- */
+.submit-md-tabs {
+  display: flex;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+}
+
+.submit-md-tab {
+  padding: 5px var(--space-3);
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  background: transparent;
+  font-size: var(--font-caption);
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease),
+    color var(--duration-fast) var(--ease);
+}
+
+.submit-md-tab:hover {
+  color: var(--foreground);
+}
+
+.submit-md-tab.active {
+  background-color: var(--muted-background);
+  border-color: var(--border);
+  color: var(--foreground);
+}
+
+.submit-md-editor {
+  min-height: 180px;
+  resize: vertical;
+  font-family: var(--font-mono);
+  font-size: var(--font-small) !important;
+  line-height: 1.7 !important;
+}
+
+.submit-md-preview {
+  min-height: 180px;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--card);
+  overflow-wrap: break-word;
+}
+
+/* ---------- 提交按钮与反馈 ---------- */
+.submit-actions {
+  margin-top: var(--space-6);
+}
+
+.submit-actions .btn {
+  height: 44px;
+  font-size: var(--font-small);
+}
+
+.submit-feedback {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--font-small);
+}
+
+.submit-feedback.error {
+  background-color: color-mix(in srgb, #dc2626 10%, transparent);
+  color: #dc2626;
+}
+
+/* ---------- 成功态 ---------- */
+.submit-success {
+  padding: var(--space-8) var(--space-5);
+  text-align: center;
+}
+
+.submit-success-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: var(--space-4);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, #16a34a 12%, transparent);
+  color: #16a34a;
+  font-size: 28px;
+}
+
+.submit-success-title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-h2);
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.submit-success-desc {
+  margin: 0 0 var(--space-5);
+  font-size: var(--font-body);
+  color: var(--muted);
+}
+
+.submit-success-desc strong {
+  color: var(--primary);
+  font-family: var(--font-mono);
+}
+
+.submit-success-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* ---------- 登录门禁 ---------- */
+.submit-gate {
+  max-width: 440px;
+  margin: var(--space-7) auto;
+  padding: var(--space-8) var(--space-6);
+  text-align: center;
+}
+
+.submit-gate-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: var(--space-4);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  color: var(--primary);
+  font-size: 26px;
+}
+
+.submit-gate-title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-h2);
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.submit-gate-desc {
+  margin: 0 0 var(--space-5);
+  font-size: var(--font-body);
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.submit-github-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background-color: #181b21;
+  color: #ffffff;
+  font-size: var(--font-small);
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color var(--duration-fast) var(--ease);
+}
+
+.submit-github-btn:hover {
+  background-color: #2a303b;
+  color: #ffffff;
+}
+
+:root[data-theme="dark"] .submit-github-btn {
+  background-color: #e6eaf2;
+  color: #0b1220;
+}
+
+:root[data-theme="dark"] .submit-github-btn:hover {
+  background-color: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .submit-github-btn {
+    background-color: #e6eaf2;
+    color: #0b1220;
+  }
+  :root:not([data-theme="light"]) .submit-github-btn:hover {
+    background-color: #ffffff;
+  }
+}
+
+.submit-gate-links {
+  margin-top: var(--space-4);
+  font-size: var(--font-caption);
+}
+
+.submit-gate-links a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.submit-gate-links a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- 侧栏：提交须知 ---------- */
+.submit-guide-card {
+  padding: var(--space-5);
+}
+
+.submit-guide-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.submit-guide-list li {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  font-size: var(--font-small);
+  color: var(--muted-foreground);
+  line-height: 1.7;
+}
+
+.submit-guide-list li + li {
+  border-top: 1px solid var(--border);
+}
+
+.submit-guide-list i {
+  flex-shrink: 0;
+  margin-top: 4px;
+  color: var(--primary);
+}
+
+.submit-guide-list code {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background-color: var(--inline-code-background);
+  color: var(--inline-code-foreground);
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
