@@ -1,5 +1,5 @@
 import { getCloudflareContext } from "~/server/utils/cloudflare"
-import { assertAllowedOrigin, getGithubToken, githubHeaders } from "~/server/utils/github"
+import { assertAllowedOrigin, getGithubToken, githubHeaders, getClientKind, withViaSignature } from "~/server/utils/github"
 // @ts-nocheck
 
 const REPO = "zitzhen/CoCo-Community"
@@ -58,7 +58,8 @@ export default defineEventHandler(async (event) => {
       {
         method: "POST",
         headers: { ...githubHeaders(token), "Content-Type": "application/json" },
-        body: JSON.stringify({ body: content }),
+        // 正文末尾空两行追加来源标记（web / api）
+        body: JSON.stringify({ body: withViaSignature(content, getClientKind(request)) }),
       }
     );
 

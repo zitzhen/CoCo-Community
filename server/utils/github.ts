@@ -47,3 +47,26 @@ export function githubHeaders(token: string) {
     "User-Agent": "Cloudflare-Worker",
   };
 }
+
+// 判断调用来源：浏览器同源请求为 web；移动端携带 X-Client: mobile/api
+// 或 ?client=mobile/api 时为 api（与 /auth/github 的约定一致）
+export function getClientKind(request: Request): "web" | "api" {
+  const xClient = (request.headers.get("X-Client") || "").toLowerCase();
+  let queryClient = "";
+  try {
+    queryClient = (new URL(request.url).searchParams.get("client") || "").toLowerCase();
+  } catch {
+    // ignore
+  }
+  return xClient === "mobile" || xClient === "api" ||
+    queryClient === "mobile" || queryClient === "api"
+    ? "api"
+    : "web";
+}
+
+// 在用户正文末尾空两行追加来源标记（HTML 注释，GitHub 渲染时不可见，raw 中可审计）
+export function withViaSignature(body: string, client: "web" | "api"): string {
+  const tag = `<!-- via coco-community ${client} -->`;
+  const trimmed = (body || "").trimEnd();
+  return trimmed ? `${trimmed}\n\n\n${tag}` : tag;
+}

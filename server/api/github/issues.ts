@@ -1,5 +1,5 @@
 import { getCloudflareContext } from "~/server/utils/cloudflare"
-import { assertAllowedOrigin, getGithubToken, githubHeaders } from "~/server/utils/github"
+import { assertAllowedOrigin, getGithubToken, githubHeaders, getClientKind, withViaSignature } from "~/server/utils/github"
 // @ts-nocheck
 
 // GitHub 默认每页 30 条且无分页会静默截断；这里按 100/页循环拉全量，
@@ -94,8 +94,12 @@ async function handleCreate(request: Request, token: string) {
   }
 
   // 不在服务端指定 labels：非协作者设置标签会被 GitHub 静默丢弃，保持创建结果可预期
-  const payload: { title: string; body?: string } = { title }
-  if (issueBody) payload.body = issueBody
+  const client = getClientKind(request)
+  const payload: { title: string; body: string } = {
+    title,
+    // 正文可空，但统一追加来源标记（空两行）
+    body: withViaSignature(issueBody, client),
+  }
 
   const githubResponse = await fetch(`https://api.github.com/repos/${REPO}/issues`, {
     method: "POST",

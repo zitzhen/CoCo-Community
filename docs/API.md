@@ -546,6 +546,8 @@ Content-Type: application/json
 成功：透传 GitHub 201 响应（创建结果原始对象，前端使用其中的 `number` 跳转详情页）。错误：400 `invalid_json` / `missing_title` / `title_too_long` / `body_too_long`；401 未登录；403 来源不在白名单；其余失败透传 GitHub 状态码与 `{ error: "GitHub API create issue failed", details }`。
 
 > 服务端不设置 labels：非仓库协作者指定标签会被 GitHub 静默丢弃，标签由维护者后续在 GitHub 端添加。
+>
+> 来源标记：服务端自动在正文末尾空两行追加 `<!-- via coco-community web -->` 或 `<!-- via coco-community api -->`（浏览器同源请求为 web；携带 `X-Client: mobile/api` 头或 `?client=mobile/api` 为 api）。正文为空时仅写入该标记。标记为 HTML 注释，GitHub 页面渲染不可见。
 
 ### 7.2 发表评论
 
@@ -554,9 +556,11 @@ POST /api/github/issues/{number}/comments
 Content-Type: application/json
 ```
 
-请求体：`{ "body": "必填，trim 后 1-5000 字符，支持 Markdown" }`
+请求体：`{ "body": "必填，trim 后 1-5000 字符，支持 Markdown" }`（长度校验针对用户内容，不含自动追加的标记）
 
 成功：透传 GitHub 201 响应（新建评论原始对象）。错误：400 `invalid_json` / `missing_body` / `body_too_long` / `Missing or invalid issue number`；401 未登录；403 来源不合法；议题不存在等错误透传 GitHub 状态码与 `{ error: "GitHub API create comment failed", details }`。
+
+评论同样按环境自动追加来源标记，规则同 [7.1](#71-创建议题)。
 
 注意事项：
 
