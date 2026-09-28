@@ -17,6 +17,7 @@ export interface R2Object {
   key: string
   size: number
   httpMetadata?: { contentType?: string }
+  customMetadata?: Record<string, string>
   body?: ReadableStream
   text?(): Promise<string>
 }
@@ -30,6 +31,11 @@ export interface R2Objects {
 
 export interface R2Bucket {
   get(key: string, options?: { onlyMetadata?: boolean }): Promise<R2Object | null>
+  put(key: string, value: string | ArrayBuffer | ReadableStream | Blob | null, options?: {
+    httpMetadata?: { contentType?: string; contentDisposition?: string }
+    customMetadata?: Record<string, string>
+  }): Promise<void>
+  delete(keys: string[]): Promise<void>
   list(options?: {
     prefix?: string
     delimiter?: string
@@ -45,6 +51,7 @@ export type CloudflareEnv = {
   GITHUB_CLIENT_SECRET?: string
   COCO_COMMUNITY_JWT?: string
   COCO_COMMUNITY_JWT_P?: string
+  GITHUB_TOKEN?: string
 }
 
 export function getCloudflareContext(event: H3Event) {

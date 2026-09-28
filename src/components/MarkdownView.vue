@@ -11,9 +11,11 @@ import { renderMarkdown } from '@/utils/markdown'
 
 const props = defineProps({
   content: { type: String, default: '' },
+  // 相对图片地址的解析基准，如 '/resource/控件名/'；不传则不重写
+  resourceBase: { type: String, default: '' },
 })
 
-const rendered = computed(() => renderMarkdown(props.content))
+const rendered = computed(() => renderMarkdown(props.content, props.resourceBase || undefined))
 
 function fallbackCopy(text) {
   const textarea = document.createElement('textarea')

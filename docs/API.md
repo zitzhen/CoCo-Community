@@ -12,8 +12,9 @@
 - [5. 文章与评论](#5-文章与评论)
 - [6. 用户](#6-用户)
 - [7. GitHub 代理](#7-github-代理)
-- [8. 日志](#8-日志)
-- [9. 数据模型附录](#9-数据模型附录)
+- [8. Git 仓库同步](#8-git-仓库同步)
+- [9. 日志](#9-日志)
+- [10. 数据模型附录](#10-数据模型附录)
 
 ---
 
@@ -166,7 +167,7 @@ GET /api/logout
 
 ## 4. 控件（R2 + D1）
 
-R2 是控件本体与元信息的真实来源；D1 `components` 表只存计数。目录结构见 [9.1](#91-r2-布局)。
+R2 是控件本体与元信息的真实来源；D1 `components` 表只存计数。目录结构见 [10.1](#101-r2-布局)。
 
 ### 4.1 控件列表
 
@@ -582,9 +583,183 @@ Content-Type: application/json
 
 ---
 
-## 8. 日志
+## 8. Git 仓库同步
 
-### 8.1 访问日志
+将基于 [`zitzhen/control-template`](https://github.com/zitzhen/control-template) 模板的 GitHub 控件仓库绑定到社区控件，服务端**全量真镜像**仓库：
+- 仓库中所有**允许类型**的文件（版本目录内 `information.json` / `control.jsx`、根 `README.md`、README 引用的图片、LICENSE 等）按原路径复制到 R2 `<控件名>/` 下；
+- 内容按 GitHub blob sha 判断：未变跳过、变更覆盖；
+- 仓库中已删除的文件从 R2 同步删除（带保护阈值，见 8.2）。
+
+绑定关系存于 D1 `github_sync_repos` 表（见 [10.2](#102-d1-表)）。一个控件名仅可绑定一个仓库；仅支持绑定**本人名下的公开仓库**。
+
+**允许镜像的文件类型**：图片（`.png .jpg .jpeg .gif .webp .bmp .ico .svg`）、文档/代码（`.md .markdown .txt .json .jsx .js .mjs .cjs .ts .css .xml .yml .yaml`）、字体（`.woff .woff2 .ttf .otf .eot`）、音视频（`.mp3 .mp4 .webm`），以及无扩展名的 `LICENSE/LICENCE/COPYING/NOTICE`。`.html/.htm/.xhtml` 等可在同源执行为活动页面的类型拒绝（`file_type_not_allowed`）；`.github/` 等点开头的仓库管道文件静默忽略。
+
+**大小上限**：jsx 与 README ≤ 100 KiB，其他单个文件 ≤ 5 MiB，解压后总量 ≤ 25 MiB、文件数 ≤ 500（超限截断，本次不执行删除并返回 warning）。
+
+**同步触发（预留 API）**：`/api/github-sync/sync` 支持两种鉴权——网页手动（Cookie 登录 + 归属校验）与仓库 CI 通知（`Authorization: Bearer <sync_secret>`，secret 由绑定接口返回）。后者即为预留的自动同步入口：在控件仓库的 GitHub Actions 中于 push 时调用，实现自动同步。同一绑定 60 秒内仅允许同步一次。
+
+### 8.1 绑定仓库
+
+```
+POST /api/github-sync/bind
+Content-Type: application/json
+```
+
+**认证**：双 Cookie + Origin 白名单。
+
+**请求体**
+
+| 字段 | 必填 | 说明 |
+| --- | --- | --- |
+| `repo` | 是 | `owner/name` 或 GitHub 仓库 URL（支持 `.git` 后缀） |
+| `controlName` | 是 | R2 控件名，规则同 `control-submit` 的 NAME_RE；已存在控件要求 author 与当前用户一致（大小写不敏感） |
+| `branch` | 否 | 默认 `main` |
+
+**200**
+
+```json
+{
+  "ok": true,
+  "controlName": "MyControl",
+  "repo": "Iamliuxiaozhen/my-control",
+  "branch": "main",
+  "validVersions": 1,
+  "totalFiles": 4,
+  "syncSecret": "a1b2...（64 位 hex，仅归属者可见，用于 CI 鉴权）",
+  "syncEndpoint": "/api/github-sync/sync",
+  "exampleCurl": "curl -X POST -H \"Authorization: Bearer ...\" ..."
+}
+```
+
+`validVersions` 为合法版本目录数，`totalFiles` 为仓库 blob 总数（均允许 0，可先绑空仓库再推代码）。
+
+**错误码**：400 `invalid_repo` / `invalid_name`；401（同登录校验链）；403 `repo_not_owned` / 来源不在白名单；404 `repo_not_accessible`（不存在或私有）；409 `name_taken_by_other` / `already_bound` / `control_info_corrupted`；500 `bind_failed`。
+
+### 8.2 触发同步（预留 API）
+
+```
+POST /api/github-sync/sync
+Content-Type: application/json
+```
+
+**认证**（二选一）：
+
+- **Cookie**：双令牌登录，且为绑定归属者（`repo_owner` 匹配登录名）
+- **Bearer**：`Authorization: Bearer <sync_secret>`（无需登录，供仓库 CI 调用）
+
+**请求体**：`{ "controlName": "MyControl" }` 或 `{ "repo": "owner/name" }`（Cookie 方式下二选一定位绑定；Bearer 方式下由 secret 直接定位，controlName 不匹配时 403 `binding_mismatch`）。
+
+**仓库结构约定**（与 R2 同构）：控件元数据 `information.json` 仅存于**仓库根目录**（`Current_version` / `Version_number_list` / `author` 等，版本列表权威来源）；各**版本目录** `v?X.Y.Z/` 内放 `control.jsx`（可含图片等附件），不含 information.json。
+
+**镜像流程**：
+
+1. 拉取绑定分支 git tree（blob sha 映射 + 版本目录识别，tree 被截断返回 `tree_truncated`）
+2. 下载整仓 tarball（共 2 次出站请求，与文件数无关），gzip 流式解压后解析 tar
+3. 文件分级：点文件忽略、非白名单拒绝、大小超限拒绝；版本目录须含 `.jsx`（否则 `missing_jsx`）；根 `information.json` 必须可解析（失败记 `invalid_information_json`，退化为按版本目录扫描）
+4. 新控件：先写 D1 `components` 登记行（失败即整体中止，R2 未被触碰）
+5. 逐文件 sha 比对：未变跳过，新增/变更覆盖写 R2（customMetadata 存 `gh_sha`）
+6. 合并写根 `information.json`：版本列表 = R2 现存 ∪ 仓库根 information.json 所列 ∪ 仓库实际版本目录（去重），`Current_version` 取语义最高，`author` 以绑定者为准；仓库根 information.json 不做原样镜像（R2 该文件由社区合并管理，且不随仓库删除）
+7. **镜像删除**：R2 中路径已不存在于仓库的文件删除——仅在镜像完整且无写入错误时执行；删除数占现存 key 超过 **30%** 则中止（`deletion_aborted_threshold`）；仓库中不存在的版本目录**整目录豁免**（保护绑定前手动上传的历史版本）
+8. 有任何变更时清理 `/api/control-list` 缓存；更新绑定行同步状态
+
+**200**（`ok` / `partial`）
+
+```json
+{
+  "ok": true,
+  "status": "ok",
+  "controlName": "MyControl",
+  "repo": "Iamliuxiaozhen/my-control",
+  "filesSynced": ["README.md", "images/demo.png", "1.0.0/control.jsx", "1.0.0/information.json"],
+  "unchanged": 0,
+  "ignored": 2,
+  "skipped": [],
+  "deleted": ["images/old.png"],
+  "versions": { "added": ["1.0.0"], "all": ["1.0.0"] },
+  "currentVersion": "1.0.0",
+  "warnings": []
+}
+```
+
+**README 图片展示**：控件详情页渲染 README 时，相对图片地址（`./images/x.png`）由前端重写为 `/resource/<控件名>/images/x.png` 经同源资源代理加载；外链图片（http/https）原样保留。
+
+**skipped.reason 取值**：`file_type_not_allowed` / `file_too_large` / `jsx_too_large` / `readme_too_large` / `invalid_information_json` / `version_file_missing_from_tarball` / `r2_write_failed`。
+
+**warnings 取值**：`tree_truncated` / `extracted_size_limit` / `file_count_limit` / `deletion_aborted_threshold`（有 warning 时 `ok=false`、HTTP 仍为 200）。
+
+**错误码**：401 `unauthenticated` / `invalid_sync_secret`；403 `not_owner` / `binding_mismatch`；404 `not_bound`；429 `sync_too_frequent`（含 `retry_after_seconds`）；502 同步整体失败（`error` 字段说明原因，如 `repo_or_branch_not_found` / `counter_register_failed: ...`）。
+
+**GitHub Actions 接入示例**（绑定接口响应中附带同内容）：
+
+```yaml
+name: Sync to CoCo-Community
+on:
+  push:
+    branches: [main]
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify CoCo-Community sync
+        run: |
+          curl -X POST -H "Authorization: Bearer ${{ secrets.COCO_SYNC_SECRET }}" \
+            -H "Content-Type: application/json" \
+            -d '{"controlName":"MyControl"}' \
+            https://cc.zitzhen.cn/api/github-sync/sync
+```
+
+`sync_secret` 仅可触发同步，无法注入内容；如泄露，解绑后重新绑定即可更换。
+
+### 8.3 我的绑定列表
+
+```
+GET /api/github-sync/list
+```
+
+**认证**：双 Cookie。返回当前用户全部绑定（`sync_secret` 仅归属者本人可见）：
+
+```json
+{
+  "list": [
+    {
+      "controlName": "MyControl",
+      "repo": "Iamliuxiaozhen/my-control",
+      "branch": "main",
+      "syncSecret": "a1b2...",
+      "createdAt": "2026-09-28T08:00:00.000Z",
+      "lastSyncedAt": "2026-09-28T09:00:00.000Z",
+      "lastSyncStatus": "ok",
+      "lastSyncDetail": {
+        "filesSynced": ["README.md", "1.0.0/control.jsx"],
+        "unchanged": 0,
+        "deleted": [],
+        "versions": { "added": ["1.0.0"], "all": ["1.0.0"] }
+      }
+    }
+  ]
+}
+```
+
+`lastSyncStatus`：`never` / `ok` / `partial` / `failed`。错误：401；500 `list_failed`。
+
+### 8.4 解绑仓库
+
+```
+POST /api/github-sync/unbind
+Content-Type: application/json
+```
+
+**认证**：双 Cookie + Origin 白名单。请求体 `{ "controlName": "MyControl" }`。仅删除 D1 绑定关系，R2 中已同步的控件数据保持不变。
+
+**200** `{ "ok": true, "controlName": "MyControl" }`。错误：400 `missing_control_name`；401；403 `not_owner` / 来源不在白名单；404 `not_bound`；500 `unbind_failed`。
+
+> 服务端访问 GitHub API 的鉴权优先级：**网页触发（bind/sync）优先使用登录用户的 GitHub token**（5000 次/小时/用户，OAuth 时下发）；Bearer CI 触发无用户会话，回退 Cloudflare Pages 可选环境变量 `GITHUB_TOKEN`（同为 5000 次/小时）；两者皆无时匿名（60 次/小时/IP，Cloudflare 共享出口 IP 下极易 403 限流）。
+
+---
+
+## 9. 日志
+
+### 9.1 访问日志
 
 ```
 GET /api/log?url={被访问路径}
@@ -602,9 +777,9 @@ GET /api/log?url={被访问路径}
 
 ---
 
-## 9. 数据模型附录
+## 10. 数据模型附录
 
-### 9.1 R2 布局（桶 `coco-community`）
+### 10.1 R2 布局（桶 `coco-community`）
 
 ```text
 <控件名>/
@@ -626,7 +801,7 @@ GET /api/log?url={被访问路径}
 
 历史数据的 `author` 可能为空字符串或大小写不一致；解析实际文件 key 时会容忍版本号写法差异（`1.0` ≈ `1.0.0`）及 `control.jsx` 文件名拼写差异。
 
-### 9.2 D1 表（数据库 `CoCo-Community`）
+### 10.2 D1 表（数据库 `CoCo-Community`）
 
 | 表 | 主要列 | 用途 |
 | --- | --- | --- |
@@ -637,17 +812,36 @@ GET /api/log?url={被访问路径}
 | `comment` | `id`, `username`, `content`, `time`, `ip`, `essayid` | 文章评论 |
 | `user` | `username`, `nickname`, `number_of_controls`, `avatar`, `bio`, `pageviews` | 用户资料 |
 | `log` | `ip`, `url`（及自增 id / 时间列） | 访问日志 |
+| `github_sync_repos` | `id`, `control_name`(UNIQUE), `repo_owner`, `repo_name`, `branch`, `sync_secret`, `created_at`, `last_synced_at`, `last_sync_status`, `last_sync_detail` | Git 仓库绑定与同步状态 |
+
+`github_sync_repos` 建表 SQL：
+
+```sql
+CREATE TABLE IF NOT EXISTS github_sync_repos (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  control_name TEXT NOT NULL UNIQUE,
+  repo_owner TEXT NOT NULL,
+  repo_name TEXT NOT NULL,
+  branch TEXT NOT NULL DEFAULT 'main',
+  sync_secret TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  last_synced_at TEXT,
+  last_sync_status TEXT,
+  last_sync_detail TEXT
+);
+```
 
 > 建议给 `components(name)` 建唯一索引以兜底并发重复提交：
 > `CREATE UNIQUE INDEX IF NOT EXISTS idx_components_name ON components(name)`（建前需确认无重名行）。
 
-### 9.3 页面路由速查
+### 10.3 页面路由速查
 
 | 路由 | 页面 |
 | --- | --- |
 | `/` | 首页（Hero 搜索 + 控件网格 + 上传入口） |
 | `/control`、`/control/{name}` | 控件列表 / 详情 |
 | `/new-control` | 提交控件（登录） |
+| `/new-control/repo` | 从 Git 仓库导入（登录） |
 | `/essay`、`/essay/{id}` | 文章列表 / 详情 |
 | `/user`、`/user/{login}` | 用户列表 / 主页 |
 | `/me` | 个人中心（登录） |
