@@ -31,6 +31,9 @@ export default defineEventHandler(async (event) => {
   // ---------- 鉴权：优先 Bearer sync_secret，否则回退 Cookie ----------
   const authHeader = request.headers.get('Authorization') || ''
   const bearer = authHeader.match(/^Bearer\s+(.+)$/i)?.[1]?.trim()
+  // CI 私有仓库场景：Bearer 触发时可附带头传 GitHub token（如 Actions 内置 secrets.GITHUB_TOKEN），
+  // 仅用于读取绑定仓库本身（owner/repo 来自绑定行，无法借此改变镜像目标）
+  const ciToken = request.headers.get('X-GitHub-Token')?.trim() || null
 
   let binding: BindingRow | null = null
   let userToken: string | null = null // Cookie 登录时保存用户 GitHub token，用于提额 GitHub API
@@ -92,10 +95,10 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  // ---------- 执行全量镜像（网页触发时优先用用户 GitHub token，避免匿名限流 403） ----------
+  // ---------- 执行全量镜像（CI 头传 token 优先，其次网页用户 token，避免匿名限流 403） ----------
   let result
   try {
-    result = await mirrorRepo(env, binding, userToken)
+    result = await mirrorRepo(env, binding, ciToken || userToken)
   } catch (err: any) {
     result = {
       status: 'failed' as const,

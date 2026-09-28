@@ -51,17 +51,20 @@ export default defineEventHandler(async (event) => {
     return jsonRes({ error: 'invalid_name' }, 400)
   }
 
-  // ---------- 校验仓库存在、公开、且归属当前用户（用用户 token，避免匿名限流 403） ----------
+  // ---------- 校验仓库存在、归属当前用户（公开或私有；用用户 token，避免匿名限流 403） ----------
   const repoRes = await fetch(`https://api.github.com/repos/${parsed.owner}/${parsed.repo}`, {
     headers: githubHeaders(auth.token),
   })
   if (!repoRes.ok) {
-    return jsonRes({ error: 'repo_not_accessible', detail: '仓库不存在、为私有仓库或不可访问' }, 404)
+    return jsonRes(
+      {
+        error: 'repo_not_accessible',
+        detail: '仓库不存在、不可访问，或为私有仓库但当前授权不足（请从绑定页重新登录获取 repo 权限）',
+      },
+      404,
+    )
   }
   const repoData = await repoRes.json()
-  if (repoData.private) {
-    return jsonRes({ error: 'repo_not_accessible', detail: '暂不支持私有仓库' }, 404)
-  }
   if (repoData.owner?.login !== auth.login) {
     return jsonRes({ error: 'repo_not_owned', detail: '仅支持绑定你自己名下的仓库' }, 403)
   }
@@ -130,7 +133,8 @@ export default defineEventHandler(async (event) => {
     totalFiles,
     syncSecret,
     syncEndpoint: '/api/github-sync/sync',
-    exampleCurl: `curl -X POST -H "Authorization: Bearer ${syncSecret}" -H "Content-Type: application/json" -d '{"controlName":"${controlName}"}' https://cc.zitzhen.cn/api/github-sync/sync`,
+    // 模板字符串内 \\$ 会被转义，此处用 \\$ 的单反斜杠形式输出 GitHub Actions 占位符 ${{ }}
+    exampleCurl: `curl -X POST -H "Authorization: Bearer ${syncSecret}" -H "X-GitHub-Token: \${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" -d '{"controlName":"${controlName}"}' https://cc.zitzhen.cn/api/github-sync/sync`,
   })
   } catch (err: any) {
     return jsonRes({ error: 'server_error', message: err?.message }, 500)

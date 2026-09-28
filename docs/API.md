@@ -586,11 +586,11 @@ Content-Type: application/json
 ## 8. Git 仓库同步
 
 将基于 [`zitzhen/control-template`](https://github.com/zitzhen/control-template) 模板的 GitHub 控件仓库绑定到社区控件，服务端**全量真镜像**仓库：
-- 仓库中所有**允许类型**的文件（版本目录内 `information.json` / `control.jsx`、根 `README.md`、README 引用的图片、LICENSE 等）按原路径复制到 R2 `<控件名>/` 下；
+- 仓库中所有**允许类型**的文件（版本目录内 `control.jsx`、仓库根 `information.json` 与 `README.md`、README 引用的图片、LICENSE 等）按原路径复制到 R2 `<控件名>/` 下（仓库根 information.json 除外，见流程第 6 步）；
 - 内容按 GitHub blob sha 判断：未变跳过、变更覆盖；
 - 仓库中已删除的文件从 R2 同步删除（带保护阈值，见 8.2）。
 
-绑定关系存于 D1 `github_sync_repos` 表（见 [10.2](#102-d1-表)）。一个控件名仅可绑定一个仓库；仅支持绑定**本人名下的公开仓库**。
+绑定关系存于 D1 `github_sync_repos` 表（见 [10.2](#102-d1-表)）。一个控件名仅可绑定一个仓库；支持绑定**本人名下的公开/私有仓库**。私有仓库要求授权时带 `repo` scope（绑定页的 GitHub 授权链接已包含；普通登录仍为 `public_repo`）。CI 触发私有仓库同步必须在请求中附带头 `X-GitHub-Token`（见 8.2）。
 
 **允许镜像的文件类型**：图片（`.png .jpg .jpeg .gif .webp .bmp .ico .svg`）、文档/代码（`.md .markdown .txt .json .jsx .js .mjs .cjs .ts .css .xml .yml .yaml`）、字体（`.woff .woff2 .ttf .otf .eot`）、音视频（`.mp3 .mp4 .webm`），以及无扩展名的 `LICENSE/LICENCE/COPYING/NOTICE`。`.html/.htm/.xhtml` 等可在同源执行为活动页面的类型拒绝（`file_type_not_allowed`）；`.github/` 等点开头的仓库管道文件静默忽略。
 
@@ -633,7 +633,7 @@ Content-Type: application/json
 
 `validVersions` 为合法版本目录数，`totalFiles` 为仓库 blob 总数（均允许 0，可先绑空仓库再推代码）。
 
-**错误码**：400 `invalid_repo` / `invalid_name`；401（同登录校验链）；403 `repo_not_owned` / 来源不在白名单；404 `repo_not_accessible`（不存在或私有）；409 `name_taken_by_other` / `already_bound` / `control_info_corrupted`；500 `bind_failed`。
+**错误码**：400 `invalid_repo` / `invalid_name`；401（同登录校验链）；403 `repo_not_owned` / 来源不在白名单；404 `repo_not_accessible`（不存在、不可访问，或私有仓库但当前 token 授权不足——从绑定页重新登录获取 `repo` scope 即可）；409 `name_taken_by_other` / `already_bound` / `control_info_corrupted`；500 `bind_failed`。
 
 ### 8.2 触发同步（预留 API）
 
@@ -646,6 +646,7 @@ Content-Type: application/json
 
 - **Cookie**：双令牌登录，且为绑定归属者（`repo_owner` 匹配登录名）
 - **Bearer**：`Authorization: Bearer <sync_secret>`（无需登录，供仓库 CI 调用）
+- **`X-GitHub-Token` 头（可选，仅 Bearer 路径生效）**：CI 传递 GitHub token 用于读取**私有仓库**（推荐 Actions 内置的 `${{ secrets.GITHUB_TOKEN }}`，自带对所属仓库的 contents 读权限）。token 仅作为读取绑定仓库本身的凭据（owner/repo 来自绑定行，无法借此改变镜像目标）；公开仓库无需该头，Cookie 路径忽略该头
 
 **请求体**：`{ "controlName": "MyControl" }` 或 `{ "repo": "owner/name" }`（Cookie 方式下二选一定位绑定；Bearer 方式下由 secret 直接定位，controlName 不匹配时 403 `binding_mismatch`）。
 
@@ -703,12 +704,13 @@ jobs:
       - name: Notify CoCo-Community sync
         run: |
           curl -X POST -H "Authorization: Bearer ${{ secrets.COCO_SYNC_SECRET }}" \
+            -H "X-GitHub-Token: ${{ secrets.GITHUB_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d '{"controlName":"MyControl"}' \
             https://cc.zitzhen.cn/api/github-sync/sync
 ```
 
-`sync_secret` 仅可触发同步，无法注入内容；如泄露，解绑后重新绑定即可更换。
+`sync_secret` 仅可触发同步，无法注入内容；如泄露，解绑后重新绑定即可更换。`secrets.GITHUB_TOKEN` 是 Actions 内置令牌（无需配置），自带对所属仓库的读权限——公开仓库可省略该头，私有仓库必带。
 
 ### 8.3 我的绑定列表
 

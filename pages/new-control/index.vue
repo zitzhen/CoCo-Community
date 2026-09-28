@@ -28,7 +28,7 @@
         请先使用 GitHub 登录，再来分享你的作品。
       </p>
       <a
-        href="https://github.com/login/oauth/authorize?client_id=Ov23lii4E31EzV9VMW7B&redirect_uri=https://cc.zitzhen.cn/auth/github?client=web"
+        href="https://github.com/login/oauth/authorize?client_id=Ov23lii4E31EzV9VMW7B&scope=repo&redirect_uri=https://cc.zitzhen.cn/auth/github?client=web"
         class="submit-github-btn"
       >
         <i class="fab fa-github" aria-hidden="true"></i>

@@ -27,7 +27,7 @@
         绑定 Git 仓库需要验证 GitHub 账号身份，用于确保你只能同步自己名下的仓库。
       </p>
       <a
-        href="https://github.com/login/oauth/authorize?client_id=Ov23lii4E31EzV9VMW7B&redirect_uri=https://cc.zitzhen.cn/auth/github?client=web"
+        href="https://github.com/login/oauth/authorize?client_id=Ov23lii4E31EzV9VMW7B&scope=repo&redirect_uri=https://cc.zitzhen.cn/auth/github?client=web"
         class="submit-github-btn"
       >
         <i class="fab fa-github" aria-hidden="true"></i>
@@ -326,6 +326,7 @@ jobs:
       - name: Notify CoCo-Community sync
         run: |
           curl -X POST -H "Authorization: Bearer ${boundSecret.value}" \\
+            -H "X-GitHub-Token: \${{ secrets.GITHUB_TOKEN }}" \\
             -H "Content-Type: application/json" \\
             -d '{"controlName":"${boundName.value}"}' \\
             https://cc.zitzhen.cn/api/github-sync/sync`)
