@@ -451,7 +451,7 @@ async function doSync() {
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  background: #f6f8fa;
+  background: var(--muted-background);
   border: 1px solid var(--border);
   border-radius: 6px;
   margin-top: 10px;
@@ -461,7 +461,7 @@ async function doSync() {
   font-size: 13px;
   word-break: break-all;
   flex: 1;
-  color: var(--text);
+  color: var(--foreground);
 }
 .sync-code {
   background: #0d1117;
@@ -474,23 +474,50 @@ async function doSync() {
   margin-top: 10px;
   white-space: pre;
 }
+/* 同步结果：语义色变量双主题覆盖（浅色实底 / 深色半透明底） */
 .sync-result {
+  --ok-fg: #047857;
+  --ok-bg: #ecfdf5;
+  --ok-border: #10b981;
+  --warn-fg: #92400e;
+  --warn-bg: #fffbeb;
+  --warn-border: #f59e0b;
+  --err-fg: #b91c1c;
+  --err-bg: #fef2f2;
+  --err-border: #ef4444;
   margin-top: 20px;
   padding: 16px;
   border-radius: 8px;
-  background: #f6f8fa;
+  background: var(--muted-background);
+  color: var(--foreground);
+}
+@media (prefers-color-scheme: dark) {
+  .sync-result {
+    --ok-fg: #6ee7b7;
+    --ok-bg: rgba(16, 185, 129, 0.12);
+    --ok-border: rgba(16, 185, 129, 0.45);
+    --warn-fg: #fcd34d;
+    --warn-bg: rgba(245, 158, 11, 0.12);
+    --warn-border: rgba(245, 158, 11, 0.45);
+    --err-fg: #fca5a5;
+    --err-bg: rgba(239, 68, 68, 0.12);
+    --err-border: rgba(239, 68, 68, 0.45);
+  }
 }
 .sync-result.success {
-  background: #ecfdf5;
-  border: 1px solid #10b981;
+  background: var(--ok-bg);
+  border: 1px solid var(--ok-border);
+  color: var(--ok-fg);
 }
 .sync-result.warn {
-  background: #fffbeb;
-  border: 1px solid #f59e0b;
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-border);
+  color: var(--warn-fg);
 }
 .sync-result.error {
-  background: #fef2f2;
-  border: 1px solid #ef4444;
+  background: var(--err-bg);
+  border: 1px solid var(--err-border);
+  color: var(--err-fg);
 }
 .sync-skipped-list {
   margin: 8px 0 0 20px;
@@ -502,7 +529,6 @@ async function doSync() {
   margin-bottom: 4px;
 }
 .sync-warning {
-  color: #b45309;
   font-size: 14px;
 }
 </style>
