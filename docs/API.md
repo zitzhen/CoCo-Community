@@ -691,6 +691,9 @@ Content-Type: application/json
 
 **GitHub Actions 接入示例**（绑定接口响应中附带同内容）：
 
+1. 先在仓库 **Settings → Secrets and variables → Actions → New repository secret** 中新建密钥：Name 填 `COCO_SYNC_SECRET`，Secret 粘贴绑定接口返回的 `sync_secret`（或直达 `https://github.com/<owner>/<repo>/settings/secrets/actions/new`）。**切勿把密钥明文写进工作流文件或提交到仓库**。
+2. 在仓库 `.github/workflows/sync-to-coco.yml` 中粘贴以下内容：
+
 ```yaml
 name: Sync to CoCo-Community
 on:
@@ -702,13 +705,14 @@ jobs:
     steps:
       - name: Notify CoCo-Community sync
         run: |
-          curl -X POST -H "Authorization: Bearer ${{ secrets.COCO_SYNC_SECRET }}" \
+          curl --fail -X POST \
+            -H "Authorization: Bearer ${{ secrets.COCO_SYNC_SECRET }}" \
             -H "Content-Type: application/json" \
             -d '{"controlName":"MyControl"}' \
             https://cc.zitzhen.cn/api/github-sync/sync
 ```
 
-`sync_secret` 仅可触发同步，无法注入内容；如泄露，解绑后重新绑定即可更换。
+`curl --fail` 保证密钥缺失或失效（HTTP 401/403）时工作流标红，便于发现配置问题。`sync_secret` 仅可触发同步，无法注入内容；如泄露，解绑后重新绑定即可更换。
 
 ### 8.3 我的绑定列表
 
