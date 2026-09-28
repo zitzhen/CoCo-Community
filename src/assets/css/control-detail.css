@@ -204,6 +204,156 @@
   flex-shrink: 0;
 }
 
+/* ---------- 许可证提示横幅 ---------- */
+/* 色调变量同时供横幅与侧栏许可证链接使用 */
+.license-tone--safe {
+  --license-accent: #059669;
+}
+.license-tone--info {
+  --license-accent: var(--primary);
+}
+.license-tone--notice {
+  --license-accent: #b45309;
+}
+.license-tone--warning {
+  --license-accent: #c2410c;
+}
+.license-tone--danger {
+  --license-accent: #dc2626;
+}
+.license-tone--neutral {
+  --license-accent: var(--muted);
+}
+
+.license-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid
+    color-mix(in srgb, var(--license-accent) 38%, var(--border));
+  border-left: 4px solid var(--license-accent);
+  border-radius: var(--radius-md);
+  background-color: color-mix(in srgb, var(--license-accent) 8%, var(--card));
+}
+
+.license-banner-icon {
+  margin-top: 2px;
+  color: var(--license-accent);
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.license-banner-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.license-banner-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  color: var(--foreground);
+  font-size: var(--font-body);
+  font-weight: 700;
+}
+
+.license-banner-tag {
+  padding: 2px 9px;
+  border: 1px solid
+    color-mix(in srgb, var(--license-accent) 40%, var(--border));
+  border-radius: var(--radius-full);
+  background-color: color-mix(
+    in srgb,
+    var(--license-accent) 12%,
+    transparent
+  );
+  color: var(--license-accent);
+  font-size: var(--font-caption);
+  font-weight: 600;
+}
+
+.license-banner-tip {
+  margin-top: 5px;
+  color: var(--muted-foreground);
+  font-size: var(--font-small);
+  line-height: 1.65;
+}
+
+.license-banner-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--space-2);
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--license-accent);
+  font-size: var(--font-caption);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.license-banner-toggle:hover {
+  text-decoration: underline;
+}
+
+.license-banner-link {
+  padding: 2px 4px;
+  color: var(--license-accent);
+  font-size: 14px;
+}
+
+.license-banner-link:hover {
+  text-decoration: none;
+  opacity: 0.8;
+}
+
+/* 许可证全文展开区 */
+.license-fulltext {
+  margin-bottom: var(--space-6);
+}
+
+.license-fulltext-pre {
+  margin: 0;
+  max-height: 460px;
+  overflow: auto;
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--muted-background);
+  color: var(--foreground);
+  font-family: var(--font-mono);
+  font-size: var(--font-caption);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* 侧栏许可证链接 */
+.license-sidebar-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--license-accent);
+  font-weight: 600;
+}
+
+.license-sidebar-link:hover {
+  text-decoration: none;
+  opacity: 0.82;
+}
+
+.license-sidebar-dot {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background-color: var(--license-accent);
+}
+
 /* ---------- 双栏布局 ---------- */
 .detail-layout {
   display: grid;
@@ -352,6 +502,35 @@
 .detail-related-grid {
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: var(--space-4);
+}
+
+/* ---------- 许可证色调：深色模式提亮 ---------- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .license-tone--safe {
+    --license-accent: #34d399;
+  }
+  :root:not([data-theme='light']) .license-tone--notice {
+    --license-accent: #fbbf24;
+  }
+  :root:not([data-theme='light']) .license-tone--warning {
+    --license-accent: #fb923c;
+  }
+  :root:not([data-theme='light']) .license-tone--danger {
+    --license-accent: #f87171;
+  }
+}
+
+:root[data-theme='dark'] .license-tone--safe {
+  --license-accent: #34d399;
+}
+:root[data-theme='dark'] .license-tone--notice {
+  --license-accent: #fbbf24;
+}
+:root[data-theme='dark'] .license-tone--warning {
+  --license-accent: #fb923c;
+}
+:root[data-theme='dark'] .license-tone--danger {
+  --license-accent: #f87171;
 }
 
 /* ============================================================
