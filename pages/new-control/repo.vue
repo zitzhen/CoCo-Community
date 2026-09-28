@@ -50,7 +50,10 @@
         <h3 class="submit-section-title">
           <i class="fas fa-key" aria-hidden="true"></i> 同步密钥（请保存）
         </h3>
-        <p class="submit-hint">此密钥用于仓库 GitHub Actions 中通知 CoCo-Community 自动同步。仅显示一次。</p>
+        <p class="submit-hint">
+          此密钥用于仓库 GitHub Actions 通知 CoCo-Community 自动同步，仅显示一次。
+          <strong>请勿写入工作流文件、提交到仓库或分享给他人</strong>。
+        </p>
         <div class="sync-secret-box">
           <code class="sync-secret-text">{{ boundSecret }}</code>
           <button type="button" class="btn btn-sm btn-outline" @click="copySecret">
@@ -60,14 +63,30 @@
         </div>
 
         <h3 class="submit-section-title" style="margin-top:24px">
-          <i class="fas fa-terminal" aria-hidden="true"></i> 仓库 Actions 示例
+          <i class="fas fa-list-ol" aria-hidden="true"></i> 配置自动同步
         </h3>
-        <p class="submit-hint">在仓库 <code>.github/workflows/sync-to-coco.yml</code> 中粘贴以下内容，push 时自动同步：</p>
-        <pre class="sync-code"><code>{{ actionsExample }}</code></pre>
-        <button type="button" class="btn btn-sm btn-outline" @click="copyActions">
-          <i :class="actionsCopied ? 'fas fa-check' : 'fas fa-copy'"></i>
-          {{ actionsCopied ? '已复制' : '复制配置' }}
-        </button>
+        <ol class="sync-steps">
+          <li>
+            先复制上方密钥，再
+            <a :href="secretSettingsUrl" target="_blank" rel="noopener noreferrer">
+              打开仓库 Actions 密钥设置页 <i class="fas fa-up-right-from-square" aria-hidden="true"></i>
+            </a>
+            （路径：仓库 <em>Settings → Secrets and variables → Actions → New repository secret</em>），新建一个密钥：
+            <ul class="sync-step-sublist">
+              <li><strong>Name</strong> 填写 <code>COCO_SYNC_SECRET</code></li>
+              <li><strong>Secret</strong> 粘贴刚才复制的同步密钥，点击 <em>Add secret</em></li>
+            </ul>
+          </li>
+          <li>
+            在仓库 <code>.github/workflows/sync-to-coco.yml</code> 中粘贴以下内容，push 时即自动同步。
+            工作流通过 <code v-pre>${{ secrets.COCO_SYNC_SECRET }}</code> 引用密钥，密钥不会出现在文件中：
+            <pre class="sync-code"><code>{{ actionsExample }}</code></pre>
+            <button type="button" class="btn btn-sm btn-outline" @click="copyActions">
+              <i :class="actionsCopied ? 'fas fa-check' : 'fas fa-copy'"></i>
+              {{ actionsCopied ? '已复制' : '复制配置' }}
+            </button>
+          </li>
+        </ol>
 
         <div class="submit-actions" style="margin-top:28px">
           <button type="button" class="btn btn-primary" :disabled="syncing" @click="doSync">
@@ -315,6 +334,11 @@ const actionsCopied = ref(false)
 
 const boundRepoUrl = computed(() => `https://github.com/${boundRepo.value}`)
 
+// GitHub 仓库「新建 Actions Secret」直达页
+const secretSettingsUrl = computed(
+  () => `https://github.com/${boundRepo.value}/settings/secrets/actions/new`,
+)
+
 const actionsExample = computed(() => `name: Sync to CoCo-Community
 on:
   push:
@@ -325,7 +349,8 @@ jobs:
     steps:
       - name: Notify CoCo-Community sync
         run: |
-          curl -X POST -H "Authorization: Bearer ${boundSecret.value}" \\
+          curl --fail -X POST \\
+            -H "Authorization: Bearer \${{ secrets.COCO_SYNC_SECRET }}" \\
             -H "Content-Type: application/json" \\
             -d '{"controlName":"${boundName.value}"}' \\
             https://cc.zitzhen.cn/api/github-sync/sync`)
@@ -473,6 +498,24 @@ async function doSync() {
   line-height: 1.6;
   margin-top: 10px;
   white-space: pre;
+}
+.sync-steps {
+  margin: 10px 0 0;
+  padding-left: 20px;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--foreground);
+}
+.sync-steps > li {
+  margin-bottom: 14px;
+}
+.sync-step-sublist {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  color: var(--muted-foreground);
+}
+.sync-steps a {
+  white-space: nowrap;
 }
 /* 同步结果：语义色变量双主题覆盖（浅色实底 / 深色半透明底） */
 .sync-result {
