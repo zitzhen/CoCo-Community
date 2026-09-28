@@ -285,13 +285,6 @@ export type MirrorResult = {
   error?: string
 }
 
-function jsonRes(body: unknown, status = 200): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { 'Content-Type': 'application/json' },
-  })
-}
-
 // 读取 GitHub 错误响应的 message 与限流信息（失败不影响主流程）
 async function githubErrorDetail(res: Response): Promise<string> {
   try {
@@ -648,5 +641,3 @@ export async function recordSyncResult(
     // 状态记录失败不影响同步结果本身
   }
 }
-
-export { jsonRes }

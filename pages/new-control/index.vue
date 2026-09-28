@@ -369,7 +369,7 @@ async function checkName() {
     if (err?.statusCode === 404 || err?.status === 404) {
       nameStatus.value = { type: 'ok', message: '名称可用，将创建新控件', icon: 'fas fa-circle-check' }
     } else {
-      nameStatus.value = { type: '', message: '', icon: '' }
+      nameStatus.value = { type: 'error', message: '检查失败，请重试', icon: 'fas fa-circle-exclamation' }
     }
   }
 }
