@@ -91,6 +91,7 @@ export default defineEventHandler(async (event) => {
 
   // ---------- 预检仓库结构（允许 0 个合法版本，先绑后推代码） ----------
   let validVersions = 0
+  let totalFiles = 0
   try {
     const treeRes = await fetch(
       `https://api.github.com/repos/${parsed.owner}/${parsed.repo}/git/trees/${encodeURIComponent(branch)}?recursive=1`,
@@ -99,7 +100,9 @@ export default defineEventHandler(async (event) => {
     if (treeRes.ok) {
       const treeData = await treeRes.json()
       if (Array.isArray(treeData?.tree)) {
-        validVersions = parseRepoTree(treeData.tree as TreeEntry[]).versions.length
+        const entries = treeData.tree as TreeEntry[]
+        validVersions = parseRepoTree(entries).versions.length
+        totalFiles = entries.filter((e) => e.type === 'blob').length
       }
     }
   } catch {
@@ -124,6 +127,7 @@ export default defineEventHandler(async (event) => {
     repo: `${parsed.owner}/${parsed.repo}`,
     branch,
     validVersions,
+    totalFiles,
     syncSecret,
     syncEndpoint: '/api/github-sync/sync',
     exampleCurl: `curl -X POST -H "Authorization: Bearer ${syncSecret}" -H "Content-Type: application/json" -d '{"controlName":"${controlName}"}' https://cc.zitzhen.cn/api/github-sync/sync`,

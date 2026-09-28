@@ -79,14 +79,23 @@
 
         <div v-if="syncResult" class="sync-result" :class="syncResultClass">
           <h4>同步结果：{{ syncResultText }}</h4>
-          <p v-if="syncResult.added?.length">新增版本：{{ syncResult.added.join('、') }}</p>
-          <p v-if="syncResult.skipped?.length">跳过/失败版本：</p>
+          <p>
+            同步 {{ syncResult.filesSynced?.length || 0 }} 个文件
+            · 未变 {{ syncResult.unchanged || 0 }}
+            · 删除 {{ syncResult.deleted?.length || 0 }}
+            · 跳过 {{ syncResult.skipped?.length || 0 }}
+          </p>
+          <p v-if="syncResult.filesSynced?.length">新增/更新文件：{{ syncResult.filesSynced.join('、') }}</p>
+          <p v-if="syncResult.deleted?.length">删除文件：{{ syncResult.deleted.join('、') }}</p>
           <ul v-if="syncResult.skipped?.length" class="sync-skipped-list">
             <li v-for="(s, i) in syncResult.skipped" :key="i">
-              {{ s.version }} — {{ skipReason(s.reason) }}
+              {{ s.path }} — {{ skipReason(s.reason) }}
             </li>
           </ul>
-          <p v-if="syncResult.readmeUpdated">README 已更新</p>
+          <p v-if="syncResult.warnings?.length" class="sync-warning">
+            <i class="fas fa-triangle-exclamation"></i>
+            {{ syncResult.warnings.map(warningText).join('；') }}
+          </p>
         </div>
       </div>
     </div>
@@ -388,17 +397,27 @@ const syncResultText = computed(() => {
 
 function skipReason(reason) {
   const map = {
-    missing_information_json: '缺少 information.json',
-    missing_jsx: '缺少 .jsx 控件文件',
+    missing_information_json: '版本目录缺少 information.json',
+    missing_jsx: '版本目录缺少 .jsx 控件文件',
     jsx_too_large: '控件文件超过 100 KiB',
-    already_exists: '该版本已存在于社区',
-    sync_limit_reached: '单次同步版本数上限',
-    information_json_download_failed: 'information.json 下载失败',
+    readme_too_large: 'README 超过 100 KiB',
+    file_too_large: '文件超过 5 MiB',
+    file_type_not_allowed: '该文件类型不允许镜像（如 .html）',
+    version_file_missing_from_tarball: '版本文件缺失',
     invalid_information_json: 'information.json 格式异常',
-    jsx_download_failed: '控件文件下载失败',
     r2_write_failed: '写入存储失败',
   }
   return map[reason] || reason
+}
+
+function warningText(warning) {
+  const map = {
+    tree_truncated: '仓库文件树被 GitHub 截断，结果可能不完整',
+    extracted_size_limit: '超过 25 MiB 解压上限，已截断，本次未执行删除',
+    file_count_limit: '超过 500 文件上限，本次未执行删除',
+    deletion_aborted_threshold: '删除比例超过 30% 保护阈值，已中止删除',
+  }
+  return map[warning] || warning
 }
 
 async function doSync() {
@@ -481,5 +500,9 @@ async function doSync() {
 }
 .sync-skipped-list li {
   margin-bottom: 4px;
+}
+.sync-warning {
+  color: #b45309;
+  font-size: 14px;
 }
 </style>

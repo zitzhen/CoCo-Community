@@ -1,6 +1,6 @@
 import { getCloudflareContext } from '~/server/utils/cloudflare'
 import { requireGithubUser } from '~/server/utils/auth'
-import { syncRepo, recordSyncResult, type RepoBinding } from '~/server/utils/github-sync'
+import { mirrorRepo, recordSyncResult, type RepoBinding } from '~/server/utils/github-sync'
 
 const RATE_LIMIT_MS = 60 * 1000 // 同一绑定 60s 内仅允许一次同步
 
@@ -90,29 +90,39 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  // ---------- 执行同步 ----------
+  // ---------- 执行全量镜像 ----------
   let result
   try {
-    result = await syncRepo(env, binding)
+    result = await mirrorRepo(env, binding)
   } catch (err: any) {
     result = {
       status: 'failed' as const,
-      added: [],
+      filesSynced: [],
+      unchanged: 0,
+      ignored: 0,
       skipped: [],
-      readmeUpdated: false,
+      deleted: [],
+      versions: { added: [], all: [] },
+      currentVersion: '',
+      warnings: [],
       error: `sync_exception: ${err?.message || 'unknown'}`,
     }
   }
   await recordSyncResult(env, binding.id, result)
 
   return jsonRes({
-    ok: result.status !== 'failed',
+    ok: result.status === 'ok',
     status: result.status,
     controlName: binding.control_name,
     repo: `${binding.repo_owner}/${binding.repo_name}`,
-    added: result.added,
+    filesSynced: result.filesSynced,
+    unchanged: result.unchanged,
+    ignored: result.ignored,
     skipped: result.skipped,
-    readmeUpdated: result.readmeUpdated,
+    deleted: result.deleted,
+    versions: result.versions,
+    currentVersion: result.currentVersion,
+    warnings: result.warnings,
     error: result.error,
   }, result.status === 'failed' ? 502 : 200)
   } catch (err: any) {

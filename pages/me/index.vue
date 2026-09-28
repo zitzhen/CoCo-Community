@@ -568,11 +568,10 @@ export default {
           method: 'POST',
           body: { controlName: b.controlName },
         });
-        const added = res?.added?.length || 0;
-        syncMessageType.value = 'info';
-        syncMessage.value = added > 0
-          ? `「${b.controlName}」同步完成，新增版本：${res.added.join('、')}`
-          : `「${b.controlName}」同步完成，无新版本`;
+        const synced = res?.filesSynced?.length || 0
+        const removed = res?.deleted?.length || 0
+        syncMessageType.value = 'info'
+        syncMessage.value = `「${b.controlName}」同步完成：新增/更新 ${synced} 个文件，删除 ${removed} 个文件，未变 ${res?.unchanged || 0} 个`
         await fetchSyncBindings();
       } catch (err) {
         syncMessageType.value = 'error';

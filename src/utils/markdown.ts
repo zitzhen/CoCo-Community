@@ -61,12 +61,30 @@ const renderer = {
 
 const markedInstance = new Marked({ gfm: true, breaks: false, renderer })
 
-export function renderMarkdown(markdown) {
+// 绝对地址（含协议 / 协议相对 / data:）原样保留；相对地址按 resourceBase 解析
+function resolveImageSrc(href: string, resourceBase?: string): string {
+  if (!resourceBase) return href
+  if (/^[a-z][a-z0-9+.-]*:/i.test(href) || href.startsWith('//')) return href
+  try {
+    return new URL(href, `https://local${resourceBase}`).pathname
+  } catch {
+    return href
+  }
+}
+
+export function renderMarkdown(markdown, resourceBase?: string) {
   if (!markdown) return ''
   // README 内旧图片地址 https://cc.zitzhen.cn/control/... 改走同源资源路由
   const normalized = String(markdown).replaceAll(
     'https://cc.zitzhen.cn/control/',
     '/resource/'
   )
-  return sanitizeHtmlOutput(markedInstance.parse(normalized))
+  const html = String(markedInstance.parse(normalized))
+  if (!resourceBase) return sanitizeHtmlOutput(html)
+  // 把相对图片地址重写到同源资源路由（在消毒前做，路径均为站内相对路径）
+  const rewritten = html.replace(
+    /(<img\b[^>]*\bsrc=")([^"]*)(")/gi,
+    (_, pre, src, post) => `${pre}${resolveImageSrc(src, resourceBase)}${post}`,
+  )
+  return sanitizeHtmlOutput(rewritten)
 }

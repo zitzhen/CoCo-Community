@@ -17,6 +17,7 @@ export interface R2Object {
   key: string
   size: number
   httpMetadata?: { contentType?: string }
+  customMetadata?: Record<string, string>
   body?: ReadableStream
   text?(): Promise<string>
 }
@@ -34,6 +35,7 @@ export interface R2Bucket {
     httpMetadata?: { contentType?: string; contentDisposition?: string }
     customMetadata?: Record<string, string>
   }): Promise<void>
+  delete(keys: string[]): Promise<void>
   list(options?: {
     prefix?: string
     delimiter?: string

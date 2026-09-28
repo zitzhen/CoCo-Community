@@ -71,7 +71,7 @@
         <div class="detail-content">
           <section class="detail-section">
             <h2 class="detail-section-title">README</h2>
-            <MarkdownView v-if="readme" :content="readme" />
+            <MarkdownView v-if="readme" :content="readme" :resource-base="readmeResourceBase" />
             <p v-else class="detail-empty-text">未能找到 README.md</p>
           </section>
 
@@ -182,6 +182,9 @@ let autoDownloadHandled = false
 
 const route = useRoute()
 const router = useRouter()
+
+// README 相对图片地址重写基准（尾斜杠必须保留）
+const readmeResourceBase = computed(() => `/resource/${route.params.id}/`)
 
 function applyMeta(meta) {
   metaAuthor.value = meta.author || ''

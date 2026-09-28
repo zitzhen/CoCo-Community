@@ -585,9 +585,16 @@ Content-Type: application/json
 
 ## 8. Git 仓库同步
 
-将基于 [`zitzhen/control-template`](https://github.com/zitzhen/control-template) 模板的 GitHub 控件仓库绑定到社区控件，服务端把仓库中的**合法版本目录**（顶层 `v?X.Y.Z/`，含可解析 `information.json` + 至少一个 ≤ 100 KiB 的 `.jsx`）**增量**复制到 R2：已存在版本跳过（不覆盖、不删除），仓库根 `README.md`（≤ 100 KiB）每次覆盖写。
+将基于 [`zitzhen/control-template`](https://github.com/zitzhen/control-template) 模板的 GitHub 控件仓库绑定到社区控件，服务端**全量真镜像**仓库：
+- 仓库中所有**允许类型**的文件（版本目录内 `information.json` / `control.jsx`、根 `README.md`、README 引用的图片、LICENSE 等）按原路径复制到 R2 `<控件名>/` 下；
+- 内容按 GitHub blob sha 判断：未变跳过、变更覆盖；
+- 仓库中已删除的文件从 R2 同步删除（带保护阈值，见 8.2）。
 
 绑定关系存于 D1 `github_sync_repos` 表（见 [10.2](#102-d1-表)）。一个控件名仅可绑定一个仓库；仅支持绑定**本人名下的公开仓库**。
+
+**允许镜像的文件类型**：图片（`.png .jpg .jpeg .gif .webp .bmp .ico .svg`）、文档/代码（`.md .markdown .txt .json .jsx .js .mjs .cjs .ts .css .xml .yml .yaml`）、字体（`.woff .woff2 .ttf .otf .eot`）、音视频（`.mp3 .mp4 .webm`），以及无扩展名的 `LICENSE/LICENCE/COPYING/NOTICE`。`.html/.htm/.xhtml` 等可在同源执行为活动页面的类型拒绝（`file_type_not_allowed`）；`.github/` 等点开头的仓库管道文件静默忽略。
+
+**大小上限**：jsx 与 README ≤ 100 KiB，其他单个文件 ≤ 5 MiB，解压后总量 ≤ 25 MiB、文件数 ≤ 500（超限截断，本次不执行删除并返回 warning）。
 
 **同步触发（预留 API）**：`/api/github-sync/sync` 支持两种鉴权——网页手动（Cookie 登录 + 归属校验）与仓库 CI 通知（`Authorization: Bearer <sync_secret>`，secret 由绑定接口返回）。后者即为预留的自动同步入口：在控件仓库的 GitHub Actions 中于 push 时调用，实现自动同步。同一绑定 60 秒内仅允许同步一次。
 
@@ -617,13 +624,14 @@ Content-Type: application/json
   "repo": "Iamliuxiaozhen/my-control",
   "branch": "main",
   "validVersions": 1,
+  "totalFiles": 4,
   "syncSecret": "a1b2...（64 位 hex，仅归属者可见，用于 CI 鉴权）",
   "syncEndpoint": "/api/github-sync/sync",
   "exampleCurl": "curl -X POST -H \"Authorization: Bearer ...\" ..."
 }
 ```
 
-`validVersions` 为绑定时的结构预检结果（允许 0，可先绑空仓库再推代码）。
+`validVersions` 为合法版本目录数，`totalFiles` 为仓库 blob 总数（均允许 0，可先绑空仓库再推代码）。
 
 **错误码**：400 `invalid_repo` / `invalid_name`；401（同登录校验链）；403 `repo_not_owned` / 来源不在白名单；404 `repo_not_accessible`（不存在或私有）；409 `name_taken_by_other` / `already_bound` / `control_info_corrupted`；500 `bind_failed`。
 
@@ -641,16 +649,16 @@ Content-Type: application/json
 
 **请求体**：`{ "controlName": "MyControl" }` 或 `{ "repo": "owner/name" }`（Cookie 方式下二选一定位绑定；Bearer 方式下由 secret 直接定位，controlName 不匹配时 403 `binding_mismatch`）。
 
-**同步语义**：
+**镜像流程**：
 
-1. 拉取绑定分支的 git tree，筛选合法版本目录（不合法目录记入 skipped 并注明原因）
-2. R2 已存在 `<control>/<version>/control.jsx` 的版本跳过（`already_exists`）
-3. 先下载全部待同步文件（下载失败发生在写库之前），逐版本校验 information.json 可解析
+1. 拉取绑定分支 git tree（blob sha 映射 + 版本目录识别，tree 被截断返回 `tree_truncated`）
+2. 下载整仓 tarball（共 2 次出站请求，与文件数无关），gzip 流式解压后解析 tar
+3. 文件分级：点文件忽略、非白名单拒绝、大小超限拒绝；版本目录内 `information.json` 必须可解析
 4. 新控件：先写 D1 `components` 登记行（失败即整体中止，R2 未被触碰）
-5. 写 R2 各版本 `control.jsx` → 合并写 `information.json`（版本列表取并集，`Current_version` 取语义最高，`author` 以绑定者为准）→ 覆盖写 `README.md`
-6. 有新增版本时清理 `/api/control-list` 缓存；更新绑定行的同步状态
-
-单次同步最多处理 50 个新版本（超出记 `sync_limit_reached`）。
+5. 逐文件 sha 比对：未变跳过，新增/变更覆盖写 R2（customMetadata 存 `gh_sha`）
+6. 合并写根 `information.json`（版本列表取并集，`Current_version` 取语义最高，`author` 以绑定者为准）
+7. **镜像删除**：R2 中路径已不存在于仓库的文件删除——仅在镜像完整且无写入错误时执行；删除数占现存 key 超过 **30%** 则中止（`deletion_aborted_threshold`）；仓库中不存在的版本目录**整目录豁免**（保护绑定前手动上传的历史版本）
+8. 有任何变更时清理 `/api/control-list` 缓存；更新绑定行同步状态
 
 **200**（`ok` / `partial`）
 
@@ -660,13 +668,22 @@ Content-Type: application/json
   "status": "ok",
   "controlName": "MyControl",
   "repo": "Iamliuxiaozhen/my-control",
-  "added": ["1.0.0"],
-  "skipped": [{ "version": "1.1.0", "reason": "already_exists" }],
-  "readmeUpdated": true
+  "filesSynced": ["README.md", "images/demo.png", "1.0.0/control.jsx", "1.0.0/information.json"],
+  "unchanged": 0,
+  "ignored": 2,
+  "skipped": [],
+  "deleted": ["images/old.png"],
+  "versions": { "added": ["1.0.0"], "all": ["1.0.0"] },
+  "currentVersion": "1.0.0",
+  "warnings": []
 }
 ```
 
-**skipped.reason 取值**：`missing_information_json` / `missing_jsx` / `jsx_too_large` / `already_exists` / `sync_limit_reached` / `information_json_download_failed` / `invalid_information_json` / `jsx_download_failed` / `r2_write_failed`。
+**README 图片展示**：控件详情页渲染 README 时，相对图片地址（`./images/x.png`）由前端重写为 `/resource/<控件名>/images/x.png` 经同源资源代理加载；外链图片（http/https）原样保留。
+
+**skipped.reason 取值**：`file_type_not_allowed` / `file_too_large` / `jsx_too_large` / `readme_too_large` / `invalid_information_json` / `version_file_missing_from_tarball` / `r2_write_failed`。
+
+**warnings 取值**：`tree_truncated` / `extracted_size_limit` / `file_count_limit` / `deletion_aborted_threshold`（有 warning 时 `ok=false`、HTTP 仍为 200）。
 
 **错误码**：401 `unauthenticated` / `invalid_sync_secret`；403 `not_owner` / `binding_mismatch`；404 `not_bound`；429 `sync_too_frequent`（含 `retry_after_seconds`）；502 同步整体失败（`error` 字段说明原因，如 `repo_or_branch_not_found` / `counter_register_failed: ...`）。
 
@@ -710,7 +727,12 @@ GET /api/github-sync/list
       "createdAt": "2026-09-28T08:00:00.000Z",
       "lastSyncedAt": "2026-09-28T09:00:00.000Z",
       "lastSyncStatus": "ok",
-      "lastSyncDetail": { "added": ["1.0.0"], "skipped": [], "readmeUpdated": true }
+      "lastSyncDetail": {
+        "filesSynced": ["README.md", "1.0.0/control.jsx"],
+        "unchanged": 0,
+        "deleted": [],
+        "versions": { "added": ["1.0.0"], "all": ["1.0.0"] }
+      }
     }
   ]
 }
