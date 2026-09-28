@@ -12,7 +12,6 @@
     "serve": "nuxt preview"
   },
   "dependencies": {
-    "@vueuse/head": "^2.0.0",
     "axios": "^1.18.0",
     "jose": "^6.1.2",
     "marked": "^16.3.0",
