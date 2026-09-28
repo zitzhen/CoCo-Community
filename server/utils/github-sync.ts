@@ -368,21 +368,27 @@ export async function mirrorRepo(
   for (const e of treeEntries) if (e.type === 'blob' && e.sha) blobSha.set(e.path, e.sha)
   const parsedTree = parseRepoTree(treeEntries)
 
-  // ---------- 2. tarball 下载 + gzip 解压 ----------
-  const tarRes = await fetch(
-    `https://api.github.com/repos/${owner}/${repo}/tarball/${encodeURIComponent(branch)}`,
-    {
-      headers: {
-        Accept: 'application/gzip',
-        'User-Agent': 'Cloudflare-Worker',
-        ...(ghToken ? { Authorization: `Bearer ${ghToken}` } : {}),
-      },
+// ---------- 2. tarball 下载 + gzip 解压 ----------
+// 通过 GitHub REST API 获取 tarball。
+// Accept 必须使用 GitHub API 支持的 JSON media type；
+// API 会将成功请求重定向到实际的 tarball 下载地址。
+// 保留 ghToken，以支持私有仓库及已认证用户的 API 配额。
+const tarRes = await fetch(
+  `https://api.github.com/repos/${owner}/${repo}/tarball/${encodeURIComponent(branch)}`,
+  {
+    headers: {
+      ...githubHeaders(ghToken),
+      Accept: 'application/vnd.github+json',
     },
+  },
+)
+
+if (!tarRes.ok || !tarRes.body) {
+  const detail = await githubErrorDetail(tarRes)
+  return failedResult(
+    `tarball_download_${tarRes.status}${detail ? `: ${detail}` : ''}`,
   )
-  if (!tarRes.ok || !tarRes.body) {
-    const detail = await githubErrorDetail(tarRes)
-    return failedResult(`tarball_download_${tarRes.status}${detail ? `: ${detail}` : ''}`)
-  }
+}
   const { bytes, truncated } = await gunzip(tarRes.body)
   if (truncated) warnings.push('extracted_size_limit')
 
