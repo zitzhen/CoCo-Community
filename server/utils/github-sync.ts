@@ -293,6 +293,31 @@ function jsonRes(body: unknown, status = 200): Response {
   })
 }
 
+// 读取 GitHub 错误响应的 message 与限流信息（失败不影响主流程）
+async function githubErrorDetail(res: Response): Promise<string> {
+  try {
+    const body = await res.text()
+    let msg = ''
+    try {
+      msg = JSON.parse(body)?.message || ''
+    } catch {
+      msg = body.slice(0, 120)
+    }
+    const remaining = res.headers.get('x-ratelimit-remaining')
+    if (remaining === '0') {
+      const reset = Number(res.headers.get('x-ratelimit-reset')) * 1000
+      const resetText = Number.isFinite(reset) && reset > 0
+        ? `，${new Date(reset).toISOString().slice(11, 16)} UTC 重置`
+        : ''
+      msg = msg || 'API rate limit exceeded'
+      return `${msg}（匿名配额已耗尽${resetText}；可在 Cloudflare Pages 配置 GITHUB_TOKEN 提额）`
+    }
+    return msg
+  } catch {
+    return ''
+  }
+}
+
 /**
  * 全量真镜像：把绑定仓库的所有允许文件按原路径复制到 R2，
  * 覆盖变更、跳过未变、删除仓库中已不存在的文件（带保护阈值）。
@@ -316,11 +341,13 @@ export async function mirrorRepo(env: CloudflareEnv, binding: RepoBinding): Prom
     { headers: githubHeaders(env.GITHUB_TOKEN) },
   )
   if (!treeRes.ok) {
+    // 尽量带上 GitHub 的原始说明（限流时 x-ratelimit-remaining=0 且 message 明确）
+    const detail = await githubErrorDetail(treeRes)
     return {
       status: 'failed',
       filesSynced, unchanged, ignored, skipped, deleted,
       versions: { added: [], all: [] }, currentVersion: '', warnings,
-      error: treeRes.status === 404 ? 'repo_or_branch_not_found' : `github_api_${treeRes.status}`,
+      error: treeRes.status === 404 ? 'repo_or_branch_not_found' : `github_api_${treeRes.status}${detail ? `: ${detail}` : ''}`,
     }
   }
   const treeData = await treeRes.json()
@@ -345,7 +372,8 @@ export async function mirrorRepo(env: CloudflareEnv, binding: RepoBinding): Prom
     },
   )
   if (!tarRes.ok || !tarRes.body) {
-    return failedResult(`tarball_download_${tarRes.status}`)
+    const detail = await githubErrorDetail(tarRes)
+    return failedResult(`tarball_download_${tarRes.status}${detail ? `: ${detail}` : ''}`)
   }
   const { bytes, truncated } = await gunzip(tarRes.body)
   if (truncated) warnings.push('extracted_size_limit')
