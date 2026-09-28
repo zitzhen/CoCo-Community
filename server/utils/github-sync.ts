@@ -321,8 +321,14 @@ async function githubErrorDetail(res: Response): Promise<string> {
 /**
  * 全量真镜像：把绑定仓库的所有允许文件按原路径复制到 R2，
  * 覆盖变更、跳过未变、删除仓库中已不存在的文件（带保护阈值）。
+ * userToken：网页触发时传入登录用户的 GitHub token（5000 次/小时/用户），
+ * 缺省回退 env.GITHUB_TOKEN，再退匿名（60 次/小时/IP，易 403）。
  */
-export async function mirrorRepo(env: CloudflareEnv, binding: RepoBinding): Promise<MirrorResult> {
+export async function mirrorRepo(
+  env: CloudflareEnv,
+  binding: RepoBinding,
+  userToken?: string | null,
+): Promise<MirrorResult> {
   const control = binding.control_name
   const owner = binding.repo_owner
   const repo = binding.repo_name
@@ -334,11 +340,13 @@ export async function mirrorRepo(env: CloudflareEnv, binding: RepoBinding): Prom
   const skipped: { path: string; reason: string }[] = []
   let unchanged = 0
   let ignored = 0
+  // GitHub 请求鉴权：用户 token 优先，其次服务级 GITHUB_TOKEN，最后匿名
+  const ghToken = userToken || env.GITHUB_TOKEN || null
 
   // ---------- 1. git tree：blob sha 映射 + 版本目录识别 ----------
   const treeRes = await fetch(
     `https://api.github.com/repos/${owner}/${repo}/git/trees/${encodeURIComponent(branch)}?recursive=1`,
-    { headers: githubHeaders(env.GITHUB_TOKEN) },
+    { headers: githubHeaders(ghToken) },
   )
   if (!treeRes.ok) {
     // 尽量带上 GitHub 的原始说明（限流时 x-ratelimit-remaining=0 且 message 明确）
@@ -367,7 +375,7 @@ export async function mirrorRepo(env: CloudflareEnv, binding: RepoBinding): Prom
       headers: {
         Accept: 'application/gzip',
         'User-Agent': 'Cloudflare-Worker',
-        ...(env.GITHUB_TOKEN ? { Authorization: `Bearer ${env.GITHUB_TOKEN}` } : {}),
+        ...(ghToken ? { Authorization: `Bearer ${ghToken}` } : {}),
       },
     },
   )

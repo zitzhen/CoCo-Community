@@ -51,9 +51,9 @@ export default defineEventHandler(async (event) => {
     return jsonRes({ error: 'invalid_name' }, 400)
   }
 
-  // ---------- 校验仓库存在、公开、且归属当前用户 ----------
+  // ---------- 校验仓库存在、公开、且归属当前用户（用用户 token，避免匿名限流 403） ----------
   const repoRes = await fetch(`https://api.github.com/repos/${parsed.owner}/${parsed.repo}`, {
-    headers: githubHeaders(env.GITHUB_TOKEN),
+    headers: githubHeaders(auth.token),
   })
   if (!repoRes.ok) {
     return jsonRes({ error: 'repo_not_accessible', detail: '仓库不存在、为私有仓库或不可访问' }, 404)
@@ -95,7 +95,7 @@ export default defineEventHandler(async (event) => {
   try {
     const treeRes = await fetch(
       `https://api.github.com/repos/${parsed.owner}/${parsed.repo}/git/trees/${encodeURIComponent(branch)}?recursive=1`,
-      { headers: githubHeaders(env.GITHUB_TOKEN) },
+      { headers: githubHeaders(auth.token) },
     )
     if (treeRes.ok) {
       const treeData = await treeRes.json()

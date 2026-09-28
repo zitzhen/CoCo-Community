@@ -33,6 +33,7 @@ export default defineEventHandler(async (event) => {
   const bearer = authHeader.match(/^Bearer\s+(.+)$/i)?.[1]?.trim()
 
   let binding: BindingRow | null = null
+  let userToken: string | null = null // Cookie 登录时保存用户 GitHub token，用于提额 GitHub API
 
   if (bearer) {
     binding = await env.DB.prepare(
@@ -50,6 +51,7 @@ export default defineEventHandler(async (event) => {
   } else {
     const auth = await requireGithubUser(event)
     if (auth instanceof Response) return auth
+    userToken = auth.token
 
     if (controlName) {
       binding = await env.DB.prepare(
@@ -90,10 +92,10 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  // ---------- 执行全量镜像 ----------
+  // ---------- 执行全量镜像（网页触发时优先用用户 GitHub token，避免匿名限流 403） ----------
   let result
   try {
-    result = await mirrorRepo(env, binding)
+    result = await mirrorRepo(env, binding, userToken)
   } catch (err: any) {
     result = {
       status: 'failed' as const,

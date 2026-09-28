@@ -751,7 +751,7 @@ Content-Type: application/json
 
 **200** `{ "ok": true, "controlName": "MyControl" }`。错误：400 `missing_control_name`；401；403 `not_owner` / 来源不在白名单；404 `not_bound`；500 `unbind_failed`。
 
-> 服务端访问 GitHub API 默认匿名（60 次/小时/IP）；如需更高速率可在 Cloudflare 后台配置可选环境变量 `GITHUB_TOKEN`（仅用于提额，不影响鉴权模型）。
+> 服务端访问 GitHub API 的鉴权优先级：**网页触发（bind/sync）优先使用登录用户的 GitHub token**（5000 次/小时/用户，OAuth 时下发）；Bearer CI 触发无用户会话，回退 Cloudflare Pages 可选环境变量 `GITHUB_TOKEN`（同为 5000 次/小时）；两者皆无时匿名（60 次/小时/IP，Cloudflare 共享出口 IP 下极易 403 限流）。
 
 ---
 
