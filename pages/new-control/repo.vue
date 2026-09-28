@@ -102,7 +102,7 @@
             从 Git 仓库导入
           </h1>
           <p class="submit-hero-desc">
-            绑定基于 zitzhen/control-template 模板的 GitHub 控件仓库，增量同步版本到 CoCo-Community。
+            绑定基于 <a href="https://github.com/zitzhen/control-template" target="_blank" rel="noopener noreferrer">zitzhen/control-template</a> 模板的 GitHub 控件仓库，增量同步版本到 CoCo-Community。
           </p>
         </div>
 
