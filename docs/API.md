@@ -649,14 +649,16 @@ Content-Type: application/json
 
 **请求体**：`{ "controlName": "MyControl" }` 或 `{ "repo": "owner/name" }`（Cookie 方式下二选一定位绑定；Bearer 方式下由 secret 直接定位，controlName 不匹配时 403 `binding_mismatch`）。
 
+**仓库结构约定**（与 R2 同构）：控件元数据 `information.json` 仅存于**仓库根目录**（`Current_version` / `Version_number_list` / `author` 等，版本列表权威来源）；各**版本目录** `v?X.Y.Z/` 内放 `control.jsx`（可含图片等附件），不含 information.json。
+
 **镜像流程**：
 
 1. 拉取绑定分支 git tree（blob sha 映射 + 版本目录识别，tree 被截断返回 `tree_truncated`）
 2. 下载整仓 tarball（共 2 次出站请求，与文件数无关），gzip 流式解压后解析 tar
-3. 文件分级：点文件忽略、非白名单拒绝、大小超限拒绝；版本目录内 `information.json` 必须可解析
+3. 文件分级：点文件忽略、非白名单拒绝、大小超限拒绝；版本目录须含 `.jsx`（否则 `missing_jsx`）；根 `information.json` 必须可解析（失败记 `invalid_information_json`，退化为按版本目录扫描）
 4. 新控件：先写 D1 `components` 登记行（失败即整体中止，R2 未被触碰）
 5. 逐文件 sha 比对：未变跳过，新增/变更覆盖写 R2（customMetadata 存 `gh_sha`）
-6. 合并写根 `information.json`（版本列表取并集，`Current_version` 取语义最高，`author` 以绑定者为准）
+6. 合并写根 `information.json`：版本列表 = R2 现存 ∪ 仓库根 information.json 所列 ∪ 仓库实际版本目录（去重），`Current_version` 取语义最高，`author` 以绑定者为准；仓库根 information.json 不做原样镜像（R2 该文件由社区合并管理，且不随仓库删除）
 7. **镜像删除**：R2 中路径已不存在于仓库的文件删除——仅在镜像完整且无写入错误时执行；删除数占现存 key 超过 **30%** 则中止（`deletion_aborted_threshold`）；仓库中不存在的版本目录**整目录豁免**（保护绑定前手动上传的历史版本）
 8. 有任何变更时清理 `/api/control-list` 缓存；更新绑定行同步状态
 

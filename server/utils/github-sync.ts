@@ -32,7 +32,6 @@ type TreeEntry = {
 export type RepoVersionCandidate = {
   dirName: string
   version: string
-  infoPath: string
   jsxPath: string
   jsxSize: number
 }
@@ -42,6 +41,8 @@ export type ParsedRepoTree = {
   invalidDirs: { dir: string; reason: string }[]
   readmePath: string | null
   readmeSize: number
+  // 仓库根 information.json（控件元数据：版本列表权威来源，仅存于控件目录根）
+  infoPath: string | null
 }
 
 /* ============================================================
@@ -52,6 +53,7 @@ export function parseRepoTree(tree: TreeEntry[]): ParsedRepoTree {
   const invalidDirs: { dir: string; reason: string }[] = []
   let readmePath: string | null = null
   let readmeSize = 0
+  let infoPath: string | null = null
 
   const dirFiles = new Map<string, TreeEntry[]>()
   for (const entry of tree) {
@@ -61,6 +63,9 @@ export function parseRepoTree(tree: TreeEntry[]): ParsedRepoTree {
       if (/^readme\.md$/i.test(segs[0])) {
         readmePath = entry.path
         readmeSize = entry.size ?? 0
+      } else if (segs[0].toLowerCase() === 'information.json') {
+        // 控件元数据在控件目录根（R2 同构：<控件>/information.json）
+        infoPath = entry.path
       }
       continue
     }
@@ -75,12 +80,7 @@ export function parseRepoTree(tree: TreeEntry[]): ParsedRepoTree {
     if (!m) continue
     const version = m[1]
 
-    const infoEntry = files.find((f) => f.path.split('/')[1].toLowerCase() === 'information.json')
-    if (!infoEntry) {
-      invalidDirs.push({ dir, reason: 'missing_information_json' })
-      continue
-    }
-
+    // 版本目录内只要求控件文件；information.json 属于控件根，不在版本目录
     const jsxEntries = files.filter((f) => /\.jsx$/i.test(f.path.split('/')[1]))
     if (jsxEntries.length === 0) {
       invalidDirs.push({ dir, reason: 'missing_jsx' })
@@ -98,13 +98,12 @@ export function parseRepoTree(tree: TreeEntry[]): ParsedRepoTree {
     versions.push({
       dirName: dir,
       version,
-      infoPath: infoEntry.path,
       jsxPath: jsxEntry.path,
       jsxSize,
     })
   }
 
-  return { versions, invalidDirs, readmePath, readmeSize }
+  return { versions, invalidDirs, readmePath, readmeSize, infoPath }
 }
 
 /* ============================================================
@@ -412,24 +411,38 @@ if (!tarRes.ok || !tarRes.body) {
     if (VERSION_DIR_RE.test(seg)) repoVersionDirs.add(seg)
   }
 
-  // ---------- 3. 版本校验：information.json 必须可解析（取自 tar，无额外请求） ----------
-  const validVersions: string[] = []
-  for (const cand of parsedTree.versions) {
-    const infoFile = byPath.get(cand.infoPath)
-    const jsxFile = byPath.get(cand.jsxPath)
-    if (!infoFile || !jsxFile) {
-      skipped.push({ path: cand.dirName, reason: 'version_file_missing_from_tarball' })
-      continue
-    }
-    try {
-      const parsedInfo = JSON.parse(new TextDecoder('utf-8').decode(infoFile.data))
-      if (!parsedInfo || typeof parsedInfo !== 'object') throw new Error('not object')
-    } catch {
-      skipped.push({ path: cand.infoPath, reason: 'invalid_information_json' })
-      continue
-    }
-    validVersions.push(cand.version)
+  // ---------- 3. 版本识别与控件元数据解析（取自 tar，无额外请求） ----------
+  const dirVersions = parsedTree.versions.map((v) => v.version)
+  // 结构不合法的版本目录（缺 jsx / jsx 超限）必须报出来，不能静默吞掉，
+  // 否则用户看不到为什么 D1 未登记、版本列表为空
+  for (const inv of parsedTree.invalidDirs) {
+    skipped.push({ path: inv.dir, reason: inv.reason })
   }
+  // tar 与 tree 双来源一致性校验：版本 jsx 必须真实存在于 tar
+  for (const cand of parsedTree.versions) {
+    if (!byPath.get(cand.jsxPath)) {
+      skipped.push({ path: cand.dirName, reason: 'version_file_missing_from_tarball' })
+    }
+  }
+
+  // 仓库根 information.json：版本列表权威来源（与 R2 同构，仅存于控件目录根）
+  let repoInfo: Record<string, unknown> | null = null
+  const repoInfoFile = parsedTree.infoPath ? byPath.get(parsedTree.infoPath) : null
+  if (repoInfoFile) {
+    try {
+      const parsed = JSON.parse(new TextDecoder('utf-8').decode(repoInfoFile.data))
+      if (parsed && typeof parsed === 'object') {
+        repoInfo = parsed
+      } else {
+        skipped.push({ path: parsedTree.infoPath!, reason: 'invalid_information_json' })
+      }
+    } catch {
+      skipped.push({ path: parsedTree.infoPath!, reason: 'invalid_information_json' })
+    }
+  }
+  const repoListedVersions: string[] = Array.isArray(repoInfo?.Version_number_list)
+    ? (repoInfo!.Version_number_list as unknown[]).filter((v): v is string => typeof v === 'string')
+    : []
 
   // ---------- 4. 新控件：先写 D1 登记行（失败整体中止，R2 未被触碰） ----------
   const existingInfoObj = await env.RESOURCES.get(`${control}/information.json`)
@@ -441,8 +454,9 @@ if (!tarRes.ok || !tarRes.body) {
   } catch {
     counterExists = false
   }
-  if (!existingInfoObj && !counterExists && validVersions.length > 0) {
-    const highest = pickHighestVersion(validVersions)
+  // 登记条件：仓库里有真实控件文件（版本目录含 jsx）
+  if (!existingInfoObj && !counterExists && parsedTree.versions.length > 0) {
+    const highest = pickHighestVersion(dirVersions)
     const cand = parsedTree.versions.find((v) => v.version === highest)!
     const sizeText = `${(cand.jsxSize / 1024).toFixed(2)} KiB`
     try {
@@ -464,6 +478,10 @@ if (!tarRes.ok || !tarRes.body) {
     }
     if (!isAllowedRepoPath(f.path)) {
       skipped.push({ path: f.path, reason: 'file_type_not_allowed' })
+      continue
+    }
+    if (f.path === 'information.json') {
+      // 根 information.json 由第 6 步合并管理，不做原样镜像（防止仓库版覆盖 R2 合并产物）
       continue
     }
     const base = f.path.split('/').pop() || ''
@@ -511,16 +529,20 @@ if (!tarRes.ok || !tarRes.body) {
   const oldVersions: string[] = Array.isArray(oldInfo.Version_number_list)
     ? oldInfo.Version_number_list
     : []
-  const addedVersions = validVersions.filter((v) => !oldVersions.includes(v))
+  // 版本列表三方合并：R2 现存 ∪ 仓库根 information.json 所列 ∪ 仓库实际版本目录
   const mergedVersions = [...oldVersions]
-  for (const v of validVersions) if (!mergedVersions.includes(v)) mergedVersions.push(v)
+  for (const v of [...repoListedVersions, ...dirVersions]) {
+    if (!mergedVersions.includes(v)) mergedVersions.push(v)
+  }
+  const addedVersions = mergedVersions.filter((v) => !oldVersions.includes(v))
 
   let currentVersion = ''
   if (mergedVersions.length > 0) {
     currentVersion = pickHighestVersion(mergedVersions)
     if (addedVersions.length > 0 || !existingInfoObj) {
       const info = {
-        ...oldInfo, // 保留 Release_input 等仓库外字段
+        ...repoInfo, // 新控件时继承仓库元数据（Release_input 等）；旧控件时被 R2 值覆盖
+        ...oldInfo,
         author: owner, // 以绑定者为准，防冒名
         Current_version: currentVersion,
         Version_number_list: mergedVersions,
@@ -540,6 +562,8 @@ if (!tarRes.ok || !tarRes.body) {
     for (const key of r2Keys) {
       const rel = key.slice(control.length + 1)
       if (repoPaths.has(rel)) continue
+      // 根 information.json 是社区合并产物（版本列表含历史版本），不随仓库删除
+      if (rel === 'information.json') continue
       // 历史版本豁免：仓库中不存在的版本目录整体保留（绑定前手动上传的版本）
       const seg = rel.split('/')[0]
       if (VERSION_DIR_RE.test(seg) && !repoVersionDirs.has(seg)) continue
