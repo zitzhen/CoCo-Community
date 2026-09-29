@@ -263,17 +263,14 @@ function resourceUrl(key) {
 
 // 许可证探测：必须走 $fetch 而非原生 fetch——
 // SSR（workerd）下相对 URL 由 Nitro 内部解析，原生 fetch 会直接抛错（与 README 同模式）
+// 适配器返回 LicenseFetchResponse 最小契约（仅需 ok + text）
 async function loadLicenseFile(id) {
   return await fetchLicenseFile(resourceUrl(`${id}/`), async (url) => {
     try {
       const text = await $fetch(url, { responseType: 'text' })
       return { ok: true, text: async () => String(text) }
-    } catch (err) {
-      return {
-        ok: false,
-        status: err?.statusCode ?? err?.response?.status ?? 0,
-        text: async () => '',
-      }
+    } catch {
+      return { ok: false, text: async () => '' }
     }
   })
 }

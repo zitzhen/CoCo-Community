@@ -277,14 +277,23 @@ export const LICENSE_FILE_NAMES = [
 
 export type LicenseFile = { fileName: string; text: string }
 
+// fetchLicenseFile 所需的最小响应契约：仅需 ok 与 text()。
+// 原生 Response 天然满足；页面侧的 $fetch 适配器返回同构最小对象即可。
+export type LicenseFetchResponse = {
+  ok: boolean
+  text: () => Promise<string>
+}
+
+export type LicenseFetch = (url: string) => Promise<LicenseFetchResponse>
+
 /**
  * 依次探测控件根目录下的许可证文件，返回第一个非空命中。
  * @param resourceBase 形如 '/resource/<控件名>/' 的同源基址（尾斜杠必需）
- * @param fetchImpl 可选注入（测试用），默认全局 fetch
+ * @param fetchImpl 可选注入（测试 / SSR $fetch 适配用），默认全局 fetch
  */
 export async function fetchLicenseFile(
   resourceBase: string,
-  fetchImpl: typeof fetch = fetch,
+  fetchImpl: LicenseFetch = fetch,
 ): Promise<LicenseFile | null> {
   for (const fileName of LICENSE_FILE_NAMES) {
     try {
