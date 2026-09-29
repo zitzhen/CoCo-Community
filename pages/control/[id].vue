@@ -66,6 +66,65 @@
         </div>
       </header>
 
+      <!-- 许可证识别提示 -->
+      <section
+        class="license-banner"
+        :class="`license-tone--${licenseTone}`"
+        aria-label="控件许可证提示"
+      >
+        <i
+          class="license-banner-icon fas"
+          :class="licenseToneMeta.icon"
+          aria-hidden="true"
+        ></i>
+        <div class="license-banner-body">
+          <div class="license-banner-title">
+            <span>许可证：{{ licenseInfo.name }}</span>
+            <span class="license-banner-tag">{{ licenseCategoryLabel }}</span>
+          </div>
+          <p class="license-banner-tip">{{ licenseInfo.tip }}</p>
+          <button
+            v-if="licenseText"
+            type="button"
+            class="license-banner-toggle"
+            :aria-expanded="licenseExpanded"
+            @click="licenseExpanded = !licenseExpanded"
+          >
+            <i
+              class="fas"
+              :class="licenseExpanded ? 'fa-chevron-up' : 'fa-file-lines'"
+              aria-hidden="true"
+            ></i>
+            {{ licenseExpanded ? '收起许可证全文' : `查看 ${licenseFileName} 全文` }}
+          </button>
+        </div>
+        <a
+          v-if="licenseInfo.url"
+          :href="licenseInfo.url"
+          class="license-banner-link"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="在 SPDX 查看许可证详情"
+          aria-label="在 SPDX 查看许可证详情"
+        >
+          <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i>
+        </a>
+      </section>
+
+      <!-- 许可证全文（展开时显示） -->
+      <section v-if="licenseExpanded && licenseText" class="detail-section license-fulltext">
+        <h2 class="detail-section-title">
+          <i class="fas fa-file-contract" aria-hidden="true"></i>
+          {{ licenseFileName }}
+        </h2>
+        <MarkdownView
+          v-if="isLicenseMarkdown"
+          :content="licenseText"
+          :resource-base="readmeResourceBase"
+        />
+        <pre v-else class="license-fulltext-pre">{{ licenseText }}</pre>
+      </section>
+
       <!-- 双栏 -->
       <div class="detail-layout">
         <div class="detail-content">
@@ -118,6 +177,31 @@
               <dd>{{ currentVersion }}</dd>
             </div>
             <div class="sidebar-info-row">
+              <dt>许可证</dt>
+              <dd>
+                <a
+                  v-if="licenseInfo.url"
+                  :href="licenseInfo.url"
+                  class="license-sidebar-link"
+                  :class="`license-tone--${licenseTone}`"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  :title="`${licenseInfo.name}（在 SPDX 查看详情）`"
+                >
+                  <span class="license-sidebar-dot" aria-hidden="true"></span>
+                  {{ licenseInfo.name }}
+                </a>
+                <span
+                  v-else
+                  class="license-sidebar-link"
+                  :class="`license-tone--${licenseTone}`"
+                >
+                  <span class="license-sidebar-dot" aria-hidden="true"></span>
+                  {{ licenseInfo.name }}
+                </span>
+              </dd>
+            </div>
+            <div class="sidebar-info-row">
               <dt>下载次数</dt>
               <dd>{{ downloads }}</dd>
             </div>
@@ -155,10 +239,40 @@
 import MarkdownView from '@/components/MarkdownView.vue'
 import ResourceCard from '@/components/ResourceCard.vue'
 import { checkLoginStatus } from '@/script/login'
+import {
+  identifyLicenseText,
+  fetchLicenseFile,
+  getNoLicenseInfo,
+  LICENSE_CATEGORY_META,
+} from '@/utils/license'
+
+// 许可证分类 → 展示色调与图标（纯展示层映射）
+const LICENSE_TONE_META = {
+  'public-domain': { tone: 'safe', icon: 'fa-circle-check' },
+  permissive: { tone: 'info', icon: 'fa-circle-info' },
+  'weak-copyleft': { tone: 'notice', icon: 'fa-scale-balanced' },
+  copyleft: { tone: 'warning', icon: 'fa-triangle-exclamation' },
+  other: { tone: 'neutral', icon: 'fa-file-contract' },
+  none: { tone: 'danger', icon: 'fa-ban' },
+}
 
 // 控件资源存储在 Cloudflare R2，页面通过同源 /resource/ 路由由服务端读取
 function resourceUrl(key) {
   return `/resource/${key.split('/').map(encodeURIComponent).join('/')}`
+}
+
+// 许可证探测：必须走 $fetch 而非原生 fetch——
+// SSR（workerd）下相对 URL 由 Nitro 内部解析，原生 fetch 会直接抛错（与 README 同模式）
+// 适配器返回 LicenseFetchResponse 最小契约（仅需 ok + text）
+async function loadLicenseFile(id) {
+  return await fetchLicenseFile(resourceUrl(`${id}/`), async (url) => {
+    try {
+      const text = await $fetch(url, { responseType: 'text' })
+      return { ok: true, text: async () => String(text) }
+    } catch {
+      return { ok: false, text: async () => '' }
+    }
+  })
 }
 
 // -------- 响应式数据 --------
@@ -178,6 +292,10 @@ const downloads = ref(0)
 const Pageviews = ref(0)
 const downloadObjectUrl = ref('')
 const sourceUrl = ref('')
+// 许可证：识别在前端完成（LICENSE 文件经同源 /resource/ 路由读取）
+const licenseText = ref('')
+const licenseFileName = ref('')
+const licenseExpanded = ref(false)
 let autoDownloadHandled = false
 
 const route = useRoute()
@@ -185,6 +303,21 @@ const router = useRouter()
 
 // README 相对图片地址重写基准（尾斜杠必须保留）
 const readmeResourceBase = computed(() => `/resource/${route.params.id}/`)
+
+// -------- 许可证识别结果（纯前端特征匹配） --------
+const licenseInfo = computed(() =>
+  licenseText.value ? identifyLicenseText(licenseText.value) : getNoLicenseInfo()
+)
+const licenseToneMeta = computed(
+  () => LICENSE_TONE_META[licenseInfo.value.category] || LICENSE_TONE_META.other
+)
+const licenseTone = computed(() => licenseToneMeta.value.tone)
+const licenseCategoryLabel = computed(
+  () => LICENSE_CATEGORY_META[licenseInfo.value.category]?.label || ''
+)
+const isLicenseMarkdown = computed(() =>
+  /\.(md|markdown)$/i.test(licenseFileName.value || '')
+)
 
 function applyMeta(meta) {
   metaAuthor.value = meta.author || ''
@@ -217,7 +350,12 @@ const { data: ssrControl } = await useAsyncData(
         responseType: 'text',
       })
     } catch {}
-    return { meta, readmeText }
+    // 许可证文件：按常见文件名短路探测，未命中返回 null（不阻断页面）
+    let licenseFile = null
+    try {
+      licenseFile = await loadLicenseFile(id)
+    } catch {}
+    return { meta, readmeText, licenseFile }
   }
 )
 
@@ -228,6 +366,10 @@ if (ssrControl.value?.notFound) {
   filename.value = route.params.id
   applyMeta(meta)
   readme.value = ssrControl.value.readmeText || ''
+  if (ssrControl.value.licenseFile) {
+    licenseText.value = ssrControl.value.licenseFile.text
+    licenseFileName.value = ssrControl.value.licenseFile.fileName
+  }
   metaReady.value = true
   loading.value = false
 }
@@ -321,6 +463,19 @@ async function loadClientData() {
         readme.value = String(readmeText)
       } catch {
         readme.value = ''
+      }
+    }
+
+    // 3.1) 许可证文件兜底（SSR 未取到时）
+    if (!ssrControl.value?.licenseFile && !licenseText.value) {
+      try {
+        const licenseFile = await loadLicenseFile(id)
+        if (licenseFile) {
+          licenseText.value = licenseFile.text
+          licenseFileName.value = licenseFile.fileName
+        }
+      } catch {
+        // 许可证识别失败保持“未声明”提示，不影响页面
       }
     }
 
