@@ -188,6 +188,18 @@ export default defineEventHandler(async (event) => {
           .bind(name, sizeText, user.login)
           .run();
       }
+
+      // 防御性：确保提交者已在 user 表登记（兼容 OAuth 修复前登录的老用户）
+      const userRow = await env.DB.prepare(
+        "SELECT username FROM user WHERE username = ?1"
+      ).bind(user.login).first();
+      if (!userRow) {
+        await env.DB.prepare(
+          "INSERT INTO user (username, nickname, number_of_controls, avatar, bio, pageviews) VALUES (?1, ?2, 0, ?3, ?4, 0)"
+        )
+          .bind(user.login, user.name || user.login, user.avatar_url || "", user.bio || "")
+          .run();
+      }
     } catch (dbErr: any) {
       console.error("[control-submit] D1 register failed:", dbErr?.message);
       return new Response(
@@ -217,7 +229,7 @@ export default defineEventHandler(async (event) => {
       const cache = useStorage("cache");
       const keys = await cache.getKeys();
       await Promise.all(
-        keys.filter((k) => k.includes("control-list")).map((k) => cache.removeItem(k))
+        keys.filter((k) => k.includes("control-list") || k.includes("user-list")).map((k) => cache.removeItem(k))
       );
     } catch { /* 忽略缓存清理失败 */ }
 

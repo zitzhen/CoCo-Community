@@ -57,6 +57,33 @@ export default defineEventHandler(async (event) => {
 
     const githubResData = await githubRes.json();
     const username = githubResData.login;
+
+    // ✅ 注册/同步用户到 D1 user 表（登录即注册，保证 /user 列表与 /user/:id 可见）
+    // 仅新用户写入默认昵称/简介；已存在用户只同步头像（GitHub 头像自动更新）
+    try {
+      const existing = await env.DB.prepare(
+        "SELECT username FROM user WHERE username = ?1"
+      ).bind(username).first()
+
+      if (existing) {
+        await env.DB.prepare(
+          "UPDATE user SET avatar = ?1 WHERE username = ?2"
+        ).bind(githubResData.avatar_url || "", username).run()
+      } else {
+        await env.DB.prepare(
+          "INSERT INTO user (username, nickname, number_of_controls, avatar, bio, pageviews) VALUES (?1, ?2, 0, ?3, ?4, 0)"
+        ).bind(
+          username,
+          githubResData.name || username,
+          githubResData.avatar_url || "",
+          githubResData.bio || ""
+        ).run()
+      }
+    } catch (dbErr: any) {
+      // 用户登记失败不阻断登录流程
+      console.error("[auth/github] user register failed:", dbErr?.message)
+    }
+
     const secretKey = env.COCO_COMMUNITY_JWT;
     
     if (!secretKey) {
