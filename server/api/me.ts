@@ -1,5 +1,5 @@
 import { getCloudflareContext } from "~/server/utils/cloudflare"
-import { findUserByUsername } from "~/server/utils/user"
+import { findUserByUsername, resolveAvatarUrl } from "~/server/utils/user"
 // @ts-nocheck
 import { jwtVerify } from 'jose';
 
@@ -116,10 +116,13 @@ export default defineEventHandler(async (event) => {
     const rateLimitReset = githubRes.headers.get("X-RateLimit-Reset");
 
     // 8. 返回精简用户信息 + 剩余额度（资料来自 D1，字段名与旧 GitHub 响应保持一致）
+    // avatar_url 已把手动上传的 avatar/<文件名> 解析为 /resource/avatar/<文件名>；
+    // github_avatar_url 为 GitHub 原始头像，供设置页"获取 GitHub 头像 URL"按钮回填
     const safeUser = {
       login: d1User.username,
       name: d1User.nickname || d1User.username,
-      avatar_url: d1User.avatar || "",
+      avatar_url: resolveAvatarUrl(d1User.avatar),
+      github_avatar_url: githubUser.avatar_url || "",
       bio: d1User.bio || "",
       html_url: `https://github.com/${d1User.username}`,
     };
