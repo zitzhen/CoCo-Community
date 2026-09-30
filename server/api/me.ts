@@ -1,4 +1,5 @@
 import { getCloudflareContext } from "~/server/utils/cloudflare"
+import { findUserByUsername } from "~/server/utils/user"
 // @ts-nocheck
 import { jwtVerify } from 'jose';
 
@@ -73,7 +74,7 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    // 4. 请求 GitHub 用户信息
+    // 4. 请求 GitHub 用户信息（仅用于校验 token 是否仍有效并获取 login）
     const githubRes = await fetch("https://api.github.com/user", {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -89,31 +90,41 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    const user = await githubRes.json();
+    const githubUser = await githubRes.json();
 
     // 5. 校验 JWT 中的用户名是否与 GitHub token 获取的用户名匹配
-    if (decodedToken.username !== user.login) {
+    if (decodedToken.username !== githubUser.login) {
       return new Response(JSON.stringify({ authenticated: false, error: "username_mismatch" }), {
         status: 401,
         headers: { "Content-Type": "application/json" },
       });
     }
 
-    // 6. 获取剩余额度
+    // 6. 从 D1 读取用户资料（头像/昵称/bio 以 D1 为准，支持用户自定义）
+    const d1User = await findUserByUsername(env, githubUser.login)
+
+    if (!d1User) {
+      return new Response(JSON.stringify({ authenticated: false, error: "user_not_found" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // 7. 获取剩余额度
     const rateLimitRemaining = githubRes.headers.get("X-RateLimit-Remaining");
     const rateLimitLimit = githubRes.headers.get("X-RateLimit-Limit");
     const rateLimitReset = githubRes.headers.get("X-RateLimit-Reset");
 
-    // 7. 返回精简用户信息 + 剩余额度
+    // 8. 返回精简用户信息 + 剩余额度（资料来自 D1，字段名与旧 GitHub 响应保持一致）
     const safeUser = {
-      id: user.id,
-      login: user.login,
-      name: user.name,
-      avatar_url: user.avatar_url,
-      html_url: user.html_url,
+      login: d1User.username,
+      name: d1User.nickname || d1User.username,
+      avatar_url: d1User.avatar || "",
+      bio: d1User.bio || "",
+      html_url: `https://github.com/${d1User.username}`,
     };
 
-    // 8. 实现滑动过期逻辑
+    // 9. 实现滑动过期逻辑
     const headers = new Headers();
     headers.set("Content-Type", "application/json");
     headers.set("Cache-Control", "no-store");
