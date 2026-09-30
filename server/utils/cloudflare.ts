@@ -52,6 +52,14 @@ export type CloudflareEnv = {
   COCO_COMMUNITY_JWT?: string
   COCO_COMMUNITY_JWT_P?: string
   GITHUB_TOKEN?: string
+  // SMTP 配置（安全报告邮件通知）
+  SMTP_HOST?: string
+  SMTP_PORT?: string
+  SMTP_USERNAME?: string
+  SMTP_PASSWORD?: string
+  SMTP_FROM?: string
+  SMTP_FROM_NAME?: string
+  SECURITY_NOTIFY_EMAIL?: string
 }
 
 export function getCloudflareContext(event: H3Event) {
