@@ -1,6 +1,42 @@
 import type { CloudflareEnv } from './cloudflare'
 
 /**
+ * 头像存储约定：
+ * - GitHub 头像：D1 user.avatar 直接存 GitHub 返回的 https URL
+ * - 手动上传头像：文件存放在 R2 的 avatar/ 文件夹，D1 user.avatar 存 R2 相对 key
+ *   （形如 avatar/<文件名>），读取时通过同源资源代理 /resource/avatar/<文件名> 访问
+ */
+export const AVATAR_KEY_PREFIX = 'avatar/'
+
+/** 判断 D1 中的头像值是否为手动上传（R2 相对 key） */
+export function isUploadedAvatar(avatar: string | null | undefined): boolean {
+  return typeof avatar === 'string' && /^avatar\//i.test(avatar.trim())
+}
+
+/**
+ * 写入前规范化头像值：
+ * - /resource/avatar/x.png（前端回填的代理 URL）→ avatar/x.png（D1 只存相对 key）
+ * - 其余值（https URL 等）原样 trim 返回
+ */
+export function normalizeAvatarInput(value: string | null | undefined): string {
+  const v = (value || '').trim()
+  return v.replace(/^\/resource\//i, (m) => (/^avatar\//i.test(v.slice(m.length)) ? '' : m))
+}
+
+/**
+ * 读取时规范化头像值：
+ * - avatar/x.png → /resource/avatar/x.png（浏览器可直接访问的同源 URL）
+ * - https URL、根相对路径、空值原样返回
+ */
+export function resolveAvatarUrl(avatar: string | null | undefined): string {
+  const v = (avatar || '').trim()
+  if (!v) return ''
+  if (/^https?:\/\//i.test(v) || v.startsWith('/')) return v
+  if (/^avatar\//i.test(v)) return `/resource/${v}`
+  return v
+}
+
+/**
  * 原子 UPSERT 到 D1 user 表，统一解决两个问题：
  *
  * 1) 非原子操作：使用 INSERT ... ON CONFLICT(LOWER(username)) DO UPDATE，
