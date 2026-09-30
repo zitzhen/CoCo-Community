@@ -14,7 +14,8 @@
 - [7. GitHub 代理](#7-github-代理)
 - [8. Git 仓库同步](#8-git-仓库同步)
 - [9. 日志](#9-日志)
-- [10. 数据模型附录](#10-数据模型附录)
+- [10. 安全报告](#10-安全报告)
+- [11. 数据模型附录](#11-数据模型附录)
 
 ---
 
@@ -80,6 +81,13 @@ GitHub 代理、昵称更新接口通过 `server/utils/github.ts` 的 `assertAll
 | `GITHUB_CLIENT_SECRET` | `/auth/github` | GitHub OAuth App Client Secret |
 | `COCO_COMMUNITY_JWT` | `/auth/github`、`/api/me`、`/api/control-submit`、`/api/essay/like`、`/api/essay/collect`、`/api/update_nickname` | JWT HS256 对称密钥（全站统一） |
 | `COCO_COMMUNITY_JWT_P` | 仅作为点赞/收藏接口的**历史回退** | 已废弃，新环境无需配置；配置时仅在主变量缺失时生效 |
+| `SMTP_HOST` | `/api/safe/report` | SMTP 服务器地址（安全报告邮件通知） |
+| `SMTP_PORT` | `/api/safe/report` | SMTP 端口（465=直连 TLS，587/25=STARTTLS） |
+| `SMTP_USERNAME` | `/api/safe/report` | SMTP 登录用户名 |
+| `SMTP_PASSWORD` | `/api/safe/report` | SMTP 登录密码/授权码 |
+| `SMTP_FROM` | `/api/safe/report` | 发件地址（一般同用户名） |
+| `SMTP_FROM_NAME` | `/api/safe/report` | 发件显示名（可选） |
+| `SECURITY_NOTIFY_EMAIL` | `/api/safe/report` | 安全报告管理员收件地址 |
 
 ### wrangler.toml 绑定
 
@@ -167,7 +175,7 @@ GET /api/logout
 
 ## 4. 控件（R2 + D1）
 
-R2 是控件本体与元信息的真实来源；D1 `components` 表只存计数。目录结构见 [10.1](#101-r2-布局)。
+R2 是控件本体与元信息的真实来源；D1 `components` 表只存计数。目录结构见 [11.1](#111-r2-布局)。
 
 ### 4.1 控件列表
 
@@ -590,7 +598,7 @@ Content-Type: application/json
 - 内容按 GitHub blob sha 判断：未变跳过、变更覆盖；
 - 仓库中已删除的文件从 R2 同步删除（带保护阈值，见 8.2）。
 
-绑定关系存于 D1 `github_sync_repos` 表（见 [10.2](#102-d1-表)）。一个控件名仅可绑定一个仓库；仅支持绑定**本人名下的公开仓库**。
+绑定关系存于 D1 `github_sync_repos` 表（见 [11.2](#112-d1-表)）。一个控件名仅可绑定一个仓库；仅支持绑定**本人名下的公开仓库**。
 
 **允许镜像的文件类型**：图片（`.png .jpg .jpeg .gif .webp .bmp .ico .svg`）、文档/代码（`.md .markdown .txt .json .jsx .js .mjs .cjs .ts .css .xml .yml .yaml`）、字体（`.woff .woff2 .ttf .otf .eot`）、音视频（`.mp3 .mp4 .webm`），以及无扩展名的 `LICENSE/LICENCE/COPYING/NOTICE`。`.html/.htm/.xhtml` 等可在同源执行为活动页面的类型拒绝（`file_type_not_allowed`）；`.github/` 等点开头的仓库管道文件静默忽略。
 
@@ -781,9 +789,75 @@ GET /api/log?url={被访问路径}
 
 ---
 
-## 10. 数据模型附录
+## 10. 安全报告
 
-### 10.1 R2 布局（桶 `coco-community`）
+### 10.1 提交安全漏洞报告
+
+```
+POST /api/safe/report
+```
+
+`/safe` 页面安全漏洞报告提交通道。**匿名可提交**（无需登录），写入 D1 `safe_report` 表，并通过 SMTP 发送邮件通知（管理员 + 报告者确认）。
+
+**认证**：无，但要求 Origin/Referer 在白名单内（同源 + `*.pages.dev`）。
+
+**请求体**
+
+```json
+{
+  "reporterName": "张三",
+  "reporterEmail": "zhangsan@example.com",
+  "affectedComponent": "文件上传功能",
+  "severity": "high",
+  "description": "漏洞详细描述...",
+  "reproduceSteps": "1. ...\n2. ...",
+  "additionalInfo": "（可选）"
+}
+```
+
+| 字段 | 必填 | 限制 |
+| --- | --- | --- |
+| `reporterName` | 是 | 1–64 字符 |
+| `reporterEmail` | 是 | 邮箱格式，≤254 字符 |
+| `affectedComponent` | 是 | 1–128 字符 |
+| `severity` | 是 | 枚举 `critical` / `high` / `medium` / `low` |
+| `description` | 是 | 1–10000 字符 |
+| `reproduceSteps` | 是 | 1–10000 字符 |
+| `additionalInfo` | 否 | ≤5000 字符 |
+
+**限流**：同一 IP 每小时最多提交 5 次，超出返回 429。
+
+**200**
+
+```json
+{ "ok": true, "id": 42, "email_sent": { "admin": true, "reporter": true } }
+```
+
+`email_sent` 表示两封邮件是否实际发出：邮件为 best-effort（D1 写入成功后才尝试），单封失败不影响 200 响应，仅在服务端日志记录。
+
+**邮件行为**
+
+- 管理员通知 → `SECURITY_NOTIFY_EMAIL`：含全部报告字段 + 报告编号 + 提交 IP
+- 报告者确认 → `reporterEmail`：感谢语 + 报告摘要 + 请勿公开披露提醒
+- SMTP 未配置（缺 `SMTP_*` 变量）时降级：报告正常入库，邮件跳过
+
+**错误**
+
+| 状态码 | error | 触发条件 |
+| --- | --- | --- |
+| 400 | `invalid_json` / `missing_field` / `invalid_email` / `invalid_severity` / `field_too_long` | 请求体非法（`field_too_long` 含 `detail` 指明字段） |
+| 403 | `Forbidden: Invalid origin` | Origin 白名单拦截 |
+| 405 | `method_not_allowed` | 非 POST |
+| 429 | `too_frequent` | IP 限流（1 小时 5 次） |
+| 500 | `db_error` / `server_error` | D1 写入失败 / 其他异常 |
+
+> IP 地址（`CF-Connecting-IP` 回退 `x-forwarded-for`）与 User-Agent 仅落库用于限流与滥用追溯，接口响应永不包含。
+
+---
+
+## 11. 数据模型附录
+
+### 11.1 R2 布局（桶 `coco-community`）
 
 ```text
 <控件名>/
@@ -805,7 +879,7 @@ GET /api/log?url={被访问路径}
 
 历史数据的 `author` 可能为空字符串或大小写不一致；解析实际文件 key 时会容忍版本号写法差异（`1.0` ≈ `1.0.0`）及 `control.jsx` 文件名拼写差异。
 
-### 10.2 D1 表（数据库 `CoCo-Community`）
+### 11.2 D1 表（数据库 `CoCo-Community`）
 
 | 表 | 主要列 | 用途 |
 | --- | --- | --- |
@@ -817,6 +891,7 @@ GET /api/log?url={被访问路径}
 | `user` | `username`, `nickname`, `number_of_controls`, `avatar`, `bio`, `pageviews` | 用户资料 |
 | `log` | `ip`, `url`（及自增 id / 时间列） | 访问日志 |
 | `github_sync_repos` | `id`, `control_name`(UNIQUE), `repo_owner`, `repo_name`, `branch`, `sync_secret`, `created_at`, `last_synced_at`, `last_sync_status`, `last_sync_detail` | Git 仓库绑定与同步状态 |
+| `safe_report` | `id`, `reporter_name`, `reporter_email`, `affected_component`, `severity`, `description`, `reproduce_steps`, `additional_info`, `ip`, `user_agent`, `status`, `created_at` | 安全漏洞报告 |
 
 `github_sync_repos` 建表 SQL：
 
@@ -838,7 +913,26 @@ CREATE TABLE IF NOT EXISTS github_sync_repos (
 > 建议给 `components(name)` 建唯一索引以兜底并发重复提交：
 > `CREATE UNIQUE INDEX IF NOT EXISTS idx_components_name ON components(name)`（建前需确认无重名行）。
 
-### 10.3 页面路由速查
+`safe_report` 建表 SQL：
+
+```sql
+CREATE TABLE IF NOT EXISTS safe_report (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  reporter_name TEXT NOT NULL,
+  reporter_email TEXT NOT NULL,
+  affected_component TEXT NOT NULL,
+  severity TEXT NOT NULL,
+  description TEXT NOT NULL,
+  reproduce_steps TEXT NOT NULL,
+  additional_info TEXT DEFAULT '',
+  ip TEXT DEFAULT '',
+  user_agent TEXT DEFAULT '',
+  status TEXT NOT NULL DEFAULT 'open',
+  created_at TEXT NOT NULL
+);
+```
+
+### 11.3 页面路由速查
 
 | 路由 | 页面 |
 | --- | --- |
