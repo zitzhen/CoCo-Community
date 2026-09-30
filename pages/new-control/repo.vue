@@ -279,6 +279,8 @@ const binding = ref(false)
 const bindError = ref('')
 
 const NAME_RE = /^[A-Za-z0-9一-鿿][A-Za-z0-9_一-鿿-]{0,63}$/
+// 保留关键词：avatar/ 是 R2 中用户头像的专属文件夹，不能作为控件名（资源前缀冲突）
+const RESERVED_NAMES = new Set(['avatar'])
 
 // ---------- 名称可用性检查（防抖） ----------
 const nameStatus = ref({ type: '', message: '', icon: '' })
@@ -296,6 +298,11 @@ async function checkName() {
   const value = controlName.value.trim()
   if (!NAME_RE.test(value)) {
     nameStatus.value = { type: 'error', message: '名称格式不正确：仅限中文、字母、数字、下划线与连字符', icon: 'fas fa-circle-exclamation' }
+    return
+  }
+
+  if (RESERVED_NAMES.has(value.toLowerCase())) {
+    nameStatus.value = { type: 'error', message: `"avatar" 为保留关键词，不能作为控件名称（该名称已用于用户头像存储）`, icon: 'fas fa-ban' }
     return
   }
 
@@ -321,8 +328,9 @@ async function checkName() {
 }
 
 const nameValid = computed(() => NAME_RE.test(controlName.value.trim()))
+const nameReserved = computed(() => RESERVED_NAMES.has(controlName.value.trim().toLowerCase()))
 const repoValid = computed(() => repoUrl.value.trim().includes('/'))
-const canBind = computed(() => nameValid.value && repoValid.value && !binding.value)
+const canBind = computed(() => nameValid.value && !nameReserved.value && repoValid.value && !binding.value)
 
 // ---------- 绑定提交 ----------
 const bound = ref(false)
@@ -379,6 +387,7 @@ async function handleBind() {
     const messages = {
       invalid_repo: '仓库地址格式不正确，请粘贴 GitHub 仓库链接',
       invalid_name: '控件名称格式不正确',
+      reserved_name: '"avatar" 为保留关键词，不能作为控件名称',
       repo_not_accessible: '仓库不存在、为私有仓库或不可访问',
       repo_not_owned: '仅支持绑定你自己名下的仓库',
       name_taken_by_other: '该控件名称已被其他用户占用',
