@@ -1,4 +1,5 @@
 import { getCloudflareContext } from "~/server/utils/cloudflare"
+import { resolveAvatarUrl } from "~/server/utils/user"
 export default defineEventHandler(async (event) => {
   const { request, env } = getCloudflareContext(event);
   
@@ -28,8 +29,14 @@ export default defineEventHandler(async (event) => {
       'SELECT * FROM user WHERE LOWER(username) = LOWER(?)'
     ).bind(username).all();
     
+    // 手动上传头像在 D1 中为 avatar/<文件名>，输出为可访问的 /resource/ 路径
+    const results = (result.results || []).map((u) => ({
+      ...u,
+      avatar: resolveAvatarUrl(u.avatar),
+    }));
+    
     // 返回查询结果
-    return new Response(JSON.stringify(result), {
+    return new Response(JSON.stringify({ ...result, results }), {
       headers: { 'Content-Type': 'application/json' }
     });
   } catch (error) {

@@ -1,4 +1,5 @@
 import { getCloudflareContext } from "~/server/utils/cloudflare"
+import { resolveAvatarUrl } from "~/server/utils/user"
 // @ts-nocheck
 
 export interface Comment {
@@ -87,7 +88,7 @@ export default defineEventHandler(async (event) => {
         
         if (userResult) {
           comment.nickname = userResult.nickname || comment.username; // 如果没有昵称，则使用用户名
-          comment.avatar = userResult.avatar || '/images/user.png'; // 如果没有头像，则使用默认头像
+          comment.avatar = resolveAvatarUrl(userResult.avatar) || '/images/user.png'; // 手动上传头像需解析为 /resource/ 路径
         } else {
           // 如果用户不存在，使用默认值
           comment.nickname = comment.username;
