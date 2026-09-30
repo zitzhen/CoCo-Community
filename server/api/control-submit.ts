@@ -1,4 +1,5 @@
 import { getCloudflareContext } from "~/server/utils/cloudflare"
+import { upsertUser } from "~/server/utils/user"
 // @ts-nocheck
 import { jwtVerify } from 'jose'
 
@@ -188,6 +189,14 @@ export default defineEventHandler(async (event) => {
           .bind(name, sizeText, user.login)
           .run();
       }
+
+      // 防御性：确保提交者已在 user 表登记（兼容 OAuth 修复前登录的老用户）
+      // 原子 UPSERT：用户已存在则不覆盖任何字段（DO NOTHING），仅保证存在性
+      await upsertUser(env, user.login, {
+        nickname: user.name || user.login,
+        avatar: user.avatar_url || "",
+        bio: user.bio || "",
+      }, [])
     } catch (dbErr: any) {
       console.error("[control-submit] D1 register failed:", dbErr?.message);
       return new Response(
@@ -217,7 +226,7 @@ export default defineEventHandler(async (event) => {
       const cache = useStorage("cache");
       const keys = await cache.getKeys();
       await Promise.all(
-        keys.filter((k) => k.includes("control-list")).map((k) => cache.removeItem(k))
+        keys.filter((k) => k.includes("control-list") || k.includes("user-list")).map((k) => cache.removeItem(k))
       );
     } catch { /* 忽略缓存清理失败 */ }
 

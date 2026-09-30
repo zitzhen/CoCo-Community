@@ -11,8 +11,8 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    // 查询当前 pageviews 数值
-    const getStmt = env.DB.prepare("SELECT pageviews FROM user WHERE username = ?");
+    // 查询当前 pageviews 数值（GitHub 用户名大小写不敏感）
+    const getStmt = env.DB.prepare("SELECT pageviews FROM user WHERE LOWER(username) = LOWER(?)");
     const getResult = await getStmt.bind(username).first<{ pageviews: number }>();
 
     if (!getResult) {
@@ -23,7 +23,7 @@ export default defineEventHandler(async (event) => {
     const newpageviews = currentpageviews + 1;
 
     // 更新 pageviews 字段
-    const updateStmt = env.DB.prepare("UPDATE user SET pageviews = ? WHERE username = ?");
+    const updateStmt = env.DB.prepare("UPDATE user SET pageviews = ? WHERE LOWER(username) = LOWER(?)");
     await updateStmt.bind(newpageviews, username).run();
 
     return new Response(`Updated '${username}' pageviews to ${newpageviews}`, {

@@ -249,7 +249,7 @@ const myControls = (controlData.value?.list || []).filter(
 // SSR：服务端获取用户基本信息，首屏 HTML 直接渲染
 const { data: userData } = await useAsyncData(`user-page-${username}`, async () => {
   const basic = await $fetch('/api/user-list')
-    .then(r => (r.list || []).find(u => u.username === username))
+    .then(r => (r.list || []).find(u => u.username?.toLowerCase() === username.toLowerCase()))
     .catch(() => null)
   return { basic }
 })

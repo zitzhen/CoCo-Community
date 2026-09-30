@@ -13,8 +13,12 @@ type UserRow = {
 export default defineCachedEventHandler(async (event) => {
   const { env } = getCloudflareContext(event)
 
+  // number_of_controls 从 components 表动态统计（user 表的该字段从未被更新，始终为 0）
+  // author 与 username 均按 LOWER() 匹配，兼容历史数据大小写不一致
   const { results } = await env.DB.prepare(
-    `SELECT username, nickname, number_of_controls, avatar, bio, pageviews FROM user ORDER BY rowid`
+    `SELECT u.username, u.nickname, u.avatar, u.bio, u.pageviews,
+            (SELECT COUNT(*) FROM components c WHERE LOWER(c.author) = LOWER(u.username)) AS number_of_controls
+     FROM user u ORDER BY u.rowid`
   ).all<UserRow>()
 
   return { list: results }

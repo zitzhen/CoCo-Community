@@ -71,6 +71,11 @@ npm run dev          # http://localhost:3000
 npx wrangler d1 execute CoCo-Community --local --command "CREATE TABLE IF NOT EXISTS ..."
 ```
 
+> `user` 表必须建立大小写不敏感的唯一索引，否则用户注册会退化为非原子的先查后写，且 GitHub 同名（大小写不同）会产生重复行。本地与生产 D1 各执行一次：
+> ```bash
+> npx wrangler d1 execute CoCo-Community --local --command "CREATE UNIQUE INDEX IF NOT EXISTS idx_user_username_ci ON user (LOWER(username));"
+> ```
+
 > 非交互终端中无法启动 wrangler 远程代理时（缺少 `CLOUDFLARE_API_TOKEN`），R2 / D1 不可达属于本地环境限制。
 
 ### 2.3 生产构建验证

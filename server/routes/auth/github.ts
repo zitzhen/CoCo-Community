@@ -1,4 +1,5 @@
 import { getCloudflareContext } from "~/server/utils/cloudflare"
+import { upsertUser } from "~/server/utils/user"
 import { SignJWT } from 'jose';
 
 export default defineEventHandler(async (event) => {
@@ -57,6 +58,21 @@ export default defineEventHandler(async (event) => {
 
     const githubResData = await githubRes.json();
     const username = githubResData.login;
+
+    // ✅ 注册/同步用户到 D1 user 表（登录即注册，保证 /user 列表与 /user/:id 可见）
+    // 原子 UPSERT：新用户写入 GitHub 昵称/头像/简介；已存在用户仅同步头像
+    // （大小写不敏感：依赖 user(LOWER(username)) UNIQUE 索引）
+    try {
+      await upsertUser(env, username, {
+        nickname: githubResData.name || username,
+        avatar: githubResData.avatar_url || "",
+        bio: githubResData.bio || "",
+      }, ['avatar'])
+    } catch (dbErr: any) {
+      // 用户登记失败不阻断登录流程
+      console.error("[auth/github] user register failed:", dbErr?.message)
+    }
+
     const secretKey = env.COCO_COMMUNITY_JWT;
     
     if (!secretKey) {
