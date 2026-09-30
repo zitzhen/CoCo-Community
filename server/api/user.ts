@@ -23,9 +23,9 @@ export default defineEventHandler(async (event) => {
   }
   
   try {
-    // 查询D1数据库中的user表
+    // 查询D1数据库中的user表（GitHub 用户名大小写不敏感，用 LOWER 匹配）
     const result = await env.DB.prepare(
-      'SELECT * FROM user WHERE username = ?'
+      'SELECT * FROM user WHERE LOWER(username) = LOWER(?)'
     ).bind(username).all();
     
     // 返回查询结果

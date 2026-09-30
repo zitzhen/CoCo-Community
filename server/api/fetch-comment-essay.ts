@@ -80,9 +80,9 @@ export default defineEventHandler(async (event) => {
     for (let i = 0; i < comments.length; i++) {
       const comment = comments[i];
       try {
-        // 查询用户信息
+        // 查询用户信息（GitHub 用户名大小写不敏感）
         const userResult = await env.DB.prepare(
-          "SELECT nickname, avatar FROM user WHERE username = ?"
+          "SELECT nickname, avatar FROM user WHERE LOWER(username) = LOWER(?)"
         ).bind(comment.username).first();
         
         if (userResult) {

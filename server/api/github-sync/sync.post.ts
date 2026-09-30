@@ -1,5 +1,6 @@
 import { getCloudflareContext } from '~/server/utils/cloudflare'
 import { requireGithubUser } from '~/server/utils/auth'
+import { upsertUser } from '~/server/utils/user'
 import { mirrorRepo, recordSyncResult, type RepoBinding } from '~/server/utils/github-sync'
 
 const RATE_LIMIT_MS = 60 * 1000 // 同一绑定 60s 内仅允许一次同步
@@ -93,6 +94,12 @@ export default defineEventHandler(async (event) => {
   }
 
   // ---------- 执行全量镜像（网页触发时优先用用户 GitHub token，避免匿名限流 403） ----------
+  // 兜底：确保仓库归属者已在 user 表登记（CI 触发时可能未走网页登录注册流程）
+  // 已存在则 DO NOTHING，不覆盖用户已有昵称/头像
+  try {
+    await upsertUser(env, binding.repo_owner, { nickname: binding.repo_owner }, [])
+  } catch { /* 登记失败不阻断同步 */ }
+
   let result
   try {
     result = await mirrorRepo(env, binding, userToken)

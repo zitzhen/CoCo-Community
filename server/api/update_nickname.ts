@@ -1,4 +1,5 @@
 import { getCloudflareContext } from "~/server/utils/cloudflare"
+import { upsertUser } from "~/server/utils/user"
 import { assertAllowedOrigin } from "~/server/utils/github"
 // @ts-nocheck
 import { jwtVerify } from 'jose'
@@ -105,25 +106,13 @@ export default defineEventHandler(async (event) => {
     )
   }
 
-  // ---------- 3. 写入 user 表（存在则更新，不存在则插入） ----------
+  // ---------- 3. 写入 user 表（原子 UPSERT：存在则更新昵称，不存在则插入） ----------
   try {
-    const existing = await env.DB.prepare(
-      "SELECT username FROM user WHERE username = ?1"
-    )
-      .bind(username)
-      .first()
-
-    if (existing) {
-      await env.DB.prepare("UPDATE user SET nickname = ?1 WHERE username = ?2")
-        .bind(nickname, username)
-        .run()
-    } else {
-      await env.DB.prepare(
-        "INSERT INTO user (username, nickname, number_of_controls, avatar, bio, pageviews) VALUES (?1, ?2, 0, ?3, '', 0)"
-      )
-        .bind(username, nickname, githubUser.avatar_url || "/images/user.png")
-        .run()
-    }
+    await upsertUser(env, username, {
+      nickname,
+      avatar: githubUser.avatar_url || "/images/user.png",
+      bio: "",
+    }, ['nickname'])
 
     return new Response(
       JSON.stringify({ success: true, data: { username, nickname } }),

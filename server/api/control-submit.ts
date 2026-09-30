@@ -1,4 +1,5 @@
 import { getCloudflareContext } from "~/server/utils/cloudflare"
+import { upsertUser } from "~/server/utils/user"
 // @ts-nocheck
 import { jwtVerify } from 'jose'
 
@@ -190,16 +191,12 @@ export default defineEventHandler(async (event) => {
       }
 
       // 防御性：确保提交者已在 user 表登记（兼容 OAuth 修复前登录的老用户）
-      const userRow = await env.DB.prepare(
-        "SELECT username FROM user WHERE username = ?1"
-      ).bind(user.login).first();
-      if (!userRow) {
-        await env.DB.prepare(
-          "INSERT INTO user (username, nickname, number_of_controls, avatar, bio, pageviews) VALUES (?1, ?2, 0, ?3, ?4, 0)"
-        )
-          .bind(user.login, user.name || user.login, user.avatar_url || "", user.bio || "")
-          .run();
-      }
+      // 原子 UPSERT：用户已存在则不覆盖任何字段（DO NOTHING），仅保证存在性
+      await upsertUser(env, user.login, {
+        nickname: user.name || user.login,
+        avatar: user.avatar_url || "",
+        bio: user.bio || "",
+      }, [])
     } catch (dbErr: any) {
       console.error("[control-submit] D1 register failed:", dbErr?.message);
       return new Response(
