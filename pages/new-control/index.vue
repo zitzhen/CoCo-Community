@@ -330,6 +330,8 @@ const fileInputRef = ref(null)
 const dragover = ref(false)
 
 const NAME_RE = /^[A-Za-z0-9一-鿿][A-Za-z0-9_一-鿿-]{0,63}$/
+// 保留关键词：avatar/ 是 R2 中用户头像的专属文件夹，不能作为控件名（资源前缀冲突）
+const RESERVED_NAMES = new Set(['avatar'])
 const VERSION_RE = /^\d{1,4}(\.\d{1,4}){0,3}$/
 const MAX_FILE_SIZE = 100 * 1024
 
@@ -350,6 +352,11 @@ async function checkName() {
   const value = name.value.trim()
   if (!NAME_RE.test(value)) {
     nameStatus.value = { type: 'error', message: '名称格式不正确：仅限中文、字母、数字、下划线与连字符', icon: 'fas fa-circle-exclamation' }
+    return
+  }
+
+  if (RESERVED_NAMES.has(value.toLowerCase())) {
+    nameStatus.value = { type: 'error', message: `"avatar" 为保留关键词，不能作为控件名称（该名称已用于用户头像存储）`, icon: 'fas fa-ban' }
     return
   }
 
@@ -416,14 +423,16 @@ const submittedName = ref('')
 const submittedVersion = ref('')
 
 const nameValid = computed(() => NAME_RE.test(name.value.trim()))
+const nameReserved = computed(() => RESERVED_NAMES.has(name.value.trim().toLowerCase()))
 const versionValid = computed(() => VERSION_RE.test(version.value.trim()))
 const canSubmit = computed(
-  () => nameValid.value && versionValid.value && file.value && !submitting.value
+  () => nameValid.value && !nameReserved.value && versionValid.value && file.value && !submitting.value
 )
 
 async function handleSubmit() {
   if (!canSubmit.value) {
-    if (!nameValid.value) nameStatus.value = { type: 'error', message: '请填写符合规则的控件名称', icon: 'fas fa-circle-exclamation' }
+    if (nameReserved.value) nameStatus.value = { type: 'error', message: `"avatar" 为保留关键词，不能作为控件名称`, icon: 'fas fa-ban' }
+    else if (!nameValid.value) nameStatus.value = { type: 'error', message: '请填写符合规则的控件名称', icon: 'fas fa-circle-exclamation' }
     else if (!versionValid.value) submitError.value = '版本号格式不正确，示例：1.0.0'
     else if (!file.value) fileError.value = '请选择 .jsx 控件文件'
     return
@@ -454,6 +463,7 @@ async function handleSubmit() {
     } else {
       const messages = {
         name_taken_by_other: '该名称已被其他用户占用，请更换名称',
+        reserved_name: '"avatar" 为保留关键词，不能作为控件名称',
         invalid_name: '控件名称格式不正确',
         invalid_version: '版本号格式不正确，示例：1.0.0',
         invalid_file_type: '仅支持 .jsx 文件',

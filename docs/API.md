@@ -78,7 +78,7 @@ GitHub 代理、昵称更新接口通过 `server/utils/github.ts` 的 `assertAll
 | --- | --- | --- |
 | `GITHUB_CLIENT_ID` | `/auth/github` | GitHub OAuth App Client ID |
 | `GITHUB_CLIENT_SECRET` | `/auth/github` | GitHub OAuth App Client Secret |
-| `COCO_COMMUNITY_JWT` | `/auth/github`、`/api/me`、`/api/control-submit`、`/api/essay/like`、`/api/essay/collect`、`/api/update_nickname` | JWT HS256 对称密钥（全站统一） |
+| `COCO_COMMUNITY_JWT` | `/auth/github`、`/api/me`、`/api/control-submit`、`/api/essay/like`、`/api/essay/collect`、`/api/update_nickname`、`/api/avatar/upload` | JWT HS256 对称密钥（全站统一） |
 | `COCO_COMMUNITY_JWT_P` | 仅作为点赞/收藏接口的**历史回退** | 已废弃，新环境无需配置；配置时仅在主变量缺失时生效 |
 
 ### wrangler.toml 绑定
@@ -486,30 +486,64 @@ GET /api/pageviews_user?username={login}
 
 自增 `user.pageviews`。200 返回 text/plain `Updated 'x' pageviews to N`；404 `Component 'x' not found`（历史文案）；400 缺参。
 
-### 6.4 更新昵称
+### 6.4 更新昵称 / 头像
 
 ```
 POST /api/update_nickname
 Content-Type: application/json
 ```
 
-**认证 / 来源**：双 Cookie（与 `/api/me` 相同校验链）+ Origin/Referer 白名单（见 1.3）。用户名**一律取自登录态**，请求体中的 username 会被忽略，无法修改他人昵称。
+**认证 / 来源**：双 Cookie（与 `/api/me` 相同校验链）+ Origin/Referer 白名单（见 1.3）。用户名**一律取自登录态**，请求体中的 username 会被忽略，无法修改他人资料。
 
-请求体：
+请求体（`nickname` 与 `avatar` 至少提供一项，可同时提供）：
 
 ```json
-{ "nickname": "新昵称（trim 后 1-32 字符）" }
+{ "nickname": "新昵称（trim 后 1-32 字符）", "avatar": "https://avatars.githubusercontent.com/u/123?v=4" }
 ```
 
-行为：`user` 表中已有记录则更新，无记录则插入新行（`avatar` 取 GitHub 头像，其余计数字段为 0）。
+头像取值规则：
+
+- GitHub 头像等外链：直接存 **https 图片 URL**（长度 ≤ 512，仅允许 `https://`）
+- 手动上传头像：D1 中存 R2 相对 key（`avatar/<文件名>`），由 6.5 上传接口写入，本接口也接受该形式；前端回填的 `/resource/avatar/<文件名>` 会被规范化回相对 key
+- 从手动上传头像切换为 URL 头像时，服务端会尽力删除旧的 R2 头像文件
+
+行为：`user` 表中已有记录则更新请求中携带的字段，无记录则插入新行。成功响应按需回传字段：
+
+```json
+{ "success": true, "data": { "username": "Iamliuxiaozhen", "nickname": "新昵称", "avatar": "https://..." } }
+```
+
+错误：400 `invalid_json` / `invalid_body` / `invalid_nickname` / `invalid_avatar`；401 `unauthenticated` / `invalid_session` / `invalid_github_token` / `username_mismatch`；403 来源不在白名单；405 非 POST；500 `server_configuration_error` / `database_error`。
+
+### 6.5 上传头像
+
+```
+POST /api/avatar/upload
+Content-Type: multipart/form-data
+```
+
+**认证 / 来源**：双 Cookie（复用 `requireGithubUser` 校验链）+ Origin/Referer 白名单。
+
+表单字段：`file`（图片文件）。仅允许 **PNG / JPG / JPEG / GIF / WebP**（按原始文件名扩展名校验），大小 ≤ **2 MiB**。
+
+行为：
+
+1. 文件写入 R2 桶 `RESOURCES` 的 `avatar/` 文件夹，对象 key 为 `avatar/<login>-<时间戳>-<随机串>.<ext>`
+2. D1 `user.avatar` 写入相对 key `avatar/<文件名>`；D1 失败会删除刚上传的 R2 对象，整体等于未提交
+3. 若旧头像同样是手动上传文件，写入成功后尽力删除旧对象
+4. 清除 `/api/user-list` 缓存
 
 **200**
 
 ```json
-{ "success": true, "data": { "username": "Iamliuxiaozhen", "nickname": "新昵称" } }
+{ "ok": true, "avatar": "avatar/iamliuxiaozhen-1727000000-ab12cd.png", "url": "/resource/avatar/iamliuxiaozhen-1727000000-ab12cd.png" }
 ```
 
-错误：400 `invalid_json` / `invalid_nickname`；401 `unauthenticated` / `invalid_session` / `invalid_github_token` / `username_mismatch`；403 来源不在白名单；405 非 POST；500 `server_configuration_error` / `database_error`。
+错误：400 `invalid_form` / `missing_file` / `invalid_file_type`；401 同 6.4；403 来源不在白名单；413 `file_too_large`；500 `server_configuration_error` / `storage_error` / `database_error`。
+
+> 展示约定：`/api/me` 与 `/api/user-list` 输出时会把 `avatar/<文件名>` 解析为 `/resource/<key>`（同源 R2 代理），GitHub https URL 原样返回；`/api/me` 另附 `github_avatar_url`（GitHub 原始头像 URL）供"获取 GitHub 头像 URL"按钮回填。
+>
+> 保留关键词：`avatar` 不允许作为控件名称（`/api/control-submit` 与 `/api/github-sync/bind` 均返回 400 `reserved_name`），避免与 R2 头像目录前缀冲突。
 
 ---
 

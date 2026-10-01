@@ -6,6 +6,8 @@ import { githubHeaders } from '~/server/utils/github'
 
 // 与 control-submit 同一控件名规则
 const NAME_RE = /^[A-Za-z0-9一-鿿][A-Za-z0-9_一-鿿-]{0,63}$/
+// 保留控件名：avatar/ 是 R2 中手动上传头像的专属文件夹（同名资源前缀冲突）
+const RESERVED_NAMES = new Set(['avatar'])
 
 // 支持 "owner/name"、"github.com/owner/name"、"https://github.com/owner/name(.git)"
 function parseRepoInput(input: string): { owner: string; repo: string } | null {
@@ -49,6 +51,9 @@ export default defineEventHandler(async (event) => {
   }
   if (!NAME_RE.test(controlName)) {
     return jsonRes({ error: 'invalid_name' }, 400)
+  }
+  if (RESERVED_NAMES.has(controlName.toLowerCase())) {
+    return jsonRes({ error: 'reserved_name', detail: `"${controlName}" 为保留关键词` }, 400)
   }
 
   // ---------- 校验仓库存在、公开、且归属当前用户（用用户 token，避免匿名限流 403） ----------

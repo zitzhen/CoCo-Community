@@ -10,6 +10,8 @@ const MAX_JSX_SIZE = 100 * 1024 // 100 KiB
 const MAX_README_SIZE = 100 * 1024 // 100 KiB
 const NAME_RE = /^[A-Za-z0-9一-鿿][A-Za-z0-9_一-鿿-]{0,63}$/
 const VERSION_RE = /^\d{1,4}(\.\d{1,4}){0,3}$/
+// 保留控件名：avatar/ 是 R2 中手动上传头像的专属文件夹（同名资源前缀冲突）
+const RESERVED_NAMES = new Set(["avatar"])
 
 export default defineEventHandler(async (event) => {
   const { request, env } = getCloudflareContext(event)
@@ -90,6 +92,13 @@ export default defineEventHandler(async (event) => {
 
     if (!NAME_RE.test(name)) {
       return new Response(JSON.stringify({ error: "invalid_name" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    if (RESERVED_NAMES.has(name.toLowerCase())) {
+      return new Response(JSON.stringify({ error: "reserved_name", detail: `"${name}" 为保留关键词` }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });

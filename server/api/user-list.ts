@@ -1,4 +1,5 @@
 import { getCloudflareContext } from "~/server/utils/cloudflare"
+import { resolveAvatarUrl } from "~/server/utils/user"
 
 type UserRow = {
   username: string
@@ -21,7 +22,10 @@ export default defineCachedEventHandler(async (event) => {
      FROM user u ORDER BY u.rowid`
   ).all<UserRow>()
 
-  return { list: results }
+  // 手动上传头像在 D1 中为 avatar/<文件名>，输出为可直接访问的 /resource/ 路径
+  const list = (results || []).map((u) => ({ ...u, avatar: resolveAvatarUrl(u.avatar) }))
+
+  return { list }
 }, {
   maxAge: 60 * 5,
   // 开发环境不缓存，保证每次都实时查询 D1
