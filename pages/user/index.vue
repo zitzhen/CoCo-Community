@@ -122,11 +122,15 @@ useHead({
   margin-right: 1rem;
   border-radius: 50%;
   overflow: hidden;
+  /* 防止简介中的长英文词导致 flex 压缩头像（会变椭圆） */
+  flex-shrink: 0;
 }
 
 .user-meta {
   display: flex;
   flex-direction: column;
+  /* 允许文本项收缩，使长词/长 URL 正常换行 */
+  min-width: 0;
 }
 
 .user-name {
