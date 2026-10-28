@@ -21,6 +21,6 @@
   },
   "devDependencies": {
     "@types/sanitize-html": "^2.16.1",
-    "wrangler": "^4.151.0"
+    "wrangler": "^4.154.0"
   }
 }
